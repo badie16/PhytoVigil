@@ -1,50 +1,97 @@
-# Welcome to your Expo app 👋
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+# 🌿 PhytoVigil – AI-Powered Plant Disease Detection
 
-## Get started
+**PhytoVigil** is a mobile application built with **React Native** and powered by **AI**, designed to help farmers and gardeners detect plant diseases simply by taking a photo of a leaf.
 
-1. Install dependencies
+<!-- <img src="./assets/logo.png" width="200" alt="PhytoVigil logo" /> -->
 
-   ```bash
-   npm install
-   ```
 
-2. Start the app
 
-   ```bash
-   npx expo start
-   ```
+## 📱 Features
 
-In the output, you'll find options to open the app in a
+- 📷 Scan plant leaves using the camera
+- 🤖 Detect diseases using a trained CNN model (PlantVillage dataset)
+- 🧠 Display diagnosis with confidence level and treatment suggestions
+- 📍 Save analysis history (with optional location)
+- 🔐 Secure local storage using Expo SecureStore
+- 🌱 Offline access to a disease guide
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
 
-## Get a fresh project
+## 🛠️ Technologies
 
-When you're ready, run:
+| Frontend (Mobile)       | Backend (AI Model)             |
+|--------------------------|-------------------------------|
+| React Native (Expo)      | Python (Flask or FastAPI)      |
+| Tailwind CSS (NativeWind)| TensorFlow / PyTorch (CNN)    |
+| Axios                    | OpenCV + Pillow (image preprocessing) |
+| Expo Camera / Media Lib  | PlantVillage Dataset           |
+| AsyncStorage / SecureStore| Railway / Render (API hosting) |
 
-```bash
-npm run reset-project
+
+
+## 📁 Project Structure (Frontend)
+
+```
+PhytoVigil/
+├── App.tsx
+├── assets/
+├── components/
+├── screens/
+├── services/
+├── tailwind.config.js
+└── README.md
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
 
-## Learn more
 
-To learn more about developing your project with Expo, look at the following resources:
+## ⚙️ Getting Started
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+### 1. Clone the repo
 
-## Join the community
+```bash
+git clone https://github.com/your-username/phyto-vigil.git
+cd phyto-vigil
+```
 
-Join our community of developers creating universal apps.
+### 2. Install dependencies
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+```bash
+npm install
+npx expo install
+```
+
+### 3. Run the project
+
+```bash
+npx expo start
+```
+
+
+
+## 🧠 AI Model (Backend)
+
+The AI model is trained on the [PlantVillage dataset](https://www.kaggle.com/datasets/emmarex/plantdisease) using a CNN architecture.
+
+### Backend repository:  
+[🔗 Backend repo (Flask API)](https://github.com/badie16/phyto-vigil-api)
+
+
+
+## 🚀 Deployment
+
+- 📱 App built with [Expo Go](https://expo.dev)
+- 🌐 API hosted on [Railway](https://railway.app) or [Render](https://render.com)
+- 🔐 HTTPS communication with API tokens 
+
+
+
+## 📜 License
+
+This project is under the **MIT License**.
+
+
+
+## 👨‍💻 Author
+
+**Badie Bahida** – [@badiebahida](https://github.com/badie16)  
