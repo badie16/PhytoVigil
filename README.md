@@ -50,7 +50,7 @@ PhytoVigil/
 ### 1. Clone the repo
 
 ```bash
-git clone https://github.com/your-username/phyto-vigil.git
+git clone https://github.com/badie16/PhytoVigil.git
 cd phyto-vigil
 ```
 
@@ -74,7 +74,7 @@ npx expo start
 The AI model is trained on the [PlantVillage dataset](https://www.kaggle.com/datasets/emmarex/plantdisease) using a CNN architecture.
 
 ### Backend repository:  
-[🔗 Backend repo (Flask API)](https://github.com/badie16/phyto-vigil-api)
+[🔗 Backend repo (Flask API)](https://github.com/badie16/PhytoVigilAPI.git)
 
 
 
