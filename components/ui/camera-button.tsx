@@ -36,6 +36,11 @@ export default function CameraButton({
         }
     }
 
+    const getBackgroundColor = () => {
+        if (disabled) return "#8E8E9380"
+        return variant === "camera" ? "#00C896" : "#4ECDC4"
+    }
+
     return (
         <TouchableOpacity
             onPress={onPress}
@@ -43,12 +48,12 @@ export default function CameraButton({
             style={[
                 getSizeStyle(),
                 {
-                    borderRadius: 40,
-                    backgroundColor: disabled ? "#90a4ae80" : "#00bfa5",
+                    borderRadius: size === "lg" ? 40 : size === "md" ? 32 : 24,
+                    backgroundColor: getBackgroundColor(),
                     alignItems: "center",
                     justifyContent: "center",
                     elevation: 8,
-                    shadowColor: "#00bfa5",
+                    shadowColor: "#00C896",
                     shadowOffset: { width: 0, height: 4 },
                     shadowOpacity: 0.3,
                     shadowRadius: 8,
