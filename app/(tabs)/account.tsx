@@ -3,7 +3,7 @@ import { View, Text, ScrollView, TouchableOpacity } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { User, Settings, Bell, MapPin, Shield, HelpCircle, ChevronRight, Leaf } from "lucide-react-native"
 
-export default function ProfileScreen() {
+export default function AccountScreen() {
     const handleSettingPress = (setting: string) => {
         console.log("Setting pressed:", setting)
     }
@@ -14,54 +14,54 @@ export default function ProfileScreen() {
                 {/* Profile Header */}
                 <View className="items-center py-8 px-6">
                     <View className="w-24 h-24 bg-primary/10 rounded-full items-center justify-center mb-4">
-                        <User color="#00bfa5" size={40} />
+                        <User color="#00C896" size={40} />
                     </View>
-                    <Text className="text-2xl font-bold text-primary-dark mb-2">Plant Guardian</Text>
+                    <Text className="text-2xl font-bold text-gray-900 mb-2">Plant Guardian</Text>
                     <Text className="text-base text-secondary">Protecting plants with AI</Text>
                 </View>
 
                 {/* Stats Cards */}
                 <View className="px-6 mb-8">
                     <View className="flex-row justify-between">
-                        <StatsCard icon={<Leaf color="#00bfa5" size={24} />} title="Plants Scanned" value="24" />
-                        <StatsCard icon={<Shield color="#00bfa5" size={24} />} title="Diseases Detected" value="8" />
+                        <StatsCard icon={<Leaf color="#00C896" size={24} />} title="Plants Scanned" value="24" />
+                        <StatsCard icon={<Shield color="#00C896" size={24} />} title="Diseases Detected" value="8" />
                     </View>
                 </View>
 
                 {/* Settings */}
                 <View className="px-6">
-                    <Text className="text-lg font-semibold text-primary-dark mb-4">Settings</Text>
+                    <Text className="text-lg font-semibold text-gray-900 mb-4">Settings</Text>
 
                     <SettingItem
-                        icon={<Bell color="#90a4ae" size={24} />}
+                        icon={<Bell color="#8E8E93" size={24} />}
                         title="Notifications"
                         subtitle="Manage your alerts"
                         onPress={() => handleSettingPress("notifications")}
                     />
 
                     <SettingItem
-                        icon={<MapPin color="#90a4ae" size={24} />}
+                        icon={<MapPin color="#8E8E93" size={24} />}
                         title="Location Services"
                         subtitle="Enable GPS for better tracking"
                         onPress={() => handleSettingPress("location")}
                     />
 
                     <SettingItem
-                        icon={<Shield color="#90a4ae" size={24} />}
+                        icon={<Shield color="#8E8E93" size={24} />}
                         title="Privacy & Security"
                         subtitle="Manage your data and privacy"
                         onPress={() => handleSettingPress("privacy")}
                     />
 
                     <SettingItem
-                        icon={<Settings color="#90a4ae" size={24} />}
+                        icon={<Settings color="#8E8E93" size={24} />}
                         title="App Settings"
                         subtitle="Customize your experience"
                         onPress={() => handleSettingPress("app")}
                     />
 
                     <SettingItem
-                        icon={<HelpCircle color="#90a4ae" size={24} />}
+                        icon={<HelpCircle color="#8E8E93" size={24} />}
                         title="Help & Support"
                         subtitle="Get help and contact us"
                         onPress={() => handleSettingPress("help")}
@@ -88,10 +88,10 @@ function StatsCard({
     value: string
 }) {
     return (
-        <View className="bg-surface rounded-xl p-4 flex-1 mx-1">
+        <View className="bg-surface rounded-2xl p-4 flex-1 mx-1">
             <View className="flex-row items-center mb-2">
                 {icon}
-                <Text className="text-2xl font-bold text-primary-dark ml-2">{value}</Text>
+                <Text className="text-2xl font-bold text-gray-900 ml-2">{value}</Text>
             </View>
             <Text className="text-sm text-secondary">{title}</Text>
         </View>
@@ -116,10 +116,10 @@ function SettingItem({
         >
             <View className="mr-4">{icon}</View>
             <View className="flex-1">
-                <Text className="text-base font-medium text-primary-dark mb-1">{title}</Text>
+                <Text className="text-base font-medium text-gray-900 mb-1">{title}</Text>
                 <Text className="text-sm text-secondary">{subtitle}</Text>
             </View>
-            <ChevronRight color="#90a4ae" size={20} />
+            <ChevronRight color="#8E8E93" size={20} />
         </TouchableOpacity>
     )
 }
