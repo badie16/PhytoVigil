@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { View, Text, ScrollView, TextInput } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
-import { Search, Book } from "lucide-react-native"
+import { Search, Shield } from "lucide-react-native"
 import DiseaseCard from "@/components/ui/disease-card"
 
 // Mock diseases data
@@ -34,7 +34,7 @@ const mockDiseases = [
     },
 ]
 
-export default function DiseasesScreen() {
+export default function DiagnoseScreen() {
     const [searchQuery, setSearchQuery] = useState("")
     const [filteredDiseases, setFilteredDiseases] = useState(mockDiseases)
 
@@ -53,7 +53,6 @@ export default function DiseasesScreen() {
     }
 
     const handleDiseasePress = (name: string) => {
-        // TODO: Navigate to disease detail screen
         console.log("Show disease details:", name)
     }
 
@@ -63,19 +62,19 @@ export default function DiseasesScreen() {
                 {/* Header */}
                 <View className="items-center mb-6">
                     <View className="w-16 h-16 bg-primary/10 rounded-full items-center justify-center mb-3">
-                        <Book color="#00bfa5" size={28} />
+                        <Shield color="#00C896" size={28} />
                     </View>
-                    <Text className="text-xl font-bold text-primary-dark mb-2">Disease Dictionary</Text>
+                    <Text className="text-xl font-bold text-gray-900 mb-2">Disease Dictionary</Text>
                     <Text className="text-sm text-secondary text-center">Learn about common plant diseases and treatments</Text>
                 </View>
 
                 {/* Search Bar */}
                 <View className="flex-row items-center bg-surface rounded-xl px-4 py-3 mb-6">
-                    <Search color="#90a4ae" size={20} />
+                    <Search color="#8E8E93" size={20} />
                     <TextInput
-                        className="flex-1 ml-3 text-base text-primary-dark"
+                        className="flex-1 ml-3 text-base text-gray-900"
                         placeholder="Search diseases..."
-                        placeholderTextColor="#90a4ae"
+                        placeholderTextColor="#8E8E93"
                         value={searchQuery}
                         onChangeText={handleSearch}
                     />
