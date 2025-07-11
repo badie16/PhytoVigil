@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { useState } from "react"
-import { View, Text, ScrollView, Alert, Modal } from "react-native"
+import { View, Text, ScrollView, Alert, Modal ,Image} from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { Leaf, Zap, Shield } from "lucide-react-native"
 import CameraButton from "@/components/ui/camera-button"
@@ -10,7 +10,6 @@ import CameraScreen from "@/components/ui/camera-screen"
 import PhotoPreview from "@/components/ui/photo-preview"
 import LoadingSpinner from "@/components/ui/loading-spinner"
 import { useCamera } from "@/hooks/use-camera"
-
 export default function ScannerScreen() {
     const [showCamera, setShowCamera] = useState(false)
     const [photoUri, setPhotoUri] = useState<string | null>(null)
@@ -87,7 +86,11 @@ export default function ScannerScreen() {
                 {/* Header */}
                 <View className="items-center py-8">
                     <View className="w-24 h-24 bg-primary/10 rounded-full items-center justify-center mb-4">
-                        <Leaf color="#00C896" size={40} />
+                    <Image
+                        source={require('../../assets/images/logo.png')}
+                        style={{ width: 72, height: 72, resizeMode: 'contain' }}
+                    />
+                    
                     </View>
                     <Text className="text-2xl font-bold text-gray-900 mb-2">Plant Disease Scanner</Text>
                     <Text className="text-base text-secondary text-center leading-6">
