@@ -34,13 +34,39 @@
 
 ```
 PhytoVigil/
-├── App.tsx
-├── assets/
-├── components/
-├── screens/
-├── services/
-├── tailwind.config.js
-└── README.md
+├── mobile/ # Mobile app 
+│ ├── App/
+│ ├── assets/
+│ ├── components/
+│ ├── hooks/
+│ ├── services/
+│ ├── tailwind.config.js
+│ └── ...
+│
+├── backend/ # Backend API 
+│ ├── server.py
+│ ├── requirements.txt
+│ ├── src/
+│ │ ├── controllers/
+│ │ ├── routes/
+│ │ └── services/
+│ └── ...
+│
+├── ai/ # AI training and model files
+│ ├── notebooks/
+│ │ └── phytovigil_model_training.ipynb
+│ ├── scripts/
+│ ├── models/
+│ └── requirements.txt
+│
+├── docs/ # Documentation and diagrams
+│ ├── architecture.md
+│ ├── dataflow.md
+│ └── mockups/
+│ └── figma_ui.png
+│
+├── README.md
+└── LICENSE
 ```
 
 
@@ -72,9 +98,6 @@ npx expo start
 ## 🧠 AI Model (Backend)
 
 The AI model is trained on the [PlantVillage dataset](https://www.kaggle.com/datasets/emmarex/plantdisease) using a CNN architecture.
-
-### Backend repository:  
-[🔗 Backend repo (Flask API)](https://github.com/badie16/PhytoVigilAPI.git)
 
 
 
