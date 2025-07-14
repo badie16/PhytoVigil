@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import Base, engine
-from app.routes import user  # routes/user.py
+from app.routes import user, auth
 
 Base.metadata.create_all(bind=engine)
 
@@ -12,7 +12,7 @@ app = FastAPI(
 )
 
 app.include_router(user.router, prefix="/api", tags=["Users"])
-
+app.include_router(auth.router, prefix="/api/auth", tags=["Auth"])
 
 @app.get("/ping")
 def ping():
