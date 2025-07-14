@@ -1,75 +1,36 @@
+# 🌱 PhytoVigil – Intelligent Plant Disease Detection
 
-# 🌿 PhytoVigil – AI-Powered Plant Disease Detection
+**PhytoVigil** is a full-stack solution (mobile + web + backend) that helps farmers, gardeners, and plant enthusiasts identify plant diseases using artificial intelligence and receive recommendations or natural treatments.
 
-**PhytoVigil** is a mobile application built with **React Native** and powered by **AI**, designed to help farmers and gardeners detect plant diseases simply by taking a photo of a leaf.
+---
 
-<!-- <img src="./assets/logo.png" width="200" alt="PhytoVigil logo" /> -->
-
-
-
-## 📱 Features
-
-- 📷 Scan plant leaves using the camera
-- 🤖 Detect diseases using a trained CNN model (PlantVillage dataset)
-- 🧠 Display diagnosis with confidence level and treatment suggestions
-- 📍 Save analysis history (with optional location)
-- 🔐 Secure local storage using Expo SecureStore
-- 🌱 Offline access to a disease guide
-
-
-
-## 🛠️ Technologies
-
-| Frontend (Mobile)       | Backend (AI Model)             |
-|--------------------------|-------------------------------|
-| React Native (Expo)      | Python (Flask or FastAPI)      |
-| Tailwind CSS (NativeWind)| TensorFlow / PyTorch (CNN)    |
-| Axios                    | OpenCV + Pillow (image preprocessing) |
-| Expo Camera / Media Lib  | PlantVillage Dataset           |
-| AsyncStorage / SecureStore| Railway / Render (API hosting) |
-
-
-
-## 📁 Project Structure (Frontend)
-
+## 📱 Project Components
 ```
-PhytoVigil/
-├── mobile/ # Mobile app 
-│ ├── App/
-│ ├── assets/
-│ ├── components/
-│ ├── hooks/
-│ ├── services/
-│ ├── tailwind.config.js
-│ └── ...
-│
-├── backend/ # Backend API 
-│ ├── server.py
-│ ├── requirements.txt
-│ ├── src/
-│ │ ├── controllers/
-│ │ ├── routes/
-│ │ └── services/
-│ └── ...
-│
-├── ai/ # AI training and model files
-│ ├── notebooks/
-│ │ └── phytovigil_model_training.ipynb
-│ ├── scripts/
-│ ├── models/
-│ └── requirements.txt
-│
-├── docs/ # Documentation and diagrams
-│ ├── architecture.md
-│ ├── dataflow.md
-│ └── mockups/
-│ └── figma_ui.png
-│
-├── README.md
+/PhytoVigil
+├── backend/       # API FastAPI + IA + PostgreSQL
+├── mobile/        # Application mobile (React Native)
+├── web/           # Interface admin web (Next.js)
+├── docs/          # Documentation and diagrams
+└── README.md      
 └── LICENSE
 ```
+## 🧠 Key Features
 
+- 📸 Detect plant disease from a leaf photo (mobile)
+- 🤖 Predict disease using a trained CNN (TensorFlow)
+- 🔐 Secure authentication with user/admin roles
+- 🧑‍🌾 Receive natural solutions & extra info via OpenAI (optional)
+- 📦 Local storage (SQLite + AsyncStorage) + cloud sync
+- 🧑‍💻 Admin web interface to manage diseases, users, etc.
 
+## 🔧 Technologies Used
+
+| Layer        | Main Techs |
+|--------------|------------|
+| Mobile       | React Native, Expo, AsyncStorage |
+| Backend      | FastAPI, PostgreSQL, TensorFlow, JWT |
+| Web (admin)  | Next.js, Tailwind CSS |
+| AI Model     | CNN (`.h5` model), OpenCV, OpenAI API |
 
 ## ⚙️ Getting Started
 
@@ -79,34 +40,11 @@ PhytoVigil/
 git clone https://github.com/badie16/PhytoVigil.git
 cd phyto-vigil
 ```
-
-### 2. Install dependencies
-
-```bash
-npm install
-npx expo install
-```
-
-### 3. Run the project
-
-```bash
-npx expo start
-```
-
-
-
-## 🧠 AI Model (Backend)
-
-The AI model is trained on the [PlantVillage dataset](https://www.kaggle.com/datasets/emmarex/plantdisease) using a CNN architecture.
-
-
-
-## 🚀 Deployment
-
-- 📱 App built with [Expo Go](https://expo.dev)
-- 🌐 API hosted on [Railway](https://railway.app) or [Render](https://render.com)
-- 🔐 HTTPS communication with API tokens 
-
+### 2. Run the Project
+Refer to the README in each subfolder:
+- [`/backend/README.md`](./backend/README.md)
+- [`/mobile/README.md`](./mobile/README.md)
+- [`/web/README.md`](./web/README.md)
 
 
 ## 📜 License
@@ -117,4 +55,5 @@ See the [LICENSE](./LICENSE) file for details.
 
 ## 👨‍💻 Author
 
-**Badie Bahida** – [@badiebahida](https://github.com/badie16)  
+**Badie Bahida** – [@badie16](https://github.com/badie16)   
+2025 Internship – Project: 🌿 *PhytoVigil*
