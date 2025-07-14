@@ -2,13 +2,11 @@
 
 Mobile application for **PhytoVigil**, developed with **React Native (Expo)**.  
 It allows users to:
-
-- Capture or import a leaf photo
-- Identify the plant disease using the AI module (via API)
-- View recommendations (OpenAI)
-- View the analysis history (even offline)
-- Receive notifications (e.g.: critical diseases)
-
+- 📸 Capture or import a leaf photo
+- 🧠 Identify the plant disease using the AI module (via API)
+- 💡 View recommendations (OpenAI)
+- 🕑 View the analysis history (even offline)
+- 🔔 Receive notifications (e.g.: critical diseases)
 
 ## ⚙️ Technologies Used
 
