@@ -101,6 +101,7 @@ enhancing user experience with dynamic, tailored content.
 
 This project is licensed under Apache 2.0 - see the LICENSE file.
 
-## 👤 Author
+## 👨‍💻 Author
 
-**Badie Bahida**  
+**Badie Bahida** – [@badie16](https://github.com/badie16)   
+2025 Internship – Project: 🌿 *PhytoVigil*
