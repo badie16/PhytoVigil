@@ -30,7 +30,7 @@
 | Mobile       | React Native, Expo, AsyncStorage |
 | Backend      | FastAPI, PostgreSQL, TensorFlow, JWT |
 | Web (admin)  | Next.js, Tailwind CSS |
-| AI Model     | CNN (`.h5` model), OpenCV, OpenAI API |
+| AI Model     | CNN (`.h5` model), OpenCV, Gemini API |
 
 ## ⚙️ Getting Started
 
