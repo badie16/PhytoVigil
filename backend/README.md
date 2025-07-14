@@ -1,16 +1,16 @@
 # 🌿 PhytoVigil Backend
 
-Backend de l'application **PhytoVigil**, développé avec **FastAPI**, intégrant :
+Backend for the **PhytoVigil** application, developed with **FastAPI**, featuring:
 
-- 🔐 Authentification sécurisée par JWT
-- 👤 Gestion des utilisateurs avec rôles (`user`, `admin`)
-- 🧠 Module IA de détection de maladies des plantes (TensorFlow)
-- 🗃️ Base de données PostgreSQL (via SQLAlchemy)
-- 📦 API RESTful avec documentation Swagger auto
-- 🔄 Support du stockage local et de la synchronisation
-- 🤖 Intégration  d’une API IA (ex: Gemini API) pour fournir
-  des informations et solutions complémentaires sur les maladies détectées
-## ⚙️ Technologies utilisées
+- 🔐 Secure JWT authentication
+- 👤 User management with roles (`user`, `admin`)
+- 🧠 AI module for plant disease detection (TensorFlow)
+- 🗃️ PostgreSQL database (via SQLAlchemy)
+- 📦 RESTful API with auto-generated Swagger documentation
+- 🔄 Local storage and synchronization support
+- 🤖 Integration with an AI API (e.g., Gemini API) to provide additional information and solutions for detected diseases
+
+## ⚙️ Technologies Used
 
 - FastAPI
 - SQLAlchemy
@@ -20,33 +20,33 @@ Backend de l'application **PhytoVigil**, développé avec **FastAPI**, intégran
 - Python-JOSE
 - Uvicorn
 
-## 🚀 Lancer le projet en local
+## 🚀 Running the Project Locally
 
-### 1. Cloner le projet
+### 1. Clone the project
 
 ```bash
 git clone https://github.com/badie16/PhytoVigil.git
 cd PhytoVigil/backend
 ```
 
-### 2. Créer et activer un environnement virtuel
+### 2. Create and activate a virtual environment
 
 ```bash
 python -m venv venv
 source venv/Scripts/activate        # Windows (Git Bash)
-# ou
-source venv/bin/activate            # Linux / macOS
+# or
+source venv/bin/activate            # Linux/macOS
 ```
 
-### 3. Installer les dépendances
+### 3. Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Configurer la base de données
+### 4. Configure the database
 
-Créer un fichier `.env` dans le dossier `/backend/` :
+Create a .env file in the /backend/ directory:
 
 ```env
 DATABASE_URL=postgresql://username:password@localhost:5432/phytovigil
@@ -55,30 +55,30 @@ ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=60
 ```
 
-### 5. Lancer l’API
+### 5. Launch the API
 
 ```bash
 uvicorn app.main:app --reload
 ```
 
-Accéder à la documentation automatique :
+Access auto-generated documentation:
 - Swagger UI : http://127.0.0.1:8000/docs
 - Redoc : http://127.0.0.1:8000/redoc
 
-## 🧠 Module IA
+## 🧠 AI Module
 
-Le modèle d’intelligence artificielle est situé dans :
+The AI model is located in:
 
 ```
 /app/ml/
-├── model.h5         ← Modèle TensorFlow entraîné
-├── class.json       ← Mapping ID → nom des maladies
-└── diagnosis.py     ← Code de prédiction
+├── model.h5         ← Trained TensorFlow model
+├── class.json       ← ID to disease name mapping
+└── diagnosis.py     ← Prediction code
 ```
-## 🤖 Intégration OpenAI
-Le backend interroger l’API Gemini pour fournir à l’utilisateur des informations détaillées et des solutions naturelles sur les maladies détectées.
-Cela permet d’enrichir l’expérience utilisateur en proposant un contenu dynamique et adapté.
-## 📦 Structure du projet
+## 🤖 Gemini Integration
+The backend queries the Gemini API to provide users with detailed information and natural solutions for detected diseases,
+enhancing user experience with dynamic, tailored content.
+## 📦 Project Structure
 ```
 /backend
 ├── app/
@@ -97,10 +97,10 @@ Cela permet d’enrichir l’expérience utilisateur en proposant un contenu dyn
 └── README.md
 ```
 
-## 📝 Licence
+## 📝 License
 
-Ce projet est sous licence **Apache 2.0** — voir le fichier `LICENSE`.
+This project is licensed under Apache 2.0 - see the LICENSE file.
 
-## 👤 Auteur
+## 👤 Author
 
 **Badie Bahida**  
