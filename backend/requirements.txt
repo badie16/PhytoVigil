@@ -10,3 +10,5 @@ python-multipart
 pillow
 opencv-python
 tensorflow
+python-dotenv
+pydantic[email]
