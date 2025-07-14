@@ -8,6 +8,11 @@
     "scheme": "phytovigil",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/images/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#00C896"
+    },
     "ios": {
       "supportsTablet": true
     },
@@ -29,9 +34,8 @@
         "expo-splash-screen",
         {
           "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#00C896"
         }
       ]
     ],
