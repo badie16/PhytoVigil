@@ -19,9 +19,9 @@
 - 📸 Detect plant disease from a leaf photo (mobile)
 - 🤖 Predict disease using a trained CNN (TensorFlow)
 - 🔐 Secure authentication with user/admin roles
-- 🧑‍🌾 Receive natural solutions & extra info via OpenAI (optional)
+- 🌾 Receive natural solutions & extra info via Gemini 
 - 📦 Local storage (SQLite + AsyncStorage) + cloud sync
-- 🧑‍💻 Admin web interface to manage diseases, users, etc.
+- 💻 Admin web interface to manage diseases, users, etc.
 
 ## 🔧 Technologies Used
 
