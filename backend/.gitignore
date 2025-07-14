@@ -1,0 +1,33 @@
+# Environnement virtuel
+venv/
+.env
+
+# Fichiers Python compilés
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Jupyter Notebooks checkpoints
+.ipynb_checkpoints/
+
+# Données lourdes (images, datasets, modèles)
+data/
+*.h5
+*.pth
+*.pkl
+*.joblib
+*.npz
+*.npy
+
+# Fichiers de logs
+*.log
+
+# DS_Store pour macOS
+.DS_Store
+
+# Config IDE
+.vscode/
+.idea/
+
+# Base de données SQLite locale
+*.sqlite3
