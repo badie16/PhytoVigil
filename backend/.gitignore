@@ -12,7 +12,6 @@ __pycache__/
 
 # Données lourdes (images, datasets, modèles)
 data/
-*.h5
 *.pth
 *.pkl
 *.joblib
