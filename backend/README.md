@@ -53,6 +53,8 @@ DATABASE_URL=postgresql://username:password@localhost:5432/phytovigil
 SECRET_KEY=your_secret_key_here
 ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=60
+GEMINI_API_KEY=your_gemini_api_key_here
+
 ```
 
 ### 5. Launch the API
