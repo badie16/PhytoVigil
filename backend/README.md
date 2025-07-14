@@ -8,6 +8,8 @@ Backend de l'application **PhytoVigil**, développé avec **FastAPI**, intégran
 - 🗃️ Base de données PostgreSQL (via SQLAlchemy)
 - 📦 API RESTful avec documentation Swagger auto
 - 🔄 Support du stockage local et de la synchronisation
+- 🤖 Intégration  d’une API IA (ex: Gemini API) pour fournir
+  des informations et solutions complémentaires sur les maladies détectées
 ## ⚙️ Technologies utilisées
 
 - FastAPI
@@ -73,7 +75,9 @@ Le modèle d’intelligence artificielle est situé dans :
 ├── class.json       ← Mapping ID → nom des maladies
 └── diagnosis.py     ← Code de prédiction
 ```
-
+## 🤖 Intégration OpenAI
+Le backend interroger l’API Gemini pour fournir à l’utilisateur des informations détaillées et des solutions naturelles sur les maladies détectées.
+Cela permet d’enrichir l’expérience utilisateur en proposant un contenu dynamique et adapté.
 ## 📦 Structure du projet
 ```
 /backend
