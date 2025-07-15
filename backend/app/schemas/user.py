@@ -10,12 +10,12 @@ class UserCreate(UserBase):
     password: str
 
 class UserRead(BaseModel):
-    id: str
+    id: int
     email: EmailStr
     name: str
     avatar: Optional[str] = None
+    role: str = "user"
     created_at: datetime
     
     class Config:
         from_attributes = True
-
