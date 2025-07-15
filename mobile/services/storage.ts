@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import type { AppSettings } from "@/types"
-
+import * as SecureStore from "expo-secure-store"
+import { Platform } from "react-native"
 class StorageService {
   private readonly SETTINGS_KEY = "app_settings"
   private readonly USER_PREFERENCES_KEY = "user_preferences"
@@ -137,6 +138,30 @@ class StorageService {
     } catch (error) {
       console.error("Error importing data:", error)
       throw error
+    }
+  }
+
+  async setSecureItem(key: string, value: string): Promise<void> {
+    if (Platform.OS === "web") {
+      await AsyncStorage.setItem(key, value)
+    } else {
+      await SecureStore.setItemAsync(key, value)
+    }
+  }
+
+  async getSecureItem(key: string): Promise<string | null> {
+    if (Platform.OS === "web") {
+      return await AsyncStorage.getItem(key)
+    } else {
+      return await SecureStore.getItemAsync(key)
+    }
+  }
+
+  async removeSecureItem(key: string): Promise<void> {
+    if (Platform.OS === "web") {
+      await AsyncStorage.removeItem(key)
+    } else {
+      await SecureStore.deleteItemAsync(key)
     }
   }
 }
