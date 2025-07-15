@@ -8,6 +8,7 @@ module.exports = (api) => {
                 path: ".env",
                 safe: false,
                 allowUndefined: true,
+                "verbose": false
             }]
         ]
     }
