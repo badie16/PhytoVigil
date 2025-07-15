@@ -2,12 +2,14 @@ import type React from "react"
 import { View, Text, ScrollView, TouchableOpacity } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { User, Settings, Bell, MapPin, Shield, HelpCircle, ChevronRight, Leaf } from "lucide-react-native"
+import { useAuth } from "@/contexts/auth-context"
 
 export default function AccountScreen() {
+
+    const {user, isLoading } = useAuth()
     const handleSettingPress = (setting: string) => {
         console.log("Setting pressed:", setting)
     }
-
     return (
         <SafeAreaView className="flex-1 bg-white">
             <ScrollView className="flex-1">
@@ -16,7 +18,7 @@ export default function AccountScreen() {
                     <View className="w-24 h-24 bg-primary/10 rounded-full items-center justify-center mb-4">
                         <User color="#00C896" size={40} />
                     </View>
-                    <Text className="text-2xl font-bold text-gray-900 mb-2">Plant Guardian</Text>
+                    <Text className="text-2xl font-bold text-gray-900 mb-2">{user?.name}</Text>
                     <Text className="text-base text-secondary">Protecting plants with AI</Text>
                 </View>
 
