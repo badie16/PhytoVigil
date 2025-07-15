@@ -71,7 +71,7 @@ export default function RegisterScreen() {
         <SafeAreaView className="flex-1 bg-white">
             <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} className="flex-1">
                 <ScrollView
-                    className="justify-center"
+                    contentContainerStyle={{ justifyContent: 'center' }}
                     keyboardShouldPersistTaps="handled"
                     showsVerticalScrollIndicator={false}
                 >
@@ -82,7 +82,8 @@ export default function RegisterScreen() {
                                 {/* App Logo */}
                                 <Image
                                     source={require('../../assets/images/logo.png')}
-                                    style={{ width: 120, height: 120, resizeMode: 'contain' }}
+                                    style={{ width: 120, height: 120 }}
+                                    resizeMode="contain"
                                 />
                             </View>
                             <Text className="text-2xl font-bold text-gray-900 mb-2">Create Account</Text>

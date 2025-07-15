@@ -27,21 +27,16 @@ export default function LoginScreen() {
 
         if (!formData.password.trim()) {
             errors.password = "Password is required"
-        } else if (formData.password.length < 6) {
-            errors.password = "Password must be at least 6 characters"
         }
-
         setFieldErrors(errors)
         return Object.keys(errors).length === 0
     }
 
     const handleLogin = async () => {
         clearError()
-
         if (!validateForm()) {
             return
         }
-
         try {
             await login(formData)
             router.replace("/(tabs)")
@@ -61,33 +56,33 @@ export default function LoginScreen() {
         <SafeAreaView className="flex-1 bg-white">
             <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} className="flex-1">
                 <ScrollView
-                    className="justify-center"
                     keyboardShouldPersistTaps="handled"
                     showsVerticalScrollIndicator={false}
+                    contentContainerStyle={{ flexGrow: 1, justifyContent: "center", alignItems: "center" }}
                 >
-                    <View className="flex-1 px-6">
+                    <View className="w-full px-6 items-center justify-center flex-1">
                         {/* Header */}
                         <View className="items-center mb-10">
                             <View className="w-120 h-120 rounded-full items-center justify-center mb-4">
                                 {/* App Logo */}
                                 <Image
                                     source={require('../../assets/images/logo.png')}
-                                    style={{ width: 120, height: 120, resizeMode: 'contain' }}
+                                    style={{ width: 120, height: 120 }}
+                                    resizeMode="contain"
                                 />
-
                             </View>
-                            <Text className="text-2xl font-bold text-gray-900 mb-2">Welcome Back</Text>
+                            <Text className="text-2xl font-bold text-gray-900 mb-2 text-center">Welcome Back</Text>
                             <Text className="text-sm text-secondary text-center">Sign in to continue monitoring your plants</Text>
                         </View>
 
                         {/* Error Message */}
                         {error && (
-                            <View className="bg-red-50 border border-red-200 rounded-xl p-3 mb-6">
+                            <View className="bg-red-50 border border-red-200 rounded-xl p-3 mb-6 w-full">
                                 <Text className="text-red-600 text-sm text-center">{error}</Text>
                             </View>
                         )}
                         {/* Form */}
-                        <View className="mb-8">
+                        <View className="mb-8 w-full">
                             {/* Email Input */}
                             <View className="mb-4">
                                 <Text className="text-sm font-medium text-gray-700 mb-2">Email Address</Text>
@@ -145,7 +140,7 @@ export default function LoginScreen() {
                             </TouchableOpacity>
                         </View>
                         {/* Footer */}
-                        <View className="items-center mt-auto pb-8">
+                        <View className="items-center pb-8 w-full">
                             <Text className="text-secondary text-sm mb-3">Don't have an account?</Text>
                             <TouchableOpacity
                                 onPress={() => {
