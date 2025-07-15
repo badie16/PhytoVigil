@@ -1,8 +1,30 @@
-import { Tabs } from "expo-router"
+// app/(tabs)/_layout.tsx
+
+import { Tabs, useRouter } from "expo-router"
 import { Camera, Home, Leaf, Shield, User } from "lucide-react-native"
-import { View } from "react-native"
+import { View, ActivityIndicator } from "react-native"
+import { useAuth } from "@/contexts/auth-context"
+import { useEffect } from "react"
 import "../../assets/style/global.css"
+
 export default function TabLayout() {
+  const { isAuthenticated, isLoading } = useAuth()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      router.replace("/auth/login") 
+    }
+  }, [isAuthenticated, isLoading])
+
+  if (isLoading || !isAuthenticated) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" color="#00C896" />
+      </View>
+    )
+  }
+
   return (
     <Tabs
       screenOptions={{
@@ -40,9 +62,7 @@ export default function TabLayout() {
         name="index"
         options={{
           title: "Home",
-          tabBarIcon: ({ color, size, focused }) => (
-            <Home color={color} size={size} />
-          ),
+          tabBarIcon: ({ color, size }) => <Home color={color} size={size} />,
         }}
       />
       <Tabs.Screen
@@ -67,7 +87,7 @@ export default function TabLayout() {
                 justifyContent: "center",
                 marginBottom: 20,
                 elevation: 8,
-                boxShadow: '0 4px 8px rgba(0, 200, 150, 0.3)'
+                boxShadow: '0 4px 8px rgba(0, 200, 150, 0.3)',
               }}
             >
               <Camera color="#FFFFFF" size={24} strokeWidth={2} />
