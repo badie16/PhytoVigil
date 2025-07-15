@@ -14,14 +14,12 @@ export default function IndexScreen() {
     useEffect(() => {
         checkFirstLaunch()
     }, [])
-
     useEffect(() => {
         if (!isLoading && showOnboarding !== null) {
             if (showOnboarding) {
                 // Show onboarding for first-time users
                 return
             }
-
             if (isAuthenticated) {
                 router.replace("/(tabs)")
             } else {

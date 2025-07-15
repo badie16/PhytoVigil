@@ -1,28 +1,26 @@
-"use client"
-import React from "react"
-
 import { AuthProvider } from "@/contexts/auth-context"
-import { databaseService } from "@/services/database"
 import { Stack } from "expo-router"
-import * as SplashScreen from "expo-splash-screen"
+import * as Splash from "expo-splash-screen"
 import { StatusBar } from "expo-status-bar"
 import { useEffect, useState } from "react"
+import { ActivityIndicator, Image, Platform, Text, View } from "react-native"
+import SplashScreen from "./splash"
 import "../assets/style/global.css"
 
-// Keep the splash screen visible while we fetch resources
-SplashScreen.preventAutoHideAsync()
+if (Platform.OS !== "web") {
+  Splash.preventAutoHideAsync()
+}
 
 export default function RootLayout() {
   const [appIsReady, setAppIsReady] = useState(false)
-
   useEffect(() => {
-    async function prepare() {
+    const prepare = async () => {
       try {
         // Initialize database
-        await databaseService.init()
+        // await databaseService.init()
 
         // Simulate minimum splash time for better UX
-        await new Promise((resolve) => setTimeout(resolve, 2000))
+        await new Promise((resolve) => setTimeout(resolve, 2500))
 
         // Any other initialization tasks can go here
         console.log("App initialization complete")
@@ -30,22 +28,18 @@ export default function RootLayout() {
         console.warn("App initialization error:", e)
       } finally {
         setAppIsReady(true)
+        if (Platform.OS !== "web") {
+          await Splash.hideAsync()
+        }
       }
     }
-
     prepare()
   }, [])
 
-  useEffect(() => {
-    if (appIsReady) {
-      // Hide the splash screen once the app is ready
-      SplashScreen.hideAsync()
-    }
-  }, [appIsReady])
-
   if (!appIsReady) {
-    // Keep showing the native splash screen
-    return null
+    return (
+      <SplashScreen></SplashScreen>
+    )
   }
 
   return (
