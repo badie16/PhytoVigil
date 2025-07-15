@@ -1,11 +1,12 @@
 "use client"
+import React from "react"
 
-import { Stack } from "expo-router"
-import { StatusBar } from "expo-status-bar"
-import { useEffect, useState } from "react"
-import * as SplashScreen from "expo-splash-screen"
 import { AuthProvider } from "@/contexts/auth-context"
 import { databaseService } from "@/services/database"
+import { Stack } from "expo-router"
+import * as SplashScreen from "expo-splash-screen"
+import { StatusBar } from "expo-status-bar"
+import { useEffect, useState } from "react"
 import "../assets/style/global.css"
 
 // Keep the splash screen visible while we fetch resources

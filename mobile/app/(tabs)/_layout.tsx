@@ -16,10 +16,7 @@ export default function TabLayout() {
           paddingTop: 8,
           height: 80,
           elevation: 8,
-          shadowColor: "#000",
-          shadowOffset: { width: 0, height: -2 },
-          shadowOpacity: 0.1,
-          shadowRadius: 8,
+          boxShadow: "0 -2px 8px rgba(0,0,0,0.1)",
         },
         tabBarLabelStyle: {
           fontSize: 11,
@@ -29,7 +26,7 @@ export default function TabLayout() {
         headerStyle: {
           backgroundColor: "#FFFFFF",
           elevation: 0,
-          shadowOpacity: 0,
+          boxShadow: 'none',
           borderBottomWidth: 0,
         },
         headerTitleStyle: {
@@ -70,10 +67,7 @@ export default function TabLayout() {
                 justifyContent: "center",
                 marginBottom: 20,
                 elevation: 8,
-                shadowColor: "#00C896",
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.3,
-                shadowRadius: 8,
+                boxShadow: '0 4px 8px rgba(0, 200, 150, 0.3)'
               }}
             >
               <Camera color="#FFFFFF" size={24} strokeWidth={2} />

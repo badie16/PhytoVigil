@@ -136,10 +136,7 @@ function PlantCard({
             className="bg-white rounded-2xl p-4 mb-4 border border-gray-100"
             style={{
                 elevation: 2,
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 1 },
-                shadowOpacity: 0.1,
-                shadowRadius: 3,
+                boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
             }}
             activeOpacity={0.8}
         >

@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
         bottom: 0,
         left: 0,
         right: 0,
-        background: "linear-gradient(transparent, rgba(0, 0, 0, 0.8))",
+        backgroundImage: "linear-gradient(transparent, rgba(0, 0, 0, 0.8))",
         padding: 20,
     },
     infoCard: {

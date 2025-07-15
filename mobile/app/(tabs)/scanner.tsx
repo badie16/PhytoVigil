@@ -88,7 +88,8 @@ export default function ScannerScreen() {
                     <View className="w-24 h-24 bg-primary/10 rounded-full items-center justify-center mb-4">
                     <Image
                         source={require('../../assets/images/logo.png')}
-                        style={{ width: 72, height: 72, resizeMode: 'contain' }}
+                        style={{ width: 72, height: 72 }}
+                        resizeMode="contain"
                     />
                     
                     </View>

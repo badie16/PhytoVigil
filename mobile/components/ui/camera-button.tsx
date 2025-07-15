@@ -53,10 +53,7 @@ export default function CameraButton({
                     alignItems: "center",
                     justifyContent: "center",
                     elevation: 8,
-                    shadowColor: "#00C896",
-                    shadowOffset: { width: 0, height: 4 },
-                    shadowOpacity: 0.3,
-                    shadowRadius: 8,
+                    boxShadow: '0 4px 8px rgba(0, 200, 150, 0.3)'
                 },
             ]}
             activeOpacity={0.8}
