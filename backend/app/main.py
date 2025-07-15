@@ -14,6 +14,14 @@ app = FastAPI(
 app.include_router(user.router, prefix="/api", tags=["Users"])
 app.include_router(auth.router, prefix="/api/auth", tags=["Auth"])
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 @app.get("/ping")
 def ping():
     return {"message": "pong"}
