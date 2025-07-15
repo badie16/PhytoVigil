@@ -71,11 +71,11 @@ export default function RegisterScreen() {
         <SafeAreaView className="flex-1 bg-white">
             <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} className="flex-1">
                 <ScrollView
-                    contentContainerStyle={{ justifyContent: 'center' }}
+                    contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}
                     keyboardShouldPersistTaps="handled"
                     showsVerticalScrollIndicator={false}
                 >
-                    <View className="flex-1 px-6 pt-5">
+                    <View className="w-full max-w-md px-6 pt-5">
                         {/* Header */}
                         <View className="items-center mb-10">
                             <View className="w-120 h-120 rounded-full items-center justify-center mb-4">
