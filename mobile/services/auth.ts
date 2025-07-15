@@ -1,8 +1,7 @@
 import type { LoginCredentials, RegisterCredentials, User } from "@/types/auth"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import * as SecureStore from "expo-secure-store"
-
-const API_BASE_URL = "http://192.168.1.100:8000" // ⚠️ Remplace par l'IP locale de ton PC
+import { API_URL } from "@env" 
 
 class AuthService {
   private readonly TOKEN_KEY = "auth_token"
@@ -13,7 +12,7 @@ class AuthService {
     form.append("username", credentials.email)
     form.append("password", credentials.password)
 
-    const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
+    const res = await fetch(`${API_URL}/api/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: form.toString(),
@@ -34,7 +33,7 @@ class AuthService {
   }
 
   async register(credentials: RegisterCredentials): Promise<User> {
-    const res = await fetch(`${API_BASE_URL}/api/auth/register`, {
+    const res = await fetch(`${API_URL}/api/auth/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(credentials),
@@ -50,7 +49,7 @@ class AuthService {
     const token = await SecureStore.getItemAsync(this.TOKEN_KEY)
     if (!token) return null
 
-    const res = await fetch(`${API_BASE_URL}/api/users/me`, {
+    const res = await fetch(`${API_URL}/api/users/me`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
