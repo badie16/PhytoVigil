@@ -1,8 +1,7 @@
 import type { LoginCredentials, RegisterCredentials, User } from "@/types/auth"
+import { API_URL } from "@env"
 import AsyncStorage from "@react-native-async-storage/async-storage"
-import * as SecureStore from "expo-secure-store"
-import { API_URL } from "@env" 
-
+import { storageService } from "./storage"
 class AuthService {
   private readonly TOKEN_KEY = "auth_token"
   private readonly USER_KEY = "user_data"
@@ -11,7 +10,7 @@ class AuthService {
     const form = new URLSearchParams()
     form.append("username", credentials.email)
     form.append("password", credentials.password)
-
+    console.log(API_URL + "/api/auth/login")
     const res = await fetch(`${API_URL}/api/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -19,11 +18,13 @@ class AuthService {
     })
 
     const data = await res.json()
+    console.log("data:", data)
     if (!res.ok) throw new Error(data.detail || "Login failed")
-
-    await SecureStore.setItemAsync(this.TOKEN_KEY, data.access_token)
-
+    console.log("yes 1")
+    await storageService.setSecureItem(this.TOKEN_KEY, data.access_token)
+    console.log("yes 2")
     const user = await this.getCurrentUser()
+    console.log(user)
     if (user) {
       await AsyncStorage.setItem(this.USER_KEY, JSON.stringify(user))
       return user
@@ -46,7 +47,7 @@ class AuthService {
   }
 
   async getCurrentUser(): Promise<User | null> {
-    const token = await SecureStore.getItemAsync(this.TOKEN_KEY)
+    const token = await storageService.getSecureItem(this.TOKEN_KEY)
     if (!token) return null
 
     const res = await fetch(`${API_URL}/api/users/me`, {
@@ -62,12 +63,12 @@ class AuthService {
   }
 
   async logout(): Promise<void> {
-    await SecureStore.deleteItemAsync(this.TOKEN_KEY)
+    await storageService.removeSecureItem(this.TOKEN_KEY)
     await AsyncStorage.removeItem(this.USER_KEY)
   }
 
   async isAuthenticated(): Promise<boolean> {
-    const token = await SecureStore.getItemAsync(this.TOKEN_KEY)
+    const token = await storageService.getSecureItem(this.TOKEN_KEY)
     return !!token
   }
 }
