@@ -4,8 +4,8 @@ import { ArrowLeft, Eye, EyeOff, Lock, Mail, User } from "lucide-react-native"
 import { useState } from "react"
 import { Image, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
-
-export default function RegisterScreen() {
+import { withGuestOnly } from "@/lib/guards/withGuestOnly"
+function RegisterScreen() {
     const router = useRouter()
     const { register, isLoading, error, clearError } = useAuth()
     const [formData, setFormData] = useState({
@@ -198,3 +198,4 @@ export default function RegisterScreen() {
         </SafeAreaView>
     )
 }
+export default withGuestOnly(RegisterScreen)

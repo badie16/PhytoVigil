@@ -1,14 +1,15 @@
 import { useAuth } from "@/contexts/auth-context"
+import { withGuestOnly } from "@/lib/guards/withGuestOnly"
 import { useRouter } from "expo-router"
 import { Eye, EyeOff, Lock, Mail } from "lucide-react-native"
 import { useState } from "react"
 import { Image, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 
-
-export default function LoginScreen() {
+function LoginScreen() {
     const router = useRouter()
     const { login, isLoading, error, clearError } = useAuth()
+
     const [formData, setFormData] = useState({
         email: "",
         password: "",
@@ -157,3 +158,5 @@ export default function LoginScreen() {
         </SafeAreaView>
     )
 }
+
+export default withGuestOnly(LoginScreen)
