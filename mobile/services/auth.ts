@@ -68,6 +68,7 @@ class AuthService {
   }
 
   async isAuthenticated(): Promise<boolean> {
+    console.log("wdf")
     const token = await storageService.getSecureItem(this.TOKEN_KEY)
     return !!token
   }
