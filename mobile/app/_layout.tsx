@@ -3,9 +3,9 @@ import { Stack } from "expo-router"
 import * as Splash from "expo-splash-screen"
 import { StatusBar } from "expo-status-bar"
 import { useEffect, useState } from "react"
-import { ActivityIndicator, Image, Platform, Text, View } from "react-native"
-import SplashScreen from "./splash"
+import { Platform } from "react-native"
 import "../assets/style/global.css"
+import SplashScreen from "./splash"
 
 if (Platform.OS !== "web") {
   Splash.preventAutoHideAsync()

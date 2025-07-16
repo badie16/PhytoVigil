@@ -52,6 +52,7 @@ export default function IndexScreen() {
 
     if (showOnboarding === null || isLoading) {
         // Still loading, keep showing nothing (splash screen is still visible)
+        
         return null
     }
 
