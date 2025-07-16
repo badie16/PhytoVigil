@@ -14,3 +14,4 @@ python-dotenv
 pydantic[email]
 bcrypt==4.0.1
 supabase-py==0.12.0
+pydantic-settings
