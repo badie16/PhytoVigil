@@ -1,100 +1,229 @@
-import { View, Text, Image, TouchableOpacity } from "react-native"
-import { AlertTriangle, CheckCircle, Info } from "lucide-react-native"
-
+import { LinearGradient } from 'expo-linear-gradient';
+import { TriangleAlert as AlertTriangle, ChevronRight, InfoIcon, Leaf, Shield } from 'lucide-react-native';
+import React from 'react';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { getSeverityConfig } from '@/lib/constant/severity';
 interface DiseaseCardProps {
-    name: string
-    confidence?: number
-    treatment?: string
-    image?: string
-    status?: "healthy" | "diseased" | "unknown"
-    onPress?: () => void
+    name: string;
+    treatment: string;
+    image: string | undefined;
+    onPress: () => void;
+    severity?: number;
 }
-
-export default function DiseaseCard({
-    name,
-    confidence,
-    treatment,
-    image,
-    status = "unknown",
-    onPress,
-}: DiseaseCardProps) {
-    const getStatusIcon = () => {
-        switch (status) {
-            case "healthy":
-                return <CheckCircle color="#00bfa5" size={24} />
-            case "diseased":
-                return <AlertTriangle color="#ff5722" size={24} />
-            default:
-                return <Info color="#90a4ae" size={24} />
-        }
-    }
-
-    const getBorderColor = () => {
-        switch (status) {
-            case "healthy":
-                return "#00bfa5"
-            case "diseased":
-                return "#ff5722"
-            default:
-                return "#90a4ae"
-        }
-    }
+export default function DiseaseCard({ name, treatment, image, onPress, severity }: DiseaseCardProps) {
+    const severityConfig = getSeverityConfig(severity);
 
     return (
-        <TouchableOpacity
-            onPress={onPress}
-            style={{
-                backgroundColor: "#ffffff",
-                borderRadius: 16,
-                padding: 16,
-                marginBottom: 16,
-                borderWidth: 2,
-                borderColor: getBorderColor(),
-                elevation: 3,
-                boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
-            }}
-            activeOpacity={0.8}
-        >
-            <View style={{ flexDirection: "row", alignItems: "flex-start" }}>
-                {image && (
-                    <Image
-                        source={{ uri: image }}
-                        style={{ width: 64, height: 64, borderRadius: 12, marginRight: 16 }}
-                        resizeMode="cover"
-                    />
-                )}
+        <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.95}>
+            <LinearGradient
+                colors={['#FFFFFF', '#F8FAFC']}
+                style={styles.cardGradient}
+            >
+                <View style={styles.cardContent}>
+                    {/* Image Section */}
+                    <View style={styles.imageSection}>
+                        <View style={styles.imageContainer}>
+                            <Image
+                                source={{ uri: image }}
+                                style={styles.image}
+                                resizeMode="cover"
+                            />
+                            <LinearGradient
+                                colors={['transparent', 'rgba(0,0,0,0.3)']}
+                                style={styles.imageOverlay}
+                            />
+                        </View>
 
-                <View style={{ flex: 1 }}>
-                    <View
-                        style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}
-                    >
-                        <Text style={{ fontSize: 18, fontWeight: "bold", color: "#00796b" }}>{name}</Text>
-                        {getStatusIcon()}
+                        {severity && (
+                            <View style={[styles.severityBadge, {
+                                backgroundColor: severityConfig.lightBg,
+                                shadowColor: severityConfig.shadowColor,
+                                shadowOffset: { width: 0, height: 2 },
+                                shadowOpacity: 1,
+                                shadowRadius: 4,
+                                elevation: 3,
+                            }]}>
+                                <AlertTriangle size={12} color={severityConfig.color} />
+                                <Text style={[styles.severityText, { color: severityConfig.darkColor }]}>
+                                    {severityConfig.text}
+                                </Text>
+                            </View>
+                        )}
                     </View>
 
-                    {confidence && (
-                        <View style={{ marginBottom: 8 }}>
-                            <Text style={{ fontSize: 14, color: "#90a4ae", marginBottom: 4 }}>Confidence: {confidence}%</Text>
-                            <View style={{ width: "100%", backgroundColor: "#e0e0e0", borderRadius: 4, height: 8 }}>
-                                <View
-                                    style={{
-                                        backgroundColor: "#00bfa5",
-                                        height: 8,
-                                        borderRadius: 4,
-                                        width: `${confidence}%`,
-                                    }}
-                                />
+                    {/* Content Section */}
+                    <View style={styles.contentSection}>
+                        <View style={styles.headerRow}>
+                            <View style={styles.titleContainer}>
+                                <Text style={styles.name} numberOfLines={1}>{name}</Text>
+                                <View style={styles.typeIndicator}>
+                                    <Leaf size={12} color="#10B981" />
+                                    <Text style={styles.typeText}>Maladie fongique</Text>
+                                </View>
+                            </View>
+
+                            <View style={styles.actionButton}>
+                                 <InfoIcon size={20} color="gray" />
                             </View>
                         </View>
-                    )}
 
-                    {treatment && (
-                        <Text style={{ fontSize: 14, color: "#666", lineHeight: 20 }} numberOfLines={2}>
-                            {treatment}
-                        </Text>
-                    )}
+                        <View style={styles.treatmentSection}>
+                            <View style={styles.treatmentHeader}>
+                                <Shield size={14} color="#3B82F6" />
+                                <Text style={styles.treatmentLabel}>Traitement</Text>
+                            </View>
+                            <Text style={styles.treatment} numberOfLines={2}>{treatment}</Text>
+                        </View>
+
+                        {/* Progress Indicator */}
+                        <View style={styles.progressContainer}>
+                            <View style={styles.progressTrack}>
+                                <LinearGradient
+                                    colors={severityConfig.gradient as [string, string]}
+                                    style={[styles.progressFill, { width: `${(severity || 1) * 20}%` }]}
+                                />
+                            </View>
+                            <Text style={styles.progressText}>Niveau {severity || 1}/5</Text>
+                        </View>
+                    </View>
                 </View>
-            </View>
+            </LinearGradient>
         </TouchableOpacity>
-    )
+    );
 }
+
+const styles = StyleSheet.create({
+    card: {
+        marginBottom: 16,
+        borderRadius: 20,
+        overflow: 'hidden',
+        elevation: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.15,
+        shadowRadius: 12,
+    },
+    cardGradient: {
+        borderRadius: 20,
+    },
+    cardContent: {
+        padding: 0,
+    },
+    imageSection: {
+        position: 'relative',
+        height: 140,
+    },
+    imageContainer: {
+        width: '100%',
+        height: '100%',
+        backgroundColor: '#F3F4F6',
+    },
+    image: {
+        width: '100%',
+        height: '100%',
+    },
+    imageOverlay: {
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        height: 40,
+    },
+    severityBadge: {
+        position: 'absolute',
+        top: 12,
+        right: 12,
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.2)',
+    },
+    severityText: {
+        fontSize: 11,
+        fontWeight: '600',
+        marginLeft: 4,
+    },
+    contentSection: {
+        padding: 16,
+    },
+    headerRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+        marginBottom: 12,
+    },
+    titleContainer: {
+        flex: 1,
+        marginRight: 12,
+    },
+    name: {
+        fontSize: 18,
+        fontWeight: '700',
+        color: '#1F2937',
+        marginBottom: 4,
+    },
+    typeIndicator: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    typeText: {
+        fontSize: 12,
+        color: '#10B981',
+        marginLeft: 4,
+        fontWeight: '500',
+    },
+    actionButton: {
+        borderRadius: 12,
+        overflow: 'hidden',
+    },
+    actionGradient: {
+        width: 32,
+        height: 32,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    treatmentSection: {
+        marginBottom: 12,
+    },
+    treatmentHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 6,
+    },
+    treatmentLabel: {
+        fontSize: 13,
+        fontWeight: '600',
+        color: '#3B82F6',
+        marginLeft: 6,
+    },
+    treatment: {
+        fontSize: 14,
+        color: '#6B7280',
+        lineHeight: 20,
+    },
+    progressContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
+    progressTrack: {
+        flex: 1,
+        height: 4,
+        backgroundColor: '#E5E7EB',
+        borderRadius: 2,
+        marginRight: 12,
+        overflow: 'hidden',
+    },
+    progressFill: {
+        height: '100%',
+        borderRadius: 2,
+    },
+    progressText: {
+        fontSize: 12,
+        color: '#9CA3AF',
+        fontWeight: '500',
+    },
+});
