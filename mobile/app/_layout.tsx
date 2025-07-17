@@ -61,6 +61,7 @@ export default function RootLayout() {
         <Stack.Screen name="auth/login" options={{ headerShown: false }} />
         <Stack.Screen name="auth/register" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="diseases/[name]" options={{ title: "Détails de la maladie" }} />
       </Stack>
     </AuthProvider>
   )
