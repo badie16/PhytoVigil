@@ -1,11 +1,10 @@
 export interface User {
-  id: string
+  id: number
   email: string
   name: string
-  avatar?: string
+  role: string
   createdAt: string
 }
-
 export interface AuthState {
   user: User | null
   isAuthenticated: boolean
@@ -22,4 +21,8 @@ export interface RegisterCredentials {
   name: string
   email: string
   password: string
+}
+export interface TokenResponse {
+  access_token: string
+  token_type: string
 }
