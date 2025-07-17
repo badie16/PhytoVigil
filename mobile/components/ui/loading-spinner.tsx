@@ -2,7 +2,7 @@ import { View, ActivityIndicator, Text } from "react-native"
 
 interface LoadingSpinnerProps {
     message?: string
-    size?: "small" | "large"
+    size?: "small" | "large" | number
 }
 
 export default function LoadingSpinner({ message = "Loading...", size = "large" }: LoadingSpinnerProps) {
