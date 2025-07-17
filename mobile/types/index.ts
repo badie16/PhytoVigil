@@ -36,16 +36,17 @@ export interface Plant {
 }
 
 export interface Disease {
-  id: string
+  id: number
   name: string
-  scientificName?: string
+  scientific_name?: string
   description: string
-  symptoms: string[]
+  symptoms: string[] | string
   treatment: string
   prevention: string
-  severity: "low" | "medium" | "high"
-  affectedPlants: string[]
-  imageUri?: string
+  severity_level: number
+  affectedPlants?: string[]   
+  image_url?: string
+  created_at?: string
 }
 
 export interface AppSettings {
