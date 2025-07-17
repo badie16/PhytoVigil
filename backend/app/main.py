@@ -1,31 +1,47 @@
-from fastapi import FastAPI
+import os
+from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
 from fastapi.middleware.cors import CORSMiddleware
-from app.database import Base, engine
-from app.routes import user, auth
+from sqlalchemy.orm import Session
+from app.database import get_db, engine, Base
+from app.routes import auth, user, plants, diseases, scans, files,ml
+from app.core.config import settings # Importez les paramètres de configuration
+from app.core.security import get_current_user
 
-Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="PhytoVigil API",
-    description="API backend de l'application PhytoVigil",
-    version="1.0.0"
+    description="API pour la détection de maladies des plantes et la gestion des utilisateurs.",
+    version="0.1.0",
+    debug=settings.debug # Utilise le paramètre de débogage
 )
 
-app.include_router(user.router, prefix="/api", tags=["Users"])
-app.include_router(auth.router, prefix="/api/auth", tags=["Auth"])
-
+# Configuration CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    # allow_origins=settings.allowed_origins, # Utilise les origines autorisées des paramètres
+    allow_origins=["*"],# tout les origin
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-@app.get("/ping")
-def ping():
-    return {"message": "pong"}
-
+# Inclure les routeurs
+app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
+app.include_router(user.router, prefix="/api/users", tags=["Users"])
+app.include_router(plants.router, prefix="/api/plants", tags=["Plants"])
+app.include_router(diseases.router, prefix="/api/diseases", tags=["Diseases"])
+app.include_router(scans.router, prefix="/api/scans", tags=["Scans"])
+app.include_router(files.router, prefix="/api/files", tags=["File Uploads"]) 
+app.include_router(ml.router, prefix="/api/ml", tags=["Machine Learning"])
 @app.get("/")
-def index():
-    return {"message": "Welcome to the PhytoVigil API"}
+async def root():
+    return  {
+        "message": "Welcome to the PhytoVigil API",
+        "version": "1.0.0"
+        }
+
+# Exemple de route protégée pour tester
+@app.get("/protected-route")
+async def protected_route(current_user: user = Depends(get_current_user)):
+    return {"message": f"Hello {current_user.email}, you are authenticated!"}
