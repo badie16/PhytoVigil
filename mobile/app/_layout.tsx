@@ -1,4 +1,5 @@
 import { AuthProvider } from "@/contexts/auth-context"
+import { databaseService } from "@/services/local/databaseService"
 import { Stack } from "expo-router"
 import * as Splash from "expo-splash-screen"
 import { StatusBar } from "expo-status-bar"
@@ -17,7 +18,7 @@ export default function RootLayout() {
     const prepare = async () => {
       try {
         // Initialize database
-        // await databaseService.init()
+        await databaseService.init()
 
         // Simulate minimum splash time for better UX
         await new Promise((resolve) => setTimeout(resolve, 2500))

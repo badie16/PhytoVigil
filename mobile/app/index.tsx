@@ -1,9 +1,9 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { useRouter } from "expo-router"
 import { useAuth } from "@/contexts/auth-context"
-import { storageService } from "@/services/storage"
+import { storageService } from "@/services/local/storage"
+import { useRouter } from "expo-router"
+import { useEffect, useState } from "react"
 import OnboardingScreen from "./onboarding"
 
 export default function IndexScreen() {
@@ -52,7 +52,7 @@ export default function IndexScreen() {
 
     if (showOnboarding === null || isLoading) {
         // Still loading, keep showing nothing (splash screen is still visible)
-        
+
         return null
     }
 
