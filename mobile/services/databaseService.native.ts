@@ -7,22 +7,22 @@ import { Platform } from "react-native"
 class DatabaseService {
     private db: any | null = null
     async init() {
-        
+        console.log("deszd")
         if (Platform.OS === 'web') {
             console.log("⚠️ SQLite non supporté sur web, init skipped");
             return;
-        }
-        const SQLite = await import("expo-sqlite")
-        this.db = await SQLite.openDatabaseAsync("phytovigil.db")
-
-        try {
+        } else {
+            const SQLite = await require("expo-sqlite")
             this.db = await SQLite.openDatabaseAsync("phytovigil.db")
-            await this.createTables()
-            // await this.seedDiseases()
-            console.log("Database initialized successfully")
-        } catch (error) {
-            console.error("Database initialization error:", error)
-            throw error
+            try {
+                this.db = await SQLite.openDatabaseAsync("phytovigil.db")
+                await this.createTables()
+                // await this.seedDiseases()
+                console.log("Database initialized successfully")
+            } catch (error) {
+                console.error("Database initialization error:", error)
+                throw error
+            }
         }
     }
 
