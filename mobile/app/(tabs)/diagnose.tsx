@@ -2,12 +2,12 @@
 
 import DiseaseCard from "@/components/ui/disease-card"
 import LoadingSpinner from "@/components/ui/loading-spinner"
-import diseaseService from "@/services/diseaseService"
+import diseaseService from "@/services/local/diseaseService"
 import type { Disease } from "@/types"
 import { useRouter } from "expo-router"
 import { Search, Shield } from "lucide-react-native"
 import { useEffect, useState } from "react"
-import { ActivityIndicator, ScrollView, Text, TextInput, View } from "react-native"
+import { ScrollView, Text, TextInput, View } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 export default function DiagnoseScreen() {
     const [searchQuery, setSearchQuery] = useState("")
@@ -45,7 +45,7 @@ export default function DiagnoseScreen() {
         }
     }
     const handleDiseasePress = (name: string) => {
-      router.push(`/diseases/${encodeURIComponent(name)}`)
+        router.push(`/diseases/${encodeURIComponent(name)}`)
 
     }
     return (
