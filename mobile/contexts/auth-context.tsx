@@ -1,7 +1,7 @@
+import { authService } from "@/services/remote/auth"
+import type { AuthState, LoginCredentials, RegisterCredentials, User } from "@/types/auth"
 import type React from "react"
 import { createContext, useContext, useEffect, useReducer } from "react"
-import { authService } from "@/services/auth"
-import type { AuthState, User, LoginCredentials, RegisterCredentials } from "@/types/auth"
 
 interface AuthContextType extends AuthState {
     login: (credentials: LoginCredentials) => Promise<void>

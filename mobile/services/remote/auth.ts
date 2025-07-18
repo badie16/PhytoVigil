@@ -2,7 +2,7 @@ import type { LoginCredentials, RegisterCredentials, User } from "@/types/auth"
 
 import { config } from "@/lib/config/env"
 import AsyncStorage from "@react-native-async-storage/async-storage"
-import { storageService } from "./local/storage"
+import { storageService } from "../local/storage"
 class AuthService {
   private readonly TOKEN_KEY = "auth_token"
   private readonly USER_KEY = "user_data"

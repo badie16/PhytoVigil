@@ -2,7 +2,7 @@
 
 import DiseaseCard from "@/components/ui/disease-card"
 import LoadingSpinner from "@/components/ui/loading-spinner"
-import diseaseService from "@/services/local/diseaseService"
+import diseaseService from "@/services/remote/diseaseService"
 import type { Disease } from "@/types"
 import { useRouter } from "expo-router"
 import { Search, Shield } from "lucide-react-native"
