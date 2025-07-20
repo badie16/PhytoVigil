@@ -1,6 +1,6 @@
 import LoadingSpinner from '@/components/ui/loading-spinner';
 import { getSeverityConfig } from '@/lib/constant/severity';
-import diseaseService from '@/services/local/diseaseService';
+import diseaseService from '@/services/remote/diseaseService';
 import type { Disease } from '@/types';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { TriangleAlert as AlertTriangle, Leaf, Pill, Shield, Stethoscope } from 'lucide-react-native';
