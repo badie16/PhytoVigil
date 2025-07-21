@@ -1,6 +1,8 @@
+import LoadingSpinner from "@/components/ui/loading-spinner"
 import { PlantUtils } from "@/lib/constant/plantUtils"
 import plantService from "@/services/remote/plantService"
 import { Plant } from "@/types"
+import { useRouter } from "expo-router"
 import { Apple, Carrot, Droplets, Flower, LayoutGrid, Leaf, List, LucideIcon, Plus, Sprout, Sun, Thermometer, TreeDeciduous } from "lucide-react-native"
 import { useEffect, useState } from "react"
 import { Dimensions, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
@@ -10,6 +12,7 @@ const { width } = Dimensions.get('window');
 const cardWidth = (width - 60) / 2;
 
 export default function PlantsScreen() {
+    const router = useRouter();
     const [plants, setPlants] = useState<Plant[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
@@ -39,7 +42,7 @@ export default function PlantsScreen() {
         console.log("Add new plant")
     }
     const handlePlantPress = (id: number) => {
-        console.log("View plant details:", id)
+        router.push(`/plants/${id}`);
     }
     return (
         <SafeAreaView className="flex-1 bg-white" style={styles.container}>
@@ -70,7 +73,7 @@ export default function PlantsScreen() {
                     </View>
                 </View>
                 {/* Plants List */}
-                <View>
+                <View >
                     <View className="flex flex-row justify-between mb-4 mt-3">
                         <Text style={styles.sectionTitle}>Your Garden</Text>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -90,33 +93,39 @@ export default function PlantsScreen() {
                             </TouchableOpacity>
                         </View>
                     </View>
-                    <View style={viewMode === 'card' ? styles.plantsGrid : null} className="mb-4">
-                        {plants.map((plant) =>
-                            viewMode === 'list'
-                                ? <PlantList
-                                    key={plant.id}
-                                    id={plant.id}
-                                    name={plant.name}
-                                    type={plant.type}
-                                    health={plant.health}
-                                    lastScanned={plant.lastScanned ?? ''}
-                                    status={plant.health ?? 'healthy'}
-                                    image={plant.image_url ?? ''}
-                                    onPress={() => handlePlantPress(plant.id)}
-                                />
-                                : <PlantCard
-                                    key={plant.id}
-                                    id={plant.id}
-                                    name={plant.name}
-                                    type={plant.type}
-                                    health={plant.health}
-                                    lastScanned={plant.lastScanned ?? ''}
-                                    status={plant.health ?? 'healthy'}
-                                    image={plant.image_url ?? ''}
-                                    onPress={() => handlePlantPress(plant.id)}
-                                />
-                        )}
-                    </View>
+                    {loading ? (
+                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', minHeight: 300 }}>
+                            <LoadingSpinner message="" size={30} />
+                        </View>
+                    ) : (
+                        <View style={viewMode === 'card' ? styles.plantsGrid : null} className="mb-4">
+                            {plants.map((plant) =>
+                                viewMode === 'list'
+                                    ? <PlantList
+                                        key={plant.id}
+                                        id={plant.id}
+                                        name={plant.name}
+                                        type={plant.type}
+                                        health={plant.health}
+                                        lastScanned={plant.lastScanned ?? ''}
+                                        status={plant.health ?? 'healthy'}
+                                        image={plant.image_url ?? ''}
+                                        onPress={() => handlePlantPress(plant.id)}
+                                    />
+                                    : <PlantCard
+                                        key={plant.id}
+                                        id={plant.id}
+                                        name={plant.name}
+                                        type={plant.type}
+                                        health={plant.health}
+                                        lastScanned={plant.lastScanned ?? ''}
+                                        status={plant.health ?? 'healthy'}
+                                        image={plant.image_url ?? ''}
+                                        onPress={() => handlePlantPress(plant.id)}
+                                    />
+                            )}
+                        </View>
+                    )}
                 </View>
             </ScrollView>
         </SafeAreaView>
