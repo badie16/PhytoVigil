@@ -45,13 +45,13 @@ export default function RootLayout() {
 
   return (
     <AuthProvider>
-      <StatusBar style="light" backgroundColor="#00C896" />
+      <StatusBar style="light" backgroundColor="#00c896" />
       <Stack
         screenOptions={{
           headerStyle: {
             backgroundColor: "#ffffff",
           },
-          headerTintColor: "#00C896",
+          headerTintColor: "#00c896",
           headerTitleStyle: {
             fontWeight: "bold",
           },
@@ -62,7 +62,8 @@ export default function RootLayout() {
         <Stack.Screen name="auth/login" options={{ headerShown: false }} />
         <Stack.Screen name="auth/register" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="diseases/[name]" options={{ title: "Détails de la maladie" }} />
+        <Stack.Screen name="diseases/[name]" options={{ title: "Disease details" }} />
+        <Stack.Screen name="plants/[id]" options={{ title: "Plant details" }} />
       </Stack>
     </AuthProvider>
   )
