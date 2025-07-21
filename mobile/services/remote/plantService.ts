@@ -24,7 +24,6 @@ class PlantService {
         console.log(data)
         return Promise.all(data.map(this.transformBackendPlantToPlant.bind(this)));
     }
-
     async getPlantById(id: number): Promise<Plant> {
         const token = await storageService.getSecureItem(config.TOKEN_KEY);
 
@@ -49,7 +48,6 @@ class PlantService {
         const data: BackendPlant = await response.json();
         return this.transformBackendPlantToPlant(data);
     }
-
     async getScansByPlantId(plantId: number): Promise<PlantScan[]> {
         const token = await storageService.getSecureItem(config.TOKEN_KEY);
         if (!token) {
@@ -70,6 +68,7 @@ class PlantService {
         const data: BackendPlantScan[] = await response.json();
         return Promise.all(data.map(scan => this.transformBackendScanToPlantScan(scan, '')));
     }
+
     async getScanById(scanId: number): Promise<PlantScan> {
         const token = await storageService.getSecureItem(config.TOKEN_KEY);
         if (!token) {
@@ -122,7 +121,6 @@ class PlantService {
             updatedAt: backendPlant.updated_at
         };
     }
-
     // Transformer les données backend en format frontend pour PlantScan
     private transformBackendScanToPlantScan(backendScan: BackendPlantScan, plantName?: string): PlantScan {
         const confidence = parseFloat(backendScan.confidence_score) || 0;
@@ -130,7 +128,7 @@ class PlantService {
 
         return {
             id: backendScan.id,
-            plantName: plantName || "",
+            plant_id: backendScan.plant_id,
             diseaseName: hasDisease ? backendScan.detected_diseases[0].class_name : 'Healthy',
             confidence: Number((confidence * 100).toFixed(2)),
             treatment: backendScan.recommendations,
@@ -145,7 +143,6 @@ class PlantService {
             notes: undefined
         };
     }
-
 
     // Déterminer la santé globale d'une plante (vous devrez implémenter cette logique)
     private async determineHealthFromScans(plantId: number): Promise<"healthy" | "warning" | "danger"> {

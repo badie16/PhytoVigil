@@ -1,6 +1,6 @@
 export interface PlantScan {
   id: number
-  plantName: string
+  plant_id: number
   diseaseName: string
   confidence: number
   treatment: string
