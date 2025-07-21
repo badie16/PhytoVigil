@@ -66,8 +66,9 @@ class PlantService {
             const errorText = await response.text();
             throw new Error(`Erreur lors de la récupération des scans : ${response.status} - ${errorText}`);
         }
+        // const plant = await this.getPlantById(plantId);
         const data: BackendPlantScan[] = await response.json();
-        return data.map(this.transformBackendScanToPlantScan.bind(this));
+        return Promise.all(data.map(scan => this.transformBackendScanToPlantScan(scan, '')));
     }
     async getScanById(scanId: number): Promise<PlantScan> {
         const token = await storageService.getSecureItem(config.TOKEN_KEY);
@@ -123,12 +124,13 @@ class PlantService {
     }
 
     // Transformer les données backend en format frontend pour PlantScan
-    private transformBackendScanToPlantScan(backendScan: BackendPlantScan): PlantScan {
+    private transformBackendScanToPlantScan(backendScan: BackendPlantScan, plantName?: string): PlantScan {
         const confidence = parseFloat(backendScan.confidence_score) || 0;
         const hasDisease = Object.keys(backendScan.detected_diseases).length > 0;
+
         return {
             id: backendScan.id,
-            plantName: '', // Vous devrez récupérer le nom de la plante séparément
+            plantName: plantName || "",
             diseaseName: hasDisease ? backendScan.detected_diseases[0].class_name : 'Healthy',
             confidence: Number((confidence * 100).toFixed(2)),
             treatment: backendScan.recommendations,
