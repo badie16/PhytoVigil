@@ -32,12 +32,10 @@ export default function TabLayout() {
         tabBarInactiveTintColor: "#8E8E93",
         tabBarStyle: {
           backgroundColor: "#FFFFFF",
-          borderTopColor: "#F2F2F7",
-          borderTopWidth: 1,
           paddingBottom: 8,
           paddingTop: 8,
           height: 80,
-          elevation: 8,
+          elevation: 1,
           boxShadow: "0 -2px 8px rgba(0,0,0,0.1)",
         },
         tabBarLabelStyle: {
@@ -54,7 +52,6 @@ export default function TabLayout() {
         headerTitleStyle: {
           color: "#00C896",
           fontSize: 20,
-          fontWeight: "bold",
         },
       }}
     >
@@ -86,11 +83,11 @@ export default function TabLayout() {
                 alignItems: "center",
                 justifyContent: "center",
                 marginBottom: 20,
-                elevation: 8,
+                elevation: 2,
                 boxShadow: '0 4px 8px rgba(0, 200, 150, 0.3)',
               }}
             >
-              <Camera color="#FFFFFF" size={24} strokeWidth={2} />
+              <Camera color="#FFFFFF" size={24}  />
             </View>
           ),
         }}

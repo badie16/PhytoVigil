@@ -50,10 +50,11 @@ export default function RootLayout() {
         screenOptions={{
           headerStyle: {
             backgroundColor: "#ffffff",
+
           },
           headerTintColor: "#00c896",
           headerTitleStyle: {
-            fontWeight: "bold",
+            // fontWeight: "bold",
           },
         }}
       >

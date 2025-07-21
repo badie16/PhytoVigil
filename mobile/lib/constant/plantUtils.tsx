@@ -74,7 +74,7 @@ export class PlantUtils {
                 return 'Unknown';
         }
     }
-    
+
     static getConfidenceColor = (confidence: number): string => {
         if (confidence >= 80) return '#10B981'; // Green
         if (confidence >= 60) return '#F59E0B'; // Orange
@@ -86,4 +86,18 @@ export class PlantUtils {
         if (confidence >= 60) return 'Medium Confidence';
         return 'Low Confidence';
     };
+    static getHealthColorWithAlpha(hex: string, alpha: number): string {
+        const [r, g, b] = this.hexToRgb(hex);
+        console.log(`rgba(${r}, ${g}, ${b}, ${alpha})`)
+        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+
+    static hexToRgb(hex: string): [number, number, number] {
+        const sanitized = hex.replace('#', '');
+        const bigint = parseInt(sanitized, 16);
+        const r = (bigint >> 16) & 255;
+        const g = (bigint >> 8) & 255;
+        const b = bigint & 255;
+        return [r, g, b];
+    }
 }

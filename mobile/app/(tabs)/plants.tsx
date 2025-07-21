@@ -57,6 +57,7 @@ export default function PlantsScreen() {
                     <TouchableOpacity
                         onPress={handleAddPlant}
                         className="w-12 h-12 bg-primary rounded-full items-center justify-center"
+                        style={{ elevation: 1 }}
                     >
                         <Plus color="#FFFFFF" size={24} />
                     </TouchableOpacity>
@@ -82,7 +83,8 @@ export default function PlantsScreen() {
                                 style={{
                                     backgroundColor: '#F3F4F6',
                                     borderRadius: 16,
-                                    padding: 6,
+                                    padding: 8,
+                                    elevation: 1
                                 }}
                                 onPress={() => setViewMode(viewMode === 'card' ? 'list' : 'card')}
                             >
@@ -135,18 +137,18 @@ export default function PlantsScreen() {
 
 function StatCard({ title, value, color, Icon }: { title: string; value: number; color: string; Icon: LucideIcon }) {
     return (
-        <View className=" flex-1 bg-white rounded-2xl p-4 items-center" style={{
-            borderTopWidth: 4, borderTopColor: color, shadowColor: '#000000',
+        <View className=" flex-1 rounded-2xl p-4 items-center" style={{
+            backgroundColor: `${color}`, shadowColor: '#000000',
             shadowOffset: { width: 0, height: 4 },
             shadowOpacity: 0.08,
             shadowRadius: 12,
-            elevation: 3,
+            elevation: 4,            
         }}>
             <View className="mb-2">
-                {Icon && <Icon size={24} color={color} />}
+                {Icon && <Icon size={24} color={"#fff"} />}
             </View>
-            <Text className="text-[28px] font-bold text-gray-900 mb-1">{value}</Text>
-            <Text className="text-xs text-gray-400 text-center font-medium">{title}</Text>
+            <Text className="text-[28px] font-bold text-white mb-1">{value}</Text>
+            <Text className="text-xs text-center text-white font-medium">{title}</Text>
         </View>
     )
 }
@@ -224,7 +226,6 @@ function PlantList({
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F8FAFC',
     },
     content: {
         flex: 1,
@@ -249,7 +250,7 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 6 },
         shadowOpacity: 0.1,
         shadowRadius: 16,
-        elevation: 4,
+        elevation: 2,
     },
     plantImageContainer: {
         position: 'relative',
@@ -265,8 +266,6 @@ const styles = StyleSheet.create({
         bottom: 0,
         left: 0,
         width: 100, // correspond à la largeur de l'image (ajuste si besoin)
-        borderTopLeftRadius: 16,
-        borderBottomLeftRadius: 16,
     },
     plantTypeIcon: {
         position: 'absolute',

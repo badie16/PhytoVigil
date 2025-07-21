@@ -24,10 +24,10 @@ export default function HomeScreen() {
     }
 
     return (
-        <SafeAreaView className="flex-1 bg-white">
+        <View className="flex-1 bg-white pt-2">
             <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
                 {/* Header */}
-                <View className="px-6 pt-4 pb-6">
+                <View className="px-6 pb-6">
                     <View className="flex-row items-center justify-between mb-6">
                         <View>
                             <Text className="text-2xl font-bold text-gray-900">Good morning! 🌱</Text>
@@ -142,7 +142,7 @@ export default function HomeScreen() {
                     </View>
                 </View>
             </ScrollView>
-        </SafeAreaView>
+        </View>
     )
 }
 

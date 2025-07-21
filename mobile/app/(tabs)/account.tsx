@@ -1,17 +1,16 @@
-import type React from "react"
-import { View, Text, ScrollView, TouchableOpacity } from "react-native"
-import { SafeAreaView } from "react-native-safe-area-context"
-import { User, Settings, Bell, MapPin, Shield, HelpCircle, ChevronRight, Leaf } from "lucide-react-native"
 import { useAuth } from "@/contexts/auth-context"
+import { Bell, ChevronRight, HelpCircle, Leaf, MapPin, Settings, Shield, User } from "lucide-react-native"
+import type React from "react"
+import { ScrollView, Text, TouchableOpacity, View } from "react-native"
 
 export default function AccountScreen() {
 
-    const {user, isLoading } = useAuth()
+    const { user, isLoading } = useAuth()
     const handleSettingPress = (setting: string) => {
         console.log("Setting pressed:", setting)
     }
     return (
-        <SafeAreaView className="flex-1 bg-white">
+        <View className="flex-1 bg-white pt-2">
             <ScrollView className="flex-1">
                 {/* Profile Header */}
                 <View className="items-center py-8 px-6">
@@ -76,7 +75,7 @@ export default function AccountScreen() {
                     <Text className="text-center text-xs text-secondary">AI-powered plant disease detection</Text>
                 </View>
             </ScrollView>
-        </SafeAreaView>
+        </View>
     )
 }
 
