@@ -2,7 +2,7 @@ import LoadingSpinner from '@/components/ui/loading-spinner';
 import { DateUtils } from '@/lib/constant/dateUtils';
 import { PlantUtils } from '@/lib/constant/plantUtils';
 import plantService from '@/services/remote/plantService';
-import { PlantScan } from '@/types';
+import { Plant, PlantScan } from '@/types';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Activity, TriangleAlert as AlertTriangle, ArrowLeft, Calendar, Camera, CircleCheck as CheckCircle, FileText, MapPin, Target } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
@@ -23,6 +23,7 @@ const { width } = Dimensions.get('window');
 export default function ScanDetailScreen() {
     const router = useRouter();
     const [scan, setScan] = useState<PlantScan>();
+    const [plant, setPlant] = useState<Plant>()
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const { id } = useLocalSearchParams();
@@ -34,6 +35,10 @@ export default function ScanDetailScreen() {
                 const scanId = Array.isArray(id) ? parseInt(id[0], 10) : parseInt(id as string, 10);
                 const data = await plantService.getScanById(scanId);
                 setScan(data);
+                if (data.plant_id) {
+                    const p = await plantService.getPlantById(data.plant_id)
+                    setPlant(p)
+                }
             } catch (err: any) {
                 console.log(err);
                 setError(err.message);
@@ -132,7 +137,7 @@ export default function ScanDetailScreen() {
                                 ]}>
                                     {scan.diseaseName}
                                 </Text>
-                                <Text style={styles.plantName}>in {scan.plantName}</Text>
+                                <Text className='capitalize' style={styles.plantName}>in {plant?.name || "Unknown"}</Text>
                             </View>
                         </View>
 
@@ -184,7 +189,7 @@ export default function ScanDetailScreen() {
                                 </View>
                                 <View style={styles.analysisItem}>
                                     <Text style={styles.analysisLabel}>Plant Type</Text>
-                                    <Text style={styles.analysisValue}>{scan.plantName}</Text>
+                                    <Text style={styles.analysisValue}>{plant?.type || "Unknown"}</Text>
                                 </View>
                                 <View style={styles.analysisItem}>
                                     <Text style={styles.analysisLabel}>Scan Method</Text>
