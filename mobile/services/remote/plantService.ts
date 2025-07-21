@@ -69,9 +69,39 @@ class PlantService {
         const data: BackendPlantScan[] = await response.json();
         return data.map(this.transformBackendScanToPlantScan.bind(this));
     }
-
+    async getScanById(scanId: number): Promise<PlantScan> {
+        const token = await storageService.getSecureItem(config.TOKEN_KEY);
+        if (!token) {
+            throw new Error("Token manquant ou utilisateur non authentifié");
+        }
+        const response = await fetch(`${config.API_URL}/api/scans/${scanId}`, {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Erreur lors de la récupération des scans : ${response.status} - ${errorText}`);
+        }
+        const data: BackendPlantScan = await response.json();
+        return this.transformBackendScanToPlantScan(data);
+    }
     // Transformer les données backend en format frontend pour Plant
     private async transformBackendPlantToPlant(backendPlant: BackendPlant): Promise<Plant> {
+        let lastScanned: string | undefined = undefined;
+        try {
+            const scans = await this.getScansByPlantId(backendPlant.id);
+            if (scans && scans.length > 0) {
+                // On prend la date la plus récente
+                lastScanned = scans
+                    .map(scan => scan.createdAt)
+                    .sort((a, b) => new Date(b).getTime() - new Date(a).getTime())[0];
+            }
+        } catch (e) {
+            // En cas d'erreur, on laisse lastScanned à undefined
+        }
         return {
             id: backendPlant.id,
             name: backendPlant.name,
@@ -84,9 +114,8 @@ class PlantService {
                 address: backendPlant.location
             } : undefined,
             image_url: backendPlant.image_url,
-            // health: this.determineHealthFromScans(backendPlant.id), // Vous devrez implémenter cette logique
             health: await this.determineHealthFromScans(backendPlant.id),
-            lastScanned: undefined, // Sera calculé à partir des scans
+            lastScanned: lastScanned,
             notes: backendPlant.notes,
             createdAt: backendPlant.created_at,
             updatedAt: backendPlant.updated_at
@@ -101,7 +130,7 @@ class PlantService {
             id: backendScan.id,
             plantName: '', // Vous devrez récupérer le nom de la plante séparément
             diseaseName: hasDisease ? backendScan.detected_diseases[0].class_name : 'Healthy',
-            confidence: confidence,
+            confidence: Number((confidence * 100).toFixed(2)),
             treatment: backendScan.recommendations,
             imageUri: backendScan.image_url,
             location: backendScan.location_lat && backendScan.location_lng ? {
