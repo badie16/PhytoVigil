@@ -41,8 +41,6 @@ export default function DiseaseInfoPage() {
     }
     return (
         <View style={styles.container}>
-            <StatusBar barStyle="light-content" backgroundColor="#1F2937" />
-
             <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
                 {/* Header avec image */}
                 <View style={styles.header}>
