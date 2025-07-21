@@ -1,9 +1,10 @@
 import LoadingSpinner from "@/components/ui/loading-spinner"
+import { DateUtils } from "@/lib/constant/dateUtils"
 import { PlantUtils } from "@/lib/constant/plantUtils"
 import plantService from "@/services/remote/plantService"
 import { Plant } from "@/types"
 import { useRouter } from "expo-router"
-import { Apple, Carrot, Droplets, Flower, LayoutGrid, Leaf, List, LucideIcon, Plus, Sprout, Sun, Thermometer, TreeDeciduous } from "lucide-react-native"
+import { Droplets, LayoutGrid, List, LucideIcon, Plus, Sun, Thermometer } from "lucide-react-native"
 import { useEffect, useState } from "react"
 import { Dimensions, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
@@ -150,26 +151,6 @@ function StatCard({ title, value, color, Icon }: { title: string; value: number;
     )
 }
 
-export const getPlantIcon = (type: string, color = "#fff") => {
-    const t = type.toLowerCase();
-    if (["vegetable", "legume", "cereal", "grain"].includes(t)) {
-        return <Carrot size={18} color={color} />;
-    }
-    if (["fruit", "citrus", "banana", "cherry"].includes(t)) {
-        return <Apple size={18} color={color} />;
-    }
-    if (["herb", "aromatic", "sprout"].includes(t)) {
-        return <Sprout size={18} color={color} />;
-    }
-    if (["flower"].includes(t)) {
-        return <Flower size={18} color={color} />;
-    }
-    if (["tree", "palm", "forest"].includes(t)) {
-        return <TreeDeciduous size={18} color={color} />;
-    }
-    return <Leaf size={18} color={color} />;
-};
-
 function PlantList({
     id,
     name,
@@ -213,7 +194,7 @@ function PlantList({
                     zIndex: 10,
                 }}
             >
-                {getPlantIcon(type, PlantUtils.getHealthColor(status))}
+                {PlantUtils.getPlantIcon(type, PlantUtils.getHealthColor(status))}
             </View>
 
             {/* Image à gauche sur toute la hauteur */}
@@ -234,7 +215,7 @@ function PlantList({
                     >
                         {health}
                     </Text>
-                    <Text className="text-xs text-secondary">Scanned {lastScanned}</Text>
+                    <Text className="text-xs text-secondary">Scanned {DateUtils.formatDateFlexible(lastScanned)}</Text>
                 </View>
             </View>
         </TouchableOpacity>
@@ -378,7 +359,7 @@ function PlantCard({ id, name,
                     styles.plantTypeIcon,
                     { backgroundColor: PlantUtils.getHealthColor(status) }
                 ]}>
-                    {getPlantIcon(type)}
+                    {PlantUtils.getPlantIcon(type)}
                 </View>
                 <View style={[
                     styles.healthIndicator,
@@ -400,7 +381,7 @@ function PlantCard({ id, name,
                     <View style={styles.metaItem}>
                         <Thermometer size={12} color="#6B7280" />
                         <Text style={styles.metaText}>
-                            {lastScanned || 'Never scanned'}
+                            {DateUtils.formatDateFlexible(lastScanned) || 'Never scanned'}
                         </Text>
                     </View>
                 </View>
