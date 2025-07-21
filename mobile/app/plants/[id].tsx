@@ -63,7 +63,7 @@ export default function PlantDetailScreen() {
         );
     }
     return (
-        <View className="flex-1 bg-slate-50">
+        <View className="flex-1 bg-white">
             <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
                 {/* Plant Image & Basic Info */}
                 <View className="relative h-72">
@@ -89,11 +89,11 @@ export default function PlantDetailScreen() {
                     </View>
                 </View>
 
-                <View className="p-5 space-y-6">
+                <View className="p-5 gap-y-6">
                     {/* Plant Information */}
-                    <View className="space-y-3">
+                    <View className="gap-y-3">
                         <Text className="text-xl font-semibold text-slate-900">Plant Information</Text>
-                        <View className="bg-white p-5 rounded-2xl shadow-sm space-y-4">
+                        <View className="bg-white p-5 rounded-2xl gap-y-4" style={styles.border}>
                             <View className="flex-row justify-between items-center">
                                 <Text className="text-base text-slate-500 font-medium">Type:</Text>
                                 <Text className="text-base text-slate-900 font-semibold text-right flex-1 capitalize">{plant.type}</Text>
@@ -121,9 +121,9 @@ export default function PlantDetailScreen() {
 
                     {/* Plant Notes */}
                     {plant.notes && (
-                        <View className="space-y-3">
+                        <View className="gap-y-3">
                             <Text className="text-xl font-semibold text-slate-900">Notes</Text>
-                            <View className="bg-white p-5 rounded-2xl shadow-sm flex-row space-x-3">
+                            <View className="bg-white p-5 rounded-2xl flex-row gap-x-3" style={styles.border}>
                                 <FileText size={18} className='mt-[2px]' color="#6B7280" />
                                 <Text className="text-base text-slate-700 flex-1 leading-6">{plant.notes}</Text>
                             </View>
@@ -131,7 +131,7 @@ export default function PlantDetailScreen() {
                     )}
 
                     {/* Scan History */}
-                    <View className="space-y-3">
+                    <View className="gap-y-3 mb-6">
                         <View className="flex-row justify-between items-center">
                             <Text className="text-xl font-semibold text-slate-900">Scan History</Text>
                             <View className="bg-slate-100 px-3 py-1.5 rounded-xl">
@@ -140,11 +140,11 @@ export default function PlantDetailScreen() {
                         </View>
 
                         {plantScans.length > 0 ? (
-                            <View className="space-y-4">
+                            <View className="gap-y-4">
                                 {plantScans.map((scan) => (
-                                    <TouchableOpacity key={scan.id} className="bg-white rounded-2xl p-5 shadow-sm" onPress={() => handleScanPress(scan.id)}>
+                                    <TouchableOpacity key={scan.id} className="bg-white rounded-2xl p-5" style={styles.border} onPress={() => handleScanPress(scan.id)}>
                                         <View className="flex-row justify-between items-center mb-3">
-                                            <View className="flex-row items-center space-x-2">
+                                            <View className="flex-row items-center gap-x-2">
                                                 {PlantUtils.getStatusIcon(scan.status)}
                                                 <Text style={[styles.scanStatusText, { color: PlantUtils.getHealthColor(scan.status) }]}>
                                                     {scan.diseaseName}
@@ -153,14 +153,14 @@ export default function PlantDetailScreen() {
                                             <Text className="text-sm text-slate-500">{DateUtils.formatDate(scan.createdAt)}</Text>
                                         </View>
 
-                                        <View className="space-y-2 mb-3">
-                                            <View className="flex-row items-center space-x-1.5">
+                                        <View className="gap-y-2 mb-3">
+                                            <View className="flex-row items-center gap-x-1.5">
                                                 <Activity size={14} color="#6B7280" />
                                                 <Text className="text-sm text-slate-500">{scan.confidence}% confidence</Text>
                                             </View>
 
                                             {scan.location?.address && (
-                                                <View className="flex-row items-center space-x-1.5">
+                                                <View className="flex-row items-center gap-x-1.5">
                                                     <MapPin size={14} color="#6B7280" />
                                                     <Text className="text-sm text-slate-500">{scan.location.address}</Text>
                                                 </View>
@@ -184,7 +184,7 @@ export default function PlantDetailScreen() {
                                 ))}
                             </View>
                         ) : (
-                            <View className="bg-white p-10 rounded-2xl items-center shadow-sm">
+                            <View className="bg-white p-10 rounded-2xl items-center" style={styles.border}>
                                 <Clock size={48} color="#D1D5DB" />
                                 <Text className="text-lg font-semibold text-slate-700 mt-4 mb-2">No scans yet</Text>
                                 <Text className="text-sm text-slate-500 text-center leading-5">Start scanning this plant to track its health over time</Text>
@@ -208,4 +208,9 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '600',
     },
+    border: {
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: '#E5E7EB',
+    }
 });

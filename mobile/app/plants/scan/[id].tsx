@@ -73,7 +73,7 @@ export default function ScanDetailScreen() {
     }
 
     return (
-        <SafeAreaView style={styles.container}>
+        <View style={styles.container}>
             {/* Header */}
             {/* <View style={styles.header}>
                 <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
@@ -117,7 +117,7 @@ export default function ScanDetailScreen() {
                         {/* Main Result Card */}
                         <View style={[
                             styles.mainResultCard,
-                            { backgroundColor: `${PlantUtils.getHealthColor(scan.status)}08` }
+                            { backgroundColor: `${PlantUtils.getHealthColorWithAlpha(PlantUtils.getHealthColor(scan.status), 0.08)}` }
                         ]}>
                             <View style={styles.resultContent}>
 
@@ -297,7 +297,7 @@ export default function ScanDetailScreen() {
                     </View>
                 </View>
             </ScrollView>
-        </SafeAreaView>
+        </View>
     );
 }
 
@@ -388,16 +388,10 @@ const styles = StyleSheet.create({
         marginBottom: 4,
     },
     mainResultCard: {
-        backgroundColor: '#FFFFFF',
         padding: 24,
         borderRadius: 20,
         borderWidth: 1,
         borderColor: '#E5E7EB',
-        shadowColor: '#000000',
-        shadowOffset: { width: 0, height: 6 },
-        shadowOpacity: 0.1,
-        shadowRadius: 20,
-        elevation: 6,
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: 16,
@@ -405,19 +399,7 @@ const styles = StyleSheet.create({
     resultIconContainer: {
         marginRight: 20,
     },
-    resultIcon: {
-        width: 64,
-        height: 64,
-        borderRadius: 32,
-        // justifyContent: 'space-between',
-        alignItems: 'center',
-        justifyContent: 'center',
-        shadowColor: '#000000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.2,
-        shadowRadius: 8,
-        elevation: 4,
-    },
+
     resultContent: {
         flex: 1,
     },
@@ -441,11 +423,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFFFFF',
         padding: 24,
         borderRadius: 20,
-        shadowColor: '#000000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.08,
-        shadowRadius: 16,
-        elevation: 4,
+        borderWidth: 1,
+        borderColor: '#E5E7EB',
         marginBottom: 16,
     },
     confidenceHeader: {
@@ -491,11 +470,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFFFFF',
         padding: 24,
         borderRadius: 20,
-        shadowColor: '#000000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.08,
-        shadowRadius: 16,
-        elevation: 4,
+        borderWidth: 1,
+        borderColor: '#E5E7EB',
         marginBottom: 16,
     },
     analysisTitle: {
@@ -532,11 +508,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFFFFF',
         padding: 24,
         borderRadius: 20,
-        shadowColor: '#000000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.08,
-        shadowRadius: 16,
-        elevation: 4,
+        borderWidth: 1,
+        borderColor: '#E5E7EB',
         gap: 24,
     },
     infoRow: {
@@ -624,7 +597,7 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 6 },
         shadowOpacity: 0.3,
         shadowRadius: 12,
-        elevation: 6,
+        elevation: 4,
     },
     primaryButtonText: {
         fontSize: 16,
@@ -646,7 +619,7 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.08,
         shadowRadius: 12,
-        elevation: 3,
+        elevation: 2,
     },
     secondaryButtonText: {
         fontSize: 16,
