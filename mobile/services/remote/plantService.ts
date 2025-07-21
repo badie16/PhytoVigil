@@ -40,13 +40,14 @@ class PlantService {
             },
         });
 
+
         if (!response.ok) {
             const errorText = await response.text();
             throw new Error(`Erreur lors de la récupération de la plante : ${response.status} - ${errorText}`);
         }
 
-        const data: Plant = await response.json();
-        return data;
+        const data: BackendPlant = await response.json();
+        return this.transformBackendPlantToPlant(data);
     }
 
     async getScansByPlantId(plantId: number): Promise<PlantScan[]> {
@@ -96,11 +97,10 @@ class PlantService {
     private transformBackendScanToPlantScan(backendScan: BackendPlantScan): PlantScan {
         const confidence = parseFloat(backendScan.confidence_score) || 0;
         const hasDisease = Object.keys(backendScan.detected_diseases).length > 0;
-
         return {
             id: backendScan.id,
             plantName: '', // Vous devrez récupérer le nom de la plante séparément
-            diseaseName: hasDisease ? Object.keys(backendScan.detected_diseases)[0] : 'Healthy',
+            diseaseName: hasDisease ? backendScan.detected_diseases[0].class_name : 'Healthy',
             confidence: confidence,
             treatment: backendScan.recommendations,
             imageUri: backendScan.image_url,
