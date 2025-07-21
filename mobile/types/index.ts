@@ -15,9 +15,35 @@ export interface PlantScan {
   status: "healthy" | "diseased" | "unknown"
   notes?: string
 }
-
+export interface BackendPlantScan {
+  plant_id: number
+  image_url: string
+  result_type: "healthy" | "diseased" | "unknown"
+  confidence_score: string
+  detected_diseases: Record<string, any>
+  recommendations: string
+  location_lat: string
+  location_lng: string
+  id: number
+  user_id: number
+  scan_date: string
+  scan_diseases: any[]
+}
+export interface BackendPlant {
+  name: string
+  type: string
+  variety: string
+  planted_date: string
+  location: string
+  notes: string
+  image_url: string
+  id: number
+  user_id: number
+  created_at: string
+  updated_at: string
+}
 export interface Plant {
-  id: string
+  id: number
   name: string
   type: string
   variety?: string
@@ -27,7 +53,7 @@ export interface Plant {
     longitude: number
     address?: string
   }
-  imageUri?: string
+  image_url?: string
   health: "healthy" | "warning" | "danger"
   lastScanned?: string
   notes?: string
@@ -44,7 +70,7 @@ export interface Disease {
   treatment: string
   prevention: string
   severity_level: number
-  affectedPlants?: string[]   
+  affectedPlants?: string[]
   image_url?: string
   created_at?: string
 }
