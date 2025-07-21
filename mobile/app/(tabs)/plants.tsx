@@ -1,58 +1,46 @@
 import { PlantUtils } from "@/lib/constant/plantUtils"
-import { Apple, Droplets, Flower, LayoutGrid, Leaf, List, LucideIcon, Plus, Sun, Thermometer } from "lucide-react-native"
-import { useState } from "react"
+import plantService from "@/services/remote/plantService"
+import { Plant } from "@/types"
+import { Apple, Carrot, Droplets, Flower, LayoutGrid, Leaf, List, LucideIcon, Plus, Sprout, Sun, Thermometer, TreeDeciduous } from "lucide-react-native"
+import { useEffect, useState } from "react"
 import { Dimensions, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 const { width } = Dimensions.get('window');
 
 const cardWidth = (width - 60) / 2;
-// Mock plants data
-const mockPlants = [
-    {
-        id: 1,
-        name: "Tomato Plant",
-        type: "Vegetable",
-        health: "Healthy",
-        lastScanned: "2 days ago",
-        image: "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQ7UH64K2_JbWj--JEDbWcTUfrwSvo7Xuk1tm4NYExO2VhZTWm8Qs1YdW1IctLimuJqONWxfLEUk3IIrtluNW1nDg",
-        status: "healthy" as const,
-    },
-    {
-        id: 2,
-        name: "Rose Bush",
-        type: "Flower",
-        health: "Needs Attention",
-        lastScanned: "1 day ago",
-        image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4c3fbPGL3SO6xDIsuaSTypobIh_tY88FqjPva8DL1-yQnFlxsYqVtffNZNg1F112Q_FXRb0zS__1f-kDeKiJiJQ",
-        status: "warning" as const,
-    },
-    {
-        id: 3,
-        name: "Apple Tree",
-        type: "Fruit",
-        health: "Healthy",
-        lastScanned: "3 days ago",
-        image: "https://www.oneclickplants.co.uk/cdn/shop/collections/Shutterstock_1798373137_2000x.jpg?v=1701287885",
-        status: "healthy" as const,
-    },
-]
 
 export default function PlantsScreen() {
-    const healthyCount = mockPlants.filter(plant => plant.status === 'healthy').length;
-    const warningCount = mockPlants.filter(plant => plant.status === 'warning').length;
-    // const dangerCount = mockPlants.filter(plant => plant.status === 'danger').length;
-    const totalCount = mockPlants.length;
-    const [plants] = useState(mockPlants)
-    const [viewMode, setViewMode] = useState<'list' | 'card'>('list');
+    const [plants, setPlants] = useState<Plant[]>([])
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
 
+    const healthyCount = plants.filter(plant => plant.health === 'healthy').length;
+    const warningCount = plants.filter(plant => plant.health === 'warning').length;
+    // const dangerCount = plants.filter(plant => plant.status === 'danger').length;
+    const totalCount = plants.length;
+    useEffect(() => {
+        const fetchPlants = async () => {
+            try {
+                const data = await plantService.getUserPlants()
+                console.log(data)
+                setPlants(data)
+
+            } catch (err: any) {
+                console.log(err)
+                setError(err.message)
+            } finally {
+                setLoading(false)
+            }
+        }
+        fetchPlants()
+    }, [])
+    const [viewMode, setViewMode] = useState<'list' | 'card'>('list');
     const handleAddPlant = () => {
         console.log("Add new plant")
     }
-
     const handlePlantPress = (id: number) => {
         console.log("View plant details:", id)
     }
-
     return (
         <SafeAreaView className="flex-1 bg-white" style={styles.container}>
             <View className="px-6 py-4">
@@ -85,14 +73,14 @@ export default function PlantsScreen() {
                 <View>
                     <View className="flex flex-row justify-between mb-4 mt-3">
                         <Text style={styles.sectionTitle}>Your Garden</Text>
-                        <View style={{ flexDirection: 'row', alignItems: 'center'}}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <TouchableOpacity
                                 style={{
                                     backgroundColor: '#F3F4F6',
                                     borderRadius: 16,
                                     padding: 6,
                                 }}
-                                onPress={() => setViewMode(viewMode === 'list' ? 'card' : 'list')}
+                                onPress={() => setViewMode(viewMode === 'card' ? 'list' : 'card')}
                             >
                                 {viewMode === 'list' ? (
                                     <LayoutGrid size={20} color="#10B981" />
@@ -102,12 +90,31 @@ export default function PlantsScreen() {
                             </TouchableOpacity>
                         </View>
                     </View>
-                    <View style={viewMode === 'card' ? styles.plantsGrid : null}>
-
+                    <View style={viewMode === 'card' ? styles.plantsGrid : null} className="mb-4">
                         {plants.map((plant) =>
-                            viewMode === 'card'
-                                ? <PlantList key={plant.id} {...plant} onPress={() => handlePlantPress(plant.id)} />
-                                : <PlantCard key={plant.id} {...plant} onPress={() => handlePlantPress(plant.id)} />
+                            viewMode === 'list'
+                                ? <PlantList
+                                    key={plant.id}
+                                    id={plant.id}
+                                    name={plant.name}
+                                    type={plant.type}
+                                    health={plant.health}
+                                    lastScanned={plant.lastScanned ?? ''}
+                                    status={plant.health ?? 'healthy'}
+                                    image={plant.image_url ?? ''}
+                                    onPress={() => handlePlantPress(plant.id)}
+                                />
+                                : <PlantCard
+                                    key={plant.id}
+                                    id={plant.id}
+                                    name={plant.name}
+                                    type={plant.type}
+                                    health={plant.health}
+                                    lastScanned={plant.lastScanned ?? ''}
+                                    status={plant.health ?? 'healthy'}
+                                    image={plant.image_url ?? ''}
+                                    onPress={() => handlePlantPress(plant.id)}
+                                />
                         )}
                     </View>
                 </View>
@@ -133,19 +140,28 @@ function StatCard({ title, value, color, Icon }: { title: string; value: number;
         </View>
     )
 }
-const getPlantIcon = (type: string, color = "#fff") => {
-    switch (type.toLowerCase()) {
-        case 'vegetable':
-            return <Leaf size={18} color={color} />;
-        case 'flower':
-            return <Flower size={18} color={color} />;
-        case 'fruit':
-            return <Apple size={18} color={color} />;
-        default:
-            return <Leaf size={18} color={color} />;
+
+export const getPlantIcon = (type: string, color = "#fff") => {
+    const t = type.toLowerCase();
+    if (["vegetable", "legume", "cereal", "grain"].includes(t)) {
+        return <Carrot size={18} color={color} />;
     }
+    if (["fruit", "citrus", "banana", "cherry"].includes(t)) {
+        return <Apple size={18} color={color} />;
+    }
+    if (["herb", "aromatic", "sprout"].includes(t)) {
+        return <Sprout size={18} color={color} />;
+    }
+    if (["flower"].includes(t)) {
+        return <Flower size={18} color={color} />;
+    }
+    if (["tree", "palm", "forest"].includes(t)) {
+        return <TreeDeciduous size={18} color={color} />;
+    }
+    return <Leaf size={18} color={color} />;
 };
-function PlantCard({
+
+function PlantList({
     id,
     name,
     type,
@@ -200,7 +216,7 @@ function PlantCard({
 
             {/* Texte à droite de l'image */}
             <View style={{ marginLeft: 100, padding: 12, flex: 1, justifyContent: 'center' }}>
-                <Text className="text-lg font-semibold text-gray-900 mb-1">{name}</Text>
+                <Text numberOfLines={1} className="text-lg font-semibold text-gray-900 mb-1" style={styles.plantNameList} >{name}</Text>
                 <Text className="text-sm text-secondary mb-1">{type}</Text>
                 <View className="flex-row items-center justify-between">
                     <Text
@@ -294,6 +310,10 @@ const styles = StyleSheet.create({
         color: '#111827',
         marginBottom: 4,
     },
+    plantNameList: {
+        paddingRight: 44,
+        overflow: "hidden"
+    },
     plantType: {
         fontSize: 14,
         color: '#6B7280',
@@ -315,7 +335,7 @@ const styles = StyleSheet.create({
 });
 
 
-function PlantList({ id, name,
+function PlantCard({ id, name,
     type,
     health,
     lastScanned,
