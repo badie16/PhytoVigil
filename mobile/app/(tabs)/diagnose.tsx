@@ -20,7 +20,6 @@ export default function DiagnoseScreen() {
         const fetchDiseases = async () => {
             try {
                 const data = await diseaseService.getAllDisease()
-                console.log(data)
                 setDiseases(data)
                 setFilteredDiseases(data)
             } catch (err: any) {
