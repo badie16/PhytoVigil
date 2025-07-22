@@ -1,6 +1,19 @@
 import { Plant, PlantScan } from '@/types';
 import { AlertCircle, Apple, Carrot, CheckCircle, Flower, HelpCircle, Leaf, Sprout, TreeDeciduous } from 'lucide-react-native';
 export class PlantUtils {
+    static PLANT_TYPES = [
+        { id: 'vegetable', label: 'Vegetable', icon: Leaf, color: '#10B981' },
+        { id: 'fruit', label: 'Fruit', icon: Apple, color: '#F59E0B' },
+        { id: 'flower', label: 'Flower', icon: Flower, color: '#EC4899' },
+        { id: 'herb', label: 'Herb', icon: Leaf, color: '#8B5CF6' },
+    ];
+
+    static COMMON_VARIETIES = {
+        vegetable: ['Tomato', 'Lettuce', 'Carrot', 'Pepper', 'Cucumber', 'Spinach'],
+        fruit: ['Apple', 'Orange', 'Banana', 'Strawberry', 'Grape', 'Lemon'],
+        flower: ['Rose', 'Tulip', 'Sunflower', 'Daisy', 'Lily', 'Orchid'],
+        herb: ['Basil', 'Mint', 'Rosemary', 'Thyme', 'Parsley', 'Cilantro'],
+    };
     static getPlantIcon = (type: string, color = "#fff", size = 18) => {
         const t = type.toLowerCase();
         if (["vegetable", "legume", "cereal", "grain"].includes(t)) {
@@ -100,4 +113,5 @@ export class PlantUtils {
         const b = bigint & 255;
         return [r, g, b];
     }
+
 }
