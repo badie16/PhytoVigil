@@ -111,7 +111,6 @@ export default function PlantsScreen() {
                                         type={plant.type}
                                         health={plant.health}
                                         lastScanned={plant.lastScanned ?? ''}
-                                        status={plant.health ?? 'healthy'}
                                         image={plant.image_url ?? ''}
                                         onPress={() => handlePlantPress(plant.id)}
                                     />
@@ -122,7 +121,6 @@ export default function PlantsScreen() {
                                         type={plant.type}
                                         health={plant.health}
                                         lastScanned={plant.lastScanned ?? ''}
-                                        status={plant.health ?? 'healthy'}
                                         image={plant.image_url ?? ''}
                                         onPress={() => handlePlantPress(plant.id)}
                                     />
@@ -159,16 +157,14 @@ function PlantList({
     type,
     health,
     lastScanned,
-    status,
     image,
     onPress,
 }: {
     id: number
     name: string
     type: string
-    health: string
+    health: "healthy" | "warning" | "danger"
     lastScanned: string
-    status: 'healthy' | 'warning' | 'danger'
     image: string
     onPress: () => void
 }) {
@@ -189,14 +185,14 @@ function PlantList({
             <View
                 className="w-10 h-10 rounded-full items-center justify-center"
                 style={{
-                    backgroundColor: `${PlantUtils.getHealthColor(status)}20`,
+                    backgroundColor: `${PlantUtils.getHealthColor(health)}20`,
                     position: 'absolute',
                     top: 12,
                     right: 12,
                     zIndex: 10,
                 }}
             >
-                {PlantUtils.getPlantIcon(type, PlantUtils.getHealthColor(status))}
+                {PlantUtils.getPlantIcon(type, PlantUtils.getHealthColor(health))}
             </View>
 
             {/* Image à gauche sur toute la hauteur */}
@@ -213,11 +209,11 @@ function PlantList({
                 <View className="flex-row items-center justify-between">
                     <Text
                         className="text-sm font-medium"
-                        style={{ color: PlantUtils.getHealthColor(status) }}
+                        style={{ color: PlantUtils.getHealthColor(health) }}
                     >
                         {health}
                     </Text>
-                    <Text className="text-xs text-secondary">Scanned {DateUtils.formatDateFlexible(lastScanned)}</Text>
+                    <Text className="text-xs text-secondary">{(lastScanned ? `Scanned ${DateUtils.formatDateFlexible(lastScanned)}` : "Never Scanned")}</Text>
                 </View>
             </View>
         </TouchableOpacity>
@@ -326,18 +322,16 @@ const styles = StyleSheet.create({
 
 function PlantCard({ id, name,
     type,
-    health,
+    health ,
     lastScanned,
-    status,
     image,
     onPress,
 }: {
     id: number
     name: string
     type: string
-    health: string
     lastScanned: string
-    status: 'healthy' | 'warning' | 'danger'
+    health: 'healthy' | 'warning' | 'danger'
     image: string
     onPress: () => void
 }) {
@@ -356,16 +350,16 @@ function PlantCard({ id, name,
                 />
                 <View style={[
                     styles.plantTypeIcon,
-                    { backgroundColor: PlantUtils.getHealthColor(status) }
+                    { backgroundColor: PlantUtils.getHealthColor(health) }
                 ]}>
                     {PlantUtils.getPlantIcon(type)}
                 </View>
                 <View style={[
                     styles.healthIndicator,
-                    { backgroundColor: PlantUtils.getHealthColor(status) }
+                    { backgroundColor: PlantUtils.getHealthColor(health) }
                 ]}>
                     <Text style={styles.healthText}>
-                        {PlantUtils.getHealthLabel(status)}
+                        {PlantUtils.getHealthLabel(health)}
                     </Text>
                 </View>
             </View>
