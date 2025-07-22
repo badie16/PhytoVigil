@@ -1,7 +1,7 @@
 import { config } from "@/lib/config/env";
+import { appendImageToFormData } from "@/lib/constant/Helper";
 import type { BackendPlant, BackendPlantScan, Plant, PlantScan } from "@/types/index";
 import { storageService } from "../local/storage";
-
 class PlantService {
     async getUserPlants(skip = 0, limit = 100): Promise<Plant[]> {
         const token = await storageService.getSecureItem(config.TOKEN_KEY);
@@ -21,7 +21,6 @@ class PlantService {
         }
 
         const data: BackendPlant[] = await response.json();
-        console.log(data)
         return Promise.all(data.map(this.transformBackendPlantToPlant.bind(this)));
     }
     async getPlantById(id: number): Promise<Plant> {
@@ -88,6 +87,61 @@ class PlantService {
         const data: BackendPlantScan = await response.json();
         return this.transformBackendScanToPlantScan(data);
     }
+
+    async uploadImage(base64Uri: string): Promise<string> {
+        const token = await storageService.getSecureItem(config.TOKEN_KEY);
+        if (!token) {
+            throw new Error("Token manquant ou utilisateur non authentifié");
+        }
+        const fileName = `photo_${Date.now()}.jpg`;
+        const formData = new FormData();
+        // Use the reusable function to handle platform logic
+        await appendImageToFormData(formData, base64Uri, fileName);
+        const response = await fetch(`${config.API_URL}/api/files/upload/plant_image`, {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+            body: formData,
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.detail || "Erreur upload image");
+        }
+
+        const data = await response.json();
+        return data;
+    }
+
+
+    async createPlant(data: {
+        name: string;
+        type: string;
+        variety?: string;
+        planted_date: string;
+        location?: string;
+        notes?: string;
+        image_url: string;
+    }) {
+        const token = await storageService.getSecureItem(config.TOKEN_KEY);
+
+        const response = await fetch(`${config.API_URL}/api/plants`, {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        });
+
+        if (!response.ok) {
+            const err = await response.json();
+            throw new Error(err.detail || "Erreur lors de la création de la plante");
+        }
+
+        return await response.json();
+    }
     // Transformer les données backend en format frontend pour Plant
     private async transformBackendPlantToPlant(backendPlant: BackendPlant): Promise<Plant> {
         let lastScanned: string | undefined = undefined;
@@ -150,7 +204,6 @@ class PlantService {
         if (!scans.length) {
             return "warning"; // Pas de scan : alerte légère
         }
-        console.log("scanc", scans)
         let diseasedCount = 0;
         let unknownCount = 0;
 
