@@ -49,17 +49,16 @@ export class PlantUtils {
     static getHealthColor(health: Plant['health'] | PlantScan['status']) {
         switch (health) {
             case 'healthy':
-                return '#10B981';
+                return '#10B981'; // vert
             case 'warning':
-                return '#F59E0B';
-            case 'diseased':
-                return '#EF4444';
-            case 'unknown':
-                return '#6B7280';
+                return '#F59E0B'; // orange
             case 'danger':
-                return '#EF4444';
+            case 'diseased':
+                return '#EF4444'; // rouge
+            case 'unknown':
+            case 'not scanned':
             default:
-                return '#6B7280';
+                return '#6B7280'; // gris
         }
     }
     static getHealthGradient(health: Plant['health']) {
@@ -83,10 +82,15 @@ export class PlantUtils {
             case 'danger':
             case 'diseased':
                 return 'Critical';
+            case 'unknown':
+                return 'Unknown';
+            case 'not scanned':
+                return 'Not Scanned';
             default:
                 return 'Unknown';
         }
     }
+
 
     static getConfidenceColor = (confidence: number): string => {
         if (confidence >= 80) return '#10B981'; // Green

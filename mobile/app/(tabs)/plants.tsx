@@ -163,7 +163,7 @@ function PlantList({
     id: number
     name: string
     type: string
-    health: "healthy" | "warning" | "danger"
+    health: "healthy" | "warning" | "danger" | "not scanned"
     lastScanned: string
     image: string
     onPress: () => void
@@ -171,6 +171,7 @@ function PlantList({
     return (
         <TouchableOpacity
             onPress={onPress}
+            key={id}
             className="bg-white rounded-2xl mb-4 border border-gray-100"
             style={{
                 elevation: 2,
@@ -208,7 +209,7 @@ function PlantList({
                 <Text className="text-sm text-secondary mb-1">{type}</Text>
                 <View className="flex-row items-center justify-between">
                     <Text
-                        className="text-sm font-medium"
+                        className="text-sm font-medium capitalize"
                         style={{ color: PlantUtils.getHealthColor(health) }}
                     >
                         {health}
@@ -285,6 +286,7 @@ const styles = StyleSheet.create({
         fontSize: 10,
         fontWeight: '600',
         color: '#FFFFFF',
+        textTransform:"capitalize"
     },
     plantInfo: {
         padding: 16,
@@ -322,7 +324,7 @@ const styles = StyleSheet.create({
 
 function PlantCard({ id, name,
     type,
-    health ,
+    health,
     lastScanned,
     image,
     onPress,
@@ -331,7 +333,7 @@ function PlantCard({ id, name,
     name: string
     type: string
     lastScanned: string
-    health: 'healthy' | 'warning' | 'danger'
+    health: 'healthy' | 'warning' | 'danger' | "not scanned"
     image: string
     onPress: () => void
 }) {
@@ -359,7 +361,8 @@ function PlantCard({ id, name,
                     { backgroundColor: PlantUtils.getHealthColor(health) }
                 ]}>
                     <Text style={styles.healthText}>
-                        {PlantUtils.getHealthLabel(health)}
+                        {/* {PlantUtils.getHealthLabel(health)} */}
+                        {health}
                     </Text>
                 </View>
             </View>
