@@ -1,13 +1,12 @@
 import CameraButton from '@/components/ui/camera-button';
+import { PlantUtils } from '@/lib/constant/plantUtils';
+import plantService from '@/services/remote/plantService';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
 import { useRouter } from 'expo-router';
 import {
-    Apple,
     Calendar,
     Check,
-    Flower,
-    Leaf,
     MapPin,
     Plus,
     X
@@ -25,19 +24,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-const PLANT_TYPES = [
-    { id: 'vegetable', label: 'Vegetable', icon: Leaf, color: '#10B981' },
-    { id: 'fruit', label: 'Fruit', icon: Apple, color: '#F59E0B' },
-    { id: 'flower', label: 'Flower', icon: Flower, color: '#EC4899' },
-    { id: 'herb', label: 'Herb', icon: Leaf, color: '#8B5CF6' },
-];
 
-const COMMON_VARIETIES = {
-    vegetable: ['Tomato', 'Lettuce', 'Carrot', 'Pepper', 'Cucumber', 'Spinach'],
-    fruit: ['Apple', 'Orange', 'Banana', 'Strawberry', 'Grape', 'Lemon'],
-    flower: ['Rose', 'Tulip', 'Sunflower', 'Daisy', 'Lily', 'Orchid'],
-    herb: ['Basil', 'Mint', 'Rosemary', 'Thyme', 'Parsley', 'Cilantro'],
-};
 
 interface PlantForm {
     name: string;
@@ -81,7 +68,7 @@ export default function AddPlantScreen() {
             aspect: [1, 1],
             quality: 0.8,
         });
-
+        console.log(result)
         if (!result.canceled) {
             setForm(prev => ({ ...prev, image: result.assets[0].uri }));
         }
@@ -168,12 +155,31 @@ export default function AddPlantScreen() {
             // TODO: Implement API call to save plant
             console.log('Saving plant:', form);
 
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            let imageUrl = "";
+            if (form.image) {
+                console.log("yes")
+                // 1. Upload image
+                imageUrl = await plantService.uploadImage(form.image);
+            }
+            console.log(imageUrl)
+            if (!imageUrl) {
+                throw new Error("Erreur lors de l'upload de l'image");
+            }
+            // 2. Créer la plante
+            await plantService.createPlant({
+                name: form.name,
+                type: form.type,
+                variety: form.variety,
+                planted_date: form.plantedDate,
+                location: form.location,
+                notes: form.notes,
+                image_url: imageUrl,
+            });
 
             Alert.alert('Success', 'Plant added successfully!', [
                 { text: 'OK', onPress: () => router.back() }
             ]);
+            router.back();
         } catch (error) {
             Alert.alert('Error', 'Failed to add plant. Please try again.');
         } finally {
@@ -181,8 +187,8 @@ export default function AddPlantScreen() {
         }
     };
 
-    const selectedType = PLANT_TYPES.find(t => t.id === form.type);
-    const availableVarieties = form.type ? COMMON_VARIETIES[form.type as keyof typeof COMMON_VARIETIES] || [] : [];
+    const selectedType = PlantUtils.PLANT_TYPES.find(t => t.id === form.type);
+    const availableVarieties = form.type ? PlantUtils.COMMON_VARIETIES[form.type as keyof typeof PlantUtils.COMMON_VARIETIES] || [] : [];
 
     return (
         <SafeAreaView style={styles.container}>
@@ -241,7 +247,7 @@ export default function AddPlantScreen() {
                     <View className="mb-6" style={styles.inputGroup}>
                         <Text className="text-base font-semibold text-gray-700 mb-3" style={styles.inputLabel}>Plant Type *</Text>
                         <View className="flex-row flex-wrap gap-3" style={styles.typeGrid}>
-                            {PLANT_TYPES.map((type) => {
+                            {PlantUtils.PLANT_TYPES.map((type) => {
                                 const Icon = type.icon;
                                 const isSelected = form.type === type.id;
                                 return (
@@ -436,7 +442,7 @@ const styles = StyleSheet.create({
         gap: 10,
         borderWidth: 1,
         borderColor: "#eee",
-         borderRadius: 20,
+        borderRadius: 20,
     },
     imagePlaceholderText: {
         fontSize: 16,
