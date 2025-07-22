@@ -38,7 +38,7 @@ class FileService:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Supabase client not initialized. Check backend configuration."
             )
-
+        print(file)
         if not file.content_type.startswith('image/'):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,

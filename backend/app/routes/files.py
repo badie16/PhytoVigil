@@ -36,6 +36,8 @@ async def upload_plant_image(
     except Exception as e:
         logger.error(f"Erreur lors de l'upload de l'image de plante: {e}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to upload plant image.")
+    
+    
 @router.post("/upload/scan_image", response_model=HttpUrl)
 async def upload_scan_image(
     file: UploadFile = File(...),
