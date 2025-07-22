@@ -54,7 +54,7 @@ export interface Plant {
     address?: string
   }
   image_url?: string
-  health: "healthy" | "warning" | "danger"
+  health: "healthy" | "warning" | "danger" | "not scanned"
   lastScanned?: string
   notes?: string
   createdAt: string
@@ -83,3 +83,5 @@ export interface AppSettings {
   language: string
   theme: "light" | "dark" | "auto"
 }
+
+
