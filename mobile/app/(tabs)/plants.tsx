@@ -40,7 +40,7 @@ export default function PlantsScreen() {
     }, [])
     const [viewMode, setViewMode] = useState<'list' | 'card'>('list');
     const handleAddPlant = () => {
-        console.log("Add new plant")
+        router.push(`/plants/add`);
     }
     const handlePlantPress = (id: number) => {
         router.push(`/plants/${id}`);
@@ -142,7 +142,7 @@ function StatCard({ title, value, color, Icon }: { title: string; value: number;
             shadowOffset: { width: 0, height: 4 },
             shadowOpacity: 0.08,
             shadowRadius: 12,
-            elevation: 4,            
+            elevation: 4,
         }}>
             <View className="mb-2">
                 {Icon && <Icon size={24} color={"#fff"} />}
