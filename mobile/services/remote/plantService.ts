@@ -199,10 +199,10 @@ class PlantService {
     }
 
     // Déterminer la santé globale d'une plante (vous devrez implémenter cette logique)
-    private async determineHealthFromScans(plantId: number): Promise<"healthy" | "warning" | "danger"> {
+    private async determineHealthFromScans(plantId: number): Promise<"healthy" | "warning" | "danger" | "not scanned"> {
         const scans = await this.getScansByPlantId(plantId);
         if (!scans.length) {
-            return "warning"; // Pas de scan : alerte légère
+            return "not scanned";
         }
         let diseasedCount = 0;
         let unknownCount = 0;
@@ -214,7 +214,6 @@ class PlantService {
                 unknownCount++;
             }
         }
-
         if (diseasedCount > 0) {
             return "danger";
         }
