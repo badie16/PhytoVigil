@@ -18,8 +18,11 @@ export class DateUtils {
             day: 'numeric',
         });
     }
-
+// 
     static formatDateFlexible(dateString: string) {
+        if (!dateString) {
+            return "Never"
+        }
         // Returns a human-readable "time ago" string (e.g., "3 days ago", "1 week ago", "1h ago")
         const date = new Date(dateString);
         const now = new Date();
