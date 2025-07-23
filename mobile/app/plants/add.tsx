@@ -68,7 +68,7 @@ export default function AddPlantScreen() {
             aspect: [1, 1],
             quality: 0.8,
         });
-        console.log(result)
+        
         if (!result.canceled) {
             setForm(prev => ({ ...prev, image: result.assets[0].uri }));
         }
