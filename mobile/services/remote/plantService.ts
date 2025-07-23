@@ -123,7 +123,7 @@ class PlantService {
         location?: string;
         notes?: string;
         image_url: string;
-    }) {
+    }): Promise<BackendPlant> {
         const token = await storageService.getSecureItem(config.TOKEN_KEY);
 
         const response = await fetch(`${config.API_URL}/api/plants`, {
