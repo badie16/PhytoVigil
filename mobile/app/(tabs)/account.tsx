@@ -11,7 +11,7 @@ export default function AccountScreen() {
     }
     return (
         <View className="flex-1 bg-white pt-2">
-            <ScrollView className="flex-1">
+            <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
                 {/* Profile Header */}
                 <View className="items-center py-8 px-6">
                     <View className="w-24 h-24 bg-primary/10 rounded-full items-center justify-center mb-4">
