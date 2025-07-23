@@ -205,7 +205,7 @@ export default function AddPlantScreen() {
                                 <Image source={{ uri: form.image }} style={styles.plantImage} />
 
                                 <TouchableOpacity
-                                    className="absolute -top-4 -right-4 w-10 h-10 rounded-full items-center justify-center shadow-md"
+                                    className="absolute -top-4 -right-4 w-10 h-10 rounded-full items-center justify-center shadow-md bg-primary"
                                     style={styles.removeImageButton}
                                     onPress={() => setForm(prev => ({ ...prev, image: null }))}
                                 >
