@@ -104,7 +104,7 @@ export default function PlantDetailScreen() {
                                     <Text className="text-base text-slate-900 font-semibold text-right flex-1 capitalize">{plant.variety}</Text>
                                 </View>
                             )}
-                            {plant.lastScanned && (
+                            {plant.plantedDate && (
                                 <View className="flex-row justify-between items-center">
                                     <Text className="text-base text-slate-500 font-medium">Planted:</Text>
                                     <Text className="text-base text-slate-900 font-semibold text-right flex-1 capitalize">{DateUtils.formatFullDate(plant.createdAt)}</Text>
