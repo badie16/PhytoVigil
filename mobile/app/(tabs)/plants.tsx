@@ -4,31 +4,47 @@ import { PlantUtils } from "@/lib/constant/plantUtils"
 import plantService from "@/services/remote/plantService"
 import { Plant } from "@/types"
 import { useRouter } from "expo-router"
-import { Droplets, LayoutGrid, List, LucideIcon, Plus, Sun, Thermometer } from "lucide-react-native"
+import { AlertTriangle, ChevronDown, Droplets, Filter, LayoutGrid, Leaf, List, LucideIcon, Plus, Sun, Thermometer, X } from "lucide-react-native"
 import { useEffect, useState } from "react"
-import { Dimensions, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { Dimensions, Image, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
-const { width } = Dimensions.get('window');
 
+const { width } = Dimensions.get('window');
 const cardWidth = (width - 60) / 2;
+
+type HealthFilter = 'all' | 'healthy' | 'warning' | 'danger' | 'not scanned';
+
+interface FilterState {
+    health: HealthFilter;
+    type: string;
+}
 
 export default function PlantsScreen() {
     const router = useRouter();
     const [plants, setPlants] = useState<Plant[]>([])
+    const [filteredPlants, setFilteredPlants] = useState<Plant[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
+    const [showFilters, setShowFilters] = useState(false)
+    const [filters, setFilters] = useState<FilterState>({
+        health: 'all',
+        type: 'all'
+    })
 
     const healthyCount = plants.filter(plant => plant.health === 'healthy').length;
-    const warningCount = plants.filter(plant => plant.health === 'warning').length;
-    // const dangerCount = plants.filter(plant => plant.status === 'danger').length;
+    const dangerCount = plants.filter(plant => plant.health === 'danger').length;
     const totalCount = plants.length;
+
+    // Get unique plant types for filter options
+    const plantTypes = ['all', ...Array.from(new Set(plants.map(plant => plant.type)))];
+
     useEffect(() => {
         const fetchPlants = async () => {
             try {
                 const data = await plantService.getUserPlants()
                 console.log(data)
                 setPlants(data)
-
+                setFilteredPlants(data)
             } catch (err: any) {
                 console.log(err)
                 setError(err.message)
@@ -38,13 +54,40 @@ export default function PlantsScreen() {
         }
         fetchPlants()
     }, [])
+
+    // Apply filters whenever filters or plants change
+    useEffect(() => {
+        let filtered = [...plants];
+
+        // Filter by health
+        if (filters.health !== 'all') {
+            filtered = filtered.filter(plant => plant.health === filters.health);
+        }
+
+        // Filter by type
+        if (filters.type !== 'all') {
+            filtered = filtered.filter(plant => plant.type === filters.type);
+        }
+
+        setFilteredPlants(filtered);
+    }, [filters, plants]);
+
     const [viewMode, setViewMode] = useState<'list' | 'card'>('list');
+
     const handleAddPlant = () => {
         router.push(`/plants/add`);
     }
+
     const handlePlantPress = (id: number) => {
         router.push(`/plants/${id}`);
     }
+
+    const clearFilters = () => {
+        setFilters({ health: 'all', type: 'all' });
+    };
+
+    const hasActiveFilters = filters.health !== 'all' || filters.type !== 'all';
+
     return (
         <SafeAreaView className="flex-1 bg-white" style={styles.container}>
             <View className="px-6 py-4">
@@ -62,30 +105,48 @@ export default function PlantsScreen() {
                         <Plus color="#FFFFFF" size={24} />
                     </TouchableOpacity>
                 </View>
-
             </View>
+
             <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
                 {/* Stats */}
                 <View className="mb-4">
-                    {/* <Text style={styles.sectionTitle}>Overview</Text> */}
                     <View className="flex-1 flex-row gap-3">
-                        <StatCard Icon={Droplets} color="#10B981" title="Total Plants" value={totalCount}></StatCard>
+                        <StatCard Icon={Leaf} color="#10B981" title="Total Plants" value={totalCount}></StatCard>
                         <StatCard Icon={Sun} color="#10B981" title="Healthy" value={healthyCount}></StatCard>
-                        <StatCard Icon={Droplets} color="#F59E0B" title="Need Care" value={warningCount}></StatCard>
+                        <StatCard Icon={AlertTriangle} color={PlantUtils.getHealthColor("danger")} title={PlantUtils.getHealthLabel("danger")} value={dangerCount}></StatCard>
                     </View>
                 </View>
-                {/* Plants List */}
-                <View >
-                    <View className="flex flex-row justify-between mb-4 mt-3">
+
+                {/* Filter Section */}
+                <View className="mb-4">
+                    <View className="flex flex-row justify-between items-center mb-4">
                         <Text style={styles.sectionTitle}>Your Garden</Text>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                            {/* Advanced Filter Button (this code does not change) */}
                             <TouchableOpacity
-                                style={{
-                                    backgroundColor: '#F3F4F6',
-                                    borderRadius: 16,
-                                    padding: 8,
-                                    elevation: 1
-                                }}
+                                style={[
+                                    styles.advancedFilterButton,
+                                    {
+                                        backgroundColor: showFilters ? '#10B981' : '#F9FAFB',
+                                        borderColor: showFilters ? '#10B981' : '#E5E7EB'
+                                    }
+                                ]}
+                                onPress={() => setShowFilters(!showFilters)}
+                            >
+                                <Filter size={16} color={showFilters ? '#FFFFFF' : '#6B7280'} />
+                                <ChevronDown
+                                    size={14}
+                                    color={showFilters ? '#FFFFFF' : '#6B7280'}
+                                    style={{ transform: [{ rotate: showFilters ? '180deg' : '0deg' }] }}
+                                />
+                                {hasActiveFilters && (
+                                    <View style={styles.filterBadge} />
+                                )}
+                            </TouchableOpacity>
+
+                            {/* View Toggle (this code does not change) */}
+                            <TouchableOpacity
+                                style={styles.viewToggleButton}
                                 onPress={() => setViewMode(viewMode === 'card' ? 'list' : 'card')}
                             >
                                 {viewMode === 'list' ? (
@@ -96,13 +157,131 @@ export default function PlantsScreen() {
                             </TouchableOpacity>
                         </View>
                     </View>
+                </View>
+                <Modal
+                    transparent={true}
+                    visible={showFilters}
+                    animationType="fade" // You can also use "slide"
+                    onRequestClose={() => setShowFilters(false)} // For Android back button
+                >
+                    <TouchableWithoutFeedback onPress={() => setShowFilters(false)}>
+                        <View style={styles.modalBackdrop}>
+                            <View style={styles.advancedFilterContainer}>
+                                <View style={styles.filterGrid}>
+                                    {/* Health Status Section */}
+                                    <View style={styles.filterSection}>
+                                        <View style={styles.filterSectionHeader}>
+                                            <View style={styles.filterIconContainer}>
+                                                <Sun size={16} color="#10B981" />
+                                            </View>
+                                            <Text style={styles.filterSectionTitle}>Health Status</Text>
+                                        </View>
+                                        <View style={styles.filterOptionsGrid}>
+                                            {(['all', 'healthy', 'warning', 'danger', 'not scanned'] as HealthFilter[]).map((health) => (
+                                                <TouchableOpacity
+                                                    key={health}
+                                                    style={[
+                                                        styles.modernFilterChip,
+                                                        {
+                                                            backgroundColor: filters.health === health ? '#10B981' : '#FFFFFF',
+                                                            borderColor: filters.health === health ? '#10B981' : '#E5E7EB'
+                                                        }
+                                                    ]}
+                                                    onPress={() => setFilters(prev => ({ ...prev, health }))}
+                                                >
+                                                    <Text style={[
+                                                        styles.modernFilterChipText,
+                                                        { color: filters.health === health ? '#FFFFFF' : '#374151' }
+                                                    ]}>
+                                                        {health === 'all' ? 'All' : health.charAt(0).toUpperCase() + health.slice(1)}
+                                                    </Text>
+                                                </TouchableOpacity>
+                                            ))}
+                                        </View>
+                                    </View>
+                                    {/* Plant Type Section */}
+                                    <View style={styles.filterSection}>
+                                        <View style={styles.filterSectionHeader}>
+                                            <View style={styles.filterIconContainer}>
+                                                <Droplets size={16} color="#10B981" />
+                                            </View>
+                                            <Text style={styles.filterSectionTitle}>Plant Type</Text>
+                                        </View>
+                                        <View style={styles.filterOptionsGrid}>
+                                            {plantTypes.slice(0, 6).map((type) => (
+                                                <TouchableOpacity
+                                                    key={type}
+                                                    style={[
+                                                        styles.modernFilterChip,
+                                                        {
+                                                            backgroundColor: filters.type === type ? '#10B981' : '#FFFFFF',
+                                                            borderColor: filters.type === type ? '#10B981' : '#E5E7EB'
+                                                        }
+                                                    ]}
+                                                    onPress={() => setFilters(prev => ({ ...prev, type }))}
+                                                >
+                                                    <Text style={[
+                                                        styles.modernFilterChipText,
+                                                        { color: filters.type === type ? '#FFFFFF' : '#374151' }
+                                                    ]}>
+                                                        {type === 'all' ? 'All Types' : type.charAt(0).toUpperCase() + type.slice(1)}
+                                                    </Text>
+                                                </TouchableOpacity>
+                                            ))}
+                                        </View>
+                                    </View>
+                                </View>
+
+                                {/* Filter Actions */}
+                                <View style={styles.filterActions}>
+                                    <TouchableOpacity
+                                        style={styles.clearFiltersAction}
+                                        onPress={clearFilters}
+                                    >
+                                        <X size={16} color="#EF4444" />
+                                        <Text style={styles.clearFiltersActionText}>Clear All</Text>
+                                    </TouchableOpacity>
+
+                                    <View style={styles.filterResultsInfo}>
+                                        <Text style={styles.filterResultsText}>
+                                            {filteredPlants.length} plants found
+                                        </Text>
+                                    </View>
+                                </View>
+                            </View>
+                        </View>
+                    </TouchableWithoutFeedback>
+                </Modal>
+                {/* Plants List */}
+                <View>
                     {loading ? (
                         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', minHeight: 300 }}>
                             <LoadingSpinner message="" size={30} />
                         </View>
+                    ) : filteredPlants.length === 0 ? (
+                        <View style={styles.emptyState}>
+                            <Text style={styles.emptyStateText}>
+                                {hasActiveFilters ? 'No plants match your filters' : 'No plants found'}
+                            </Text>
+                            {hasActiveFilters && (
+                                <TouchableOpacity
+                                    className="bg-primary"
+                                    style={{
+                                        paddingHorizontal: 16,
+                                        paddingVertical: 10,
+                                        borderRadius: 8,
+                                        marginTop: 8,
+                                        alignItems: 'center',
+                                    }}
+                                    onPress={clearFilters}
+                                >
+                                    <Text className="text-white">Clear Filters</Text>
+                                </TouchableOpacity>
+                            )}
+                        </View>
                     ) : (
                         <View style={viewMode === 'card' ? styles.plantsGrid : null} className="mb-4">
-                            {plants.map((plant) =>
+                            {filteredPlants.map((plant) =>
                                 viewMode === 'list'
                                     ? <PlantList
                                         key={plant.id}
@@ -178,7 +357,7 @@ function PlantList({
                 boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
                 position: 'relative',
                 height: 100,
-                overflow: 'hidden', // pour appliquer les bordures à l’image
+                overflow: 'hidden',
             }}
             activeOpacity={0.8}
         >
@@ -220,6 +399,70 @@ function PlantList({
         </TouchableOpacity>
     )
 }
+
+function PlantCard({ id, name,
+    type,
+    health,
+    lastScanned,
+    image,
+    onPress,
+}: {
+    id: number
+    name: string
+    type: string
+    lastScanned: string
+    health: 'healthy' | 'warning' | 'danger' | "not scanned"
+    image: string
+    onPress: () => void
+}) {
+    return (
+        <TouchableOpacity
+            key={id}
+            style={styles.plantCard}
+            onPress={onPress}
+            activeOpacity={0.8}
+        >
+            <View style={styles.plantImageContainer}>
+                <Image
+                    source={{ uri: image }}
+                    style={styles.plantImage}
+                    resizeMode="cover"
+                />
+                <View style={[
+                    styles.plantTypeIcon,
+                    { backgroundColor: PlantUtils.getHealthColor(health) }
+                ]}>
+                    {PlantUtils.getPlantIcon(type)}
+                </View>
+                <View style={[
+                    styles.healthIndicator,
+                    { backgroundColor: PlantUtils.getHealthColor(health) }
+                ]}>
+                    <Text style={styles.healthText}>
+                        {health}
+                    </Text>
+                </View>
+            </View>
+
+            <View style={styles.plantInfo}>
+                <Text style={styles.plantName} numberOfLines={1}>
+                    {name}
+                </Text>
+                <Text style={styles.plantType}>{type}</Text>
+
+                <View style={styles.plantMeta}>
+                    <View style={styles.metaItem}>
+                        <Thermometer size={12} color="#6B7280" />
+                        <Text style={styles.metaText}>
+                            {DateUtils.formatDateFlexible(lastScanned) || 'Never scanned'}
+                        </Text>
+                    </View>
+                </View>
+            </View>
+        </TouchableOpacity>
+    )
+}
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -262,7 +505,7 @@ const styles = StyleSheet.create({
         top: 0,
         bottom: 0,
         left: 0,
-        width: 100, // correspond à la largeur de l'image (ajuste si besoin)
+        width: 100,
     },
     plantTypeIcon: {
         position: 'absolute',
@@ -286,7 +529,7 @@ const styles = StyleSheet.create({
         fontSize: 10,
         fontWeight: '600',
         color: '#FFFFFF',
-        textTransform:"capitalize"
+        textTransform: "capitalize"
     },
     plantInfo: {
         padding: 16,
@@ -319,69 +562,153 @@ const styles = StyleSheet.create({
         color: '#6B7280',
         flex: 1,
     },
+    // Modern Filter Styles
+    quickFilters: {
+        flexDirection: 'row',
+        gap: 8,
+    },
+    quickFilterPill: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 20,
+        elevation: 1,
+        gap: 4,
+    },
+    quickFilterText: {
+        fontSize: 12,
+        fontWeight: '600',
+    },
+    advancedFilterButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        borderRadius: 12,
+        borderWidth: 1,
+        gap: 4,
+        position: 'relative',
+    },
+    filterBadge: {
+        position: 'absolute',
+        top: -2,
+        right: -2,
+        width: 6,
+        height: 6,
+        borderRadius: 3,
+        backgroundColor: '#EF4444',
+    },
+    viewToggleButton: {
+        backgroundColor: '#F3F4F6',
+        borderRadius: 12,
+        padding: 8,
+        elevation: 1,
+    },
+    advancedFilterContainer: {
+        marginTop: 240,
+        backgroundColor: '#FFFFFF',
+        borderRadius: 20,
+        padding: 20,
+        shadowColor: '#000000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.08,
+        shadowRadius: 12,
+        elevation: 5,
+    },
+    filterGrid: {
+        gap: 20,
+    },
+    filterSection: {
+        gap: 12,
+    },
+    modalBackdrop: {
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.4)',
+        paddingHorizontal: 20,
+    },
+    filterSectionHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+    },
+    filterIconContainer: {
+        width: 28,
+        height: 28,
+        borderRadius: 14,
+        backgroundColor: '#F0FDF4',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    filterSectionTitle: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#374151',
+    },
+    filterOptionsGrid: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 8,
+    },
+    modernFilterChip: {
+        paddingHorizontal: 14,
+        paddingVertical: 10,
+        borderRadius: 12,
+        borderWidth: 1,
+        elevation: 1,
+        minWidth: 70,
+        alignItems: 'center',
+    },
+    modernFilterChipText: {
+        fontSize: 12,
+        fontWeight: '500',
+        textAlign: 'center',
+    },
+    filterActions: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginTop: 16,
+        paddingTop: 16,
+        borderTopWidth: 1,
+        borderTopColor: '#F3F4F6',
+    },
+    clearFiltersAction: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 6,
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        borderRadius: 8,
+        backgroundColor: '#FEF2F2',
+    },
+    clearFiltersActionText: {
+        fontSize: 14,
+        color: '#EF4444',
+        fontWeight: '500',
+    },
+    filterResultsInfo: {
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        borderRadius: 8,
+        backgroundColor: '#F0FDF4',
+    },
+    filterResultsText: {
+        fontSize: 14,
+        color: '#10B981',
+        fontWeight: '600',
+    },
+    emptyState: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: 200,
+        paddingVertical: 40,
+    },
+    emptyStateText: {
+        fontSize: 16,
+        color: '#6B7280',
+        textAlign: 'center',
+        marginBottom: 16,
+    },
 });
-
-
-function PlantCard({ id, name,
-    type,
-    health,
-    lastScanned,
-    image,
-    onPress,
-}: {
-    id: number
-    name: string
-    type: string
-    lastScanned: string
-    health: 'healthy' | 'warning' | 'danger' | "not scanned"
-    image: string
-    onPress: () => void
-}) {
-    return (
-        <TouchableOpacity
-            key={id}
-            style={styles.plantCard}
-            onPress={onPress}
-            activeOpacity={0.8}
-        >
-            <View style={styles.plantImageContainer}>
-                <Image
-                    source={{ uri: image }}
-                    style={styles.plantImage}
-                    resizeMode="cover"
-                />
-                <View style={[
-                    styles.plantTypeIcon,
-                    { backgroundColor: PlantUtils.getHealthColor(health) }
-                ]}>
-                    {PlantUtils.getPlantIcon(type)}
-                </View>
-                <View style={[
-                    styles.healthIndicator,
-                    { backgroundColor: PlantUtils.getHealthColor(health) }
-                ]}>
-                    <Text style={styles.healthText}>
-                        {/* {PlantUtils.getHealthLabel(health)} */}
-                        {health}
-                    </Text>
-                </View>
-            </View>
-
-            <View style={styles.plantInfo}>
-                <Text style={styles.plantName} numberOfLines={1}>
-                    {name}
-                </Text>
-                <Text style={styles.plantType}>{type}</Text>
-
-                <View style={styles.plantMeta}>
-                    <View style={styles.metaItem}>
-                        <Thermometer size={12} color="#6B7280" />
-                        <Text style={styles.metaText}>
-                            {DateUtils.formatDateFlexible(lastScanned) || 'Never scanned'}
-                        </Text>
-                    </View>
-                </View>
-            </View>
-        </TouchableOpacity>
-    )
-}
