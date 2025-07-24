@@ -48,7 +48,7 @@ class ScanService {
             }
 
             const data = await apiResponse.json()
-            return data
+            return this.transformBackendPredictToPredict(data)
         } catch (error) {
             console.error("Error predicting disease:", error)
             throw new Error(error instanceof Error ? error.message : "Failed to analyze image")
@@ -243,6 +243,32 @@ class ScanService {
         }
     }
 
+    transformBackendPredictToPredict(backend: any): PredictionResponse {
+        return {
+            diseaseName: backend.predicted_class ?? backend.disease_name ?? "",
+            top_predictions: Array.isArray(backend.top_predictions)
+                ? backend.top_predictions.map((pred: any) => ({
+                    class_name: pred.class_name ?? pred.className ?? "",
+                    confidence: pred.confidence,
+                    rank: pred.rank,
+                }))
+                : [],
+            confidence: Number((backend.confidence * 100).toFixed(2)),
+            treatment: backend.treatment ?? backend.recommendations,
+            location: backend.location
+                ? {
+                    latitude: backend.location.latitude,
+                    longitude: backend.location.longitude,
+                    address: backend.location.address,
+                }
+                : undefined,
+            status: backend.result_type ?? "unknown",
+            createdAt: backend.scan_date ?? undefined,
+            model_version: backend.model_version ?? undefined,
+            processing_time: backend.processing_time ?? undefined,
+        }
+    }
+
     /**
      * Get scan statistics for dashboard
      */
@@ -292,32 +318,32 @@ class ScanService {
     /**
      * Batch process multiple images (for future use)
      */
-    async batchPredict(images: PredictionRequest[]): Promise<PredictionResponse[]> {
-        try {
-            const promises = images.map((image) => this.predictDisease(image))
-            const results = await Promise.allSettled(promises)
+    // async batchPredict(images: PredictionRequest[]): Promise<PredictionResponse[]> {
+    //     try {
+    //         const promises = images.map((image) => this.predictDisease(image))
+    //         const results = await Promise.allSettled(promises)
 
-            return results.map((result, index) => {
-                if (result.status === "fulfilled") {
-                    return result.value
-                } else {
-                    console.error(`Batch prediction failed for image ${index}:`, result.reason)
-                    return {
-                        success: false,
-                        prediction: {
-                            class_name: "Error",
-                            confidence: 0,
-                            is_healthy: false,
-                        },
-                        message: result.reason?.message || "Prediction failed",
-                    }
-                }
-            })
-        } catch (error) {
-            console.error("Error in batch prediction:", error)
-            throw new Error(error instanceof Error ? error.message : "Batch prediction failed")
-        }
-    }
+    //         return results.map((result, index) => {
+    //             if (result.status === "fulfilled") {
+    //                 return result.value
+    //             } else {
+    //                 console.error(`Batch prediction failed for image ${index}:`, result.reason)
+    //                 return {
+    //                     success: false,
+    //                     prediction: {
+    //                         class_name: "Error",
+    //                         confidence: 0,
+    //                         is_healthy: false,
+    //                     },
+    //                     message: result.reason?.message || "Prediction failed",
+    //                 }
+    //             }
+    //         })
+    //     } catch (error) {
+    //         console.error("Error in batch prediction:", error)
+    //         throw new Error(error instanceof Error ? error.message : "Batch prediction failed")
+    //     }
+    // }
 }
 
 export const scanService = new ScanService()
