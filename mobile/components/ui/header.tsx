@@ -1,27 +1,27 @@
-import React from 'react';
-import {
-    View,
-    Text,
-    TouchableOpacity,
-    StyleSheet,
-} from 'react-native';
 import {
     ArrowLeft,
 } from 'lucide-react-native';
+import React from 'react';
+import {
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+} from 'react-native';
 
 
-export default function Header({ onBack }: { onBack: () => void }) {
+export default function Header({ onBack, title }: { onBack: () => void, title: string }) {
     return (
-            <View style={styles.header}>
-                <TouchableOpacity
-                    style={styles.backButton}
-                    onPress={onBack}
-                >
-                    <ArrowLeft size={24} color="#111827" />
-                </TouchableOpacity>
-                <Text style={styles.headerTitle}>Choose Analysis Type</Text>
-                <View style={styles.placeholder} />
-            </View>
+        <View style={styles.header}>
+            <TouchableOpacity
+                style={styles.backButton}
+                onPress={onBack}
+            >
+                <ArrowLeft size={24} color="#111827" />
+            </TouchableOpacity>
+            <Text style={styles.headerTitle}>{title}</Text>
+            <View style={styles.placeholder} />
+        </View>
     );
 }
 
