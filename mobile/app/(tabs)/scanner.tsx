@@ -171,7 +171,6 @@ export default function ScannerScreen() {
     if (currentFlow === 'analyzing') {
         return <LoadingSpinner message="Analyzing your plant with AI..." size="large" />
     }
-
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: '#ffffff' }}>
             {currentFlow === 'scanner' && (
@@ -241,6 +240,7 @@ export default function ScannerScreen() {
 
             {/* Camera Modal */}
             <Modal visible={currentFlow === 'camera'} animationType="slide" presentationStyle="fullScreen">
+               
                 <CameraScreen onClose={handleCloseCamera} onPhotoTaken={handlePhotoTaken} />
             </Modal>
 
