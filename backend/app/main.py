@@ -33,7 +33,7 @@ app.include_router(plants.router, prefix="/api/plants", tags=["Plants"])
 app.include_router(diseases.router, prefix="/api/diseases", tags=["Diseases"])
 app.include_router(scans.router, prefix="/api/scans", tags=["Scans"])
 app.include_router(files.router, prefix="/api/files", tags=["File Uploads"]) 
-# app.include_router(ml.router, prefix="/api/ml", tags=["Machine Learning"])
+app.include_router(ml.router, prefix="/api/ml", tags=["Machine Learning"])
 @app.get("/")
 async def root():
     return  {
