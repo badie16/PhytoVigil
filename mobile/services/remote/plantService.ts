@@ -176,14 +176,23 @@ class PlantService {
         };
     }
     // Transformer les données backend en format frontend pour PlantScan
-    private transformBackendScanToPlantScan(backendScan: BackendPlantScan, plantName?: string): PlantScan {
+    transformBackendScanToPlantScan(backendScan: BackendPlantScan, plantName?: string): PlantScan {
         const confidence = parseFloat(backendScan.confidence_score) || 0;
         const hasDisease = Object.keys(backendScan.detected_diseases).length > 0;
 
         return {
             id: backendScan.id,
             plant_id: backendScan.plant_id,
-            diseaseName: hasDisease ? backendScan.detected_diseases[0].class_name : 'Healthy',
+            diseaseName: hasDisease && Array.isArray(backendScan.detected_diseases) && backendScan.detected_diseases.length > 0
+                ? backendScan.detected_diseases[0].class_name
+                : 'Healthy',
+            top_predictions: Array.isArray(backendScan.detected_diseases)
+                ? backendScan.detected_diseases.map((d, idx) => ({
+                    class_name: d.class_name,
+                    confidence: typeof d.confidence === "number" ? d.confidence : parseFloat(d.confidence),
+                    rank: d.rank ?? idx + 1
+                }))
+                : [],
             confidence: Number((confidence * 100).toFixed(2)),
             treatment: backendScan.recommendations,
             imageUri: backendScan.image_url,
@@ -194,7 +203,7 @@ class PlantService {
             createdAt: backendScan.scan_date,
             updatedAt: backendScan.scan_date,
             status: backendScan.result_type,
-            notes: undefined
+            notes: backendScan.detected_diseases?.notes,
         };
     }
 

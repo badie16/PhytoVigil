@@ -46,6 +46,18 @@ export class PlantUtils {
                 return <HelpCircle size={20} color="#6B7280" />;
         }
     }
+    static getHealthBackground = (health: Plant['health'] | PlantScan['status']) => {
+        switch (health) {
+            case 'healthy':
+                return '#F0FDF4';
+            case 'warning':
+                return '#FFFBEB';
+            case 'diseased':
+                return '#FEF2F2';
+            default:
+                return '#F9FAFB';
+        }
+    };
     static getHealthColor(health: Plant['health'] | PlantScan['status']) {
         switch (health) {
             case 'healthy':

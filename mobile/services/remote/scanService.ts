@@ -2,6 +2,7 @@ import { config } from "@/lib/config/env";
 import { appendImageToFormData } from "@/lib/constant/Helper";
 import type { BackendPlantScan, PlantScan, PredictionRequest, PredictionResponse } from "@/types";
 import { storageService } from "../local/storage";
+import plantService from "./plantService";
 
 
 export interface ScanHistoryResponse {
@@ -92,7 +93,7 @@ class ScanService {
                 throw new Error(errorData.detail || `HTTP error! status: ${response.status}`)
             }
             const data = await response.json()
-            return data
+            return plantService.transformBackendScanToPlantScan(data)
         } catch (error) {
             console.error("Error predicting and saving scan:", error)
             throw new Error(error instanceof Error ? error.message : "Failed to analyze and save scan")
@@ -285,31 +286,6 @@ class ScanService {
         } catch (error) {
             console.error("Error fetching scan statistics:", error)
             throw new Error(error instanceof Error ? error.message : "Failed to fetch scan statistics")
-        }
-    }
-
-    /**
-     * Convert backend scan to frontend format
-     */
-    transformBackendScan(backendScan: BackendPlantScan): PlantScan {
-        return {
-            id: backendScan.id,
-            plant_id: backendScan.plant_id,
-            diseaseName: backendScan.detected_diseases?.disease_name || "Unknown",
-            confidence: Number.parseFloat(backendScan.confidence_score),
-            treatment: backendScan.recommendations || "No treatment recommendations available",
-            imageUri: backendScan.image_url,
-            location:
-                backendScan.location_lat && backendScan.location_lng
-                    ? {
-                        latitude: Number.parseFloat(backendScan.location_lat),
-                        longitude: Number.parseFloat(backendScan.location_lng),
-                    }
-                    : undefined,
-            createdAt: backendScan.scan_date,
-            updatedAt: backendScan.scan_date,
-            status: backendScan.result_type,
-            notes: backendScan.detected_diseases?.notes,
         }
     }
 
