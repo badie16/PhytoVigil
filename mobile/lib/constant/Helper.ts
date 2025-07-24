@@ -28,22 +28,46 @@ export async function appendImageToFormData(
     fileName: string,
     argName: string = "file"
 ): Promise<void> {
-    const base64Data = base64Uri.split(',')[1];
-
-    if (Platform.OS === 'web') {
-        // WEB: Convert Base64 to Blob and append.
+    if (Platform.OS === "web") {
+        const base64Data = base64Uri.split(',')[1];
         const imageBlob = base64ToBlob(base64Data);
         formData.append(argName, imageBlob, fileName);
     } else {
-        // NATIVE (iOS/Android): Save to a temporary file and append its path.
-        const tempFileUri = FileSystem.cacheDirectory + fileName;
-        await FileSystem.writeAsStringAsync(tempFileUri, base64Data, {
-            encoding: FileSystem.EncodingType.Base64,
-        });
-        formData.append(argName, {
-            uri: tempFileUri,
-            name: fileName,
-            type: "image/jpeg",
-        } as any);
+        if (base64Uri.startsWith("data:")) {
+            // ✅ Cas base64 URI
+            const parts = base64Uri.split(",");
+            if (parts.length !== 2) {
+                throw new Error("Invalid base64 URI format");
+            }
+            const base64Data = parts[1];
+            const tempFileUri = FileSystem.cacheDirectory + fileName;
+            await FileSystem.writeAsStringAsync(tempFileUri, base64Data, {
+                encoding: FileSystem.EncodingType.Base64,
+            });
+            formData.append(argName, {
+                uri: tempFileUri,
+                name: fileName,
+                type: "image/jpeg",
+            } as any);
+
+        } else if (base64Uri.startsWith("file://")) {
+            // ✅ Cas chemin local (file://...) => on lit le contenu
+            const base64Data = await FileSystem.readAsStringAsync(base64Uri, {
+                encoding: FileSystem.EncodingType.Base64,
+            });
+
+            const tempFileUri = FileSystem.cacheDirectory + fileName;
+            await FileSystem.writeAsStringAsync(tempFileUri, base64Data, {
+                encoding: FileSystem.EncodingType.Base64,
+            });
+
+            formData.append(argName, {
+                uri: tempFileUri,
+                name: fileName,
+                type: "image/jpeg",
+            } as any);
+        } else {
+            throw new Error("Unsupported image URI format. Must be base64 or file URI.");
+        }
     }
 }
