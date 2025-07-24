@@ -66,7 +66,7 @@ async def predict_disease(
             result_type=prediction_result["result_type"],
             top_predictions=prediction_result["top_predictions"],
             recommendations=prediction_result["recommendations"],
-            image=str(prediction_result["image_uri"]),
+            image="",
             scan_date=datetime.now(),
             model_version=prediction_result["model_version"],
             processing_time=prediction_result.get("processing_time")
