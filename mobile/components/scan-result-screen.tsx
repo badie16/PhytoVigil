@@ -1,4 +1,5 @@
 import type { ScanData } from '@/app/(tabs)/scanner';
+import { DateUtils } from '@/lib/constant/dateUtils';
 import { PlantUtils } from '@/lib/constant/plantUtils';
 import { Activity, Calendar, Camera, Clock, Download, Leaf, Link2, Share, Zap } from 'lucide-react-native';
 import React from 'react';
@@ -108,7 +109,7 @@ export default function ScanResultScreen({
                             <Text style={styles.resultTitle}>Disease Detection</Text>
                             <View style={[styles.confidenceBadge, { backgroundColor: PlantUtils.getHealthBackground(scanResult.status) }]}>
                                 <Text style={[styles.confidenceText, { color: PlantUtils.getHealthColor(scanResult.status) }]}>
-                                    {Math.round(scanResult.confidence * 100)}% confidence
+                                    {scanResult.confidence}% confidence
                                 </Text>
                             </View>
                         </View>
@@ -137,7 +138,7 @@ export default function ScanResultScreen({
                                                 {prediction.class_name.replace(/___/g, ' - ').replace(/_/g, ' ')}
                                             </Text>
                                             <Text style={styles.predictionConfidence}>
-                                                {Math.round(prediction.confidence * 100)}% confidence
+                                                {prediction.confidence}% confidence
                                             </Text>
                                         </View>
                                     </View>
@@ -164,22 +165,18 @@ export default function ScanResultScreen({
                             <Calendar size={16} color="#6B7280" />
                             <Text style={styles.infoLabel}>Scanned:</Text>
                             <Text style={styles.infoValue}>
-                                {new Date(scanResult.createdAt).toLocaleDateString('en-US', {
-                                    month: 'short',
-                                    day: 'numeric',
-                                    year: 'numeric',
-                                    hour: '2-digit',
-                                    minute: '2-digit',
-                                })}
+                                {DateUtils.formatDateFlexible(scanResult.createdAt)}
                             </Text>
                         </View>
-                        {/* <View style={styles.infoRow}>
-                            <Clock size={16} color="#6B7280" />
-                            <Text style={styles.infoLabel}>Processing Time:</Text>
-                            <Text style={styles.infoValue}>
-                                {scanResult.processing_time.toFixed(2)}s
-                            </Text>
-                        </View> */}
+                        {scanResult.processing_time && (
+                            <View style={styles.infoRow}>
+                                <Clock size={16} color="#6B7280" />
+                                <Text style={styles.infoLabel}>Processing Time:</Text>
+                                <Text style={styles.infoValue}>
+                                    {scanResult.processing_time.toFixed(2)}s
+                                </Text>
+                            </View>)
+                        }
                         <View style={styles.infoRow}>
                             <Activity size={16} color="#6B7280" />
                             <Text style={styles.infoLabel}>Analysis Type:</Text>
@@ -187,11 +184,13 @@ export default function ScanResultScreen({
                                 {analysisType === 'quick' ? 'Quick Analysis' : 'Saved Analysis'}
                             </Text>
                         </View>
-                        {/* <View style={styles.infoRow}>
-                            <Zap size={16} color="#6B7280" />
-                            <Text style={styles.infoLabel}>Model Version:</Text>
-                            <Text style={styles.infoValue}>{scanResult.model_version}</Text>
-                        </View> */}
+                        {scanResult.model_version && (  
+                            <View style={styles.infoRow}>
+                                <Zap size={16} color="#6B7280" />
+                                <Text style={styles.infoLabel}>Model Version:</Text>
+                                <Text style={styles.infoValue}>{scanResult.model_version}</Text>
+                            </View>
+                        )}
                         {analysisType === 'save' && (
                             <View style={styles.infoRow}>
                                 <Download size={16} color="#6B7280" />
