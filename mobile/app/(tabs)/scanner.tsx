@@ -7,10 +7,12 @@ import PhotoPreview from "@/components/ui/photo-preview"
 // import ScanResultScreen from "@/components/ui/scan-result-screen"
 import AddPlantForm from "@/components/add-plant-form"
 import { useCamera } from "@/hooks/use-camera"
+import { scanService } from "@/services/remote/scanService"
 import type React from "react"
 import { useState } from "react"
 import { Image, Modal, ScrollView, Text, View } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
+import ScanResultScreen from "@/components/scan-result-screen"
 
 export type ScanFlow = 'scanner' | 'camera' | 'preview' | 'options' | 'linking' | 'addPlant' | 'result' | 'analyzing'
 
@@ -21,11 +23,20 @@ export interface ScanData {
     isNewPlant?: boolean
     analysisType?: 'quick' | 'save'
     scanResult?: {
-        disease: string
-        severity: string
+        predicted_class: string
         confidence: number
-        recommendations: string[]
-        healthStatus: 'healthy' | 'diseased' | 'warning'
+        result_type: 'healthy' | 'diseased' | 'warning' | 'unknown'
+        top_predictions: Array<{
+            class_name: string
+            confidence: number
+            rank: number
+            class_index: number
+        }>
+        recommendations: string
+        image: string
+        scan_date: string
+        model_version: string
+        processing_time: number
     }
 }
 
@@ -56,7 +67,7 @@ export default function ScannerScreen() {
             })
         }
         setCurrentFlow('analyzing')
-        simulateAnalysis()
+        StartAnalysis()
     }
 
     const handleLinkToExistingPlant = () => {
@@ -86,30 +97,43 @@ export default function ScannerScreen() {
                 analysisType: 'save'
             })
         }
-
+        console.log("yes")
         setCurrentFlow('analyzing')
-        simulateAnalysis()
+        StartAnalysis()
     }
 
-    const simulateAnalysis = () => {
-        // Simulate AI analysis
-        setTimeout(() => {
-            const mockResult = {
-                disease: "Early Blight",
-                severity: "Moderate",
-                confidence: 87,
-                recommendations: [
-                    "Remove affected leaves immediately",
-                    "Apply organic fungicide spray",
-                    "Improve air circulation around plant",
-                    "Water at soil level to avoid wet leaves"
-                ],
-                healthStatus: 'diseased' as const
+    const StartAnalysis = () => {
+        if (!scanData?.imageUri) {
+            console.error("No image to analyze");
+            return;
+        }
+        (async () => {
+            try {
+                let data;
+                if (scanData.linkedPlantId) {
+                    console.log(scanData.linkedPlantId)
+                    data = await scanService.predictAndSaveScan({
+                        image: scanData.imageUri,
+                        plantId: scanData.linkedPlantId,
+                        // locationLat: scanData.location?.lat,
+                        // locationLng: scanData.location?.lng,
+                    });
+                } else {
+                    data = await scanService.predictDisease({
+                        image: scanData.imageUri,
+                    });
+                }
+                console.log("Prediction result:", data);
+                setScanData(prev => prev ? { ...prev, scanResult: data as any } : prev)
+                setCurrentFlow('result')
+            } catch (error) {
+                console.error("Error during analysis:", error);
+                setCurrentFlow('options')
+                // TODO : handle error (e.g., show error message to user)
+            } finally {
+                setCurrentFlow('result')
             }
-
-            setScanData(prev => prev ? { ...prev, scanResult: mockResult } : null)
-            setCurrentFlow('result')
-        }, 3000)
+        })();
     }
 
     const handleRetakePhoto = () => {
@@ -265,16 +289,16 @@ export default function ScannerScreen() {
                     />
                 )}
             </Modal>
-            {/* Scan Result Modal
+            {/* Scan Result Modal */}
             <Modal visible={currentFlow === 'result'} animationType="slide" presentationStyle="fullScreen">
                 {scanData?.scanResult && (
                     <ScanResultScreen
                         scanData={scanData}
                         onNewScan={handleNewScan}
-                        onBack={handleBackToLinking}
+                        onBack={handleBackToOptions}
                     />
                 )}
-            </Modal> */}
+            </Modal>
         </SafeAreaView>
     )
 }
