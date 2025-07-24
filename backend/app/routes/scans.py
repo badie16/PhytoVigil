@@ -1,13 +1,19 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, status
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
+
 from app.database import get_db
+from app.models.disease import Disease
 from app.models.user import User
 from app.schemas.scan import PlantScan, PlantScanCreate, PlantScanUpdate
-from app.crud import scan as crud_scan
 from app.core.security import get_current_user
+from app.services.file_service import FileService
+from app.services.ml_service import ml_service
+from app.crud import scan as crud_scan
+from app.crud.scan import create_scan, create_scan_disease
 
 router = APIRouter()
+file_service = FileService()
 
 @router.get("/", response_model=List[PlantScan])
 def get_user_scans(
@@ -55,22 +61,71 @@ def get_plant_scans(
     return scans
 
 @router.post("/", response_model=PlantScan, status_code=status.HTTP_201_CREATED)
-def create_scan(
-    scan: PlantScanCreate,
+async def upload_scan(
+    image: UploadFile = File(...),
+    plant_id: Optional[int] = Form(None),
+    location_lat: Optional[float] = Form(None),
+    location_lng: Optional[float] = Form(None),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
     """Créer un nouveau scan"""
-    # Si plant_id est fourni, vérifier que la plante appartient à l'utilisateur
-    if scan.plant_id:
-        from app.crud import plant as crud_plant
-        plant = crud_plant.get_plant(db, plant_id=scan.plant_id)
-        if not plant:
-            raise HTTPException(status_code=404, detail="Plante non trouvée")
-        if plant.user_id != current_user.id:
-            raise HTTPException(status_code=403, detail="Accès non autorisé")
+    try:
+        # Si plant_id est fourni, vérifier que la plante appartient à l'utilisateur
+        if plant_id:
+            from app.crud import plant as crud_plant
+            plant = crud_plant.get_plant(db, plant_id=plant_id)
+            if not plant:
+                raise HTTPException(status_code=404, detail="Plante non trouvée")
+            if plant.user_id != current_user.id:
+                raise HTTPException(status_code=403, detail="Accès non autorisé")
+            
+        image_bytes = await image.read()
+        if len(image_bytes) > 10 * 1024 * 1024:
+            raise HTTPException(413, "Image trop volumineuse")
+        
+        image.file.seek(0)
+        # Créer le dossier de destination
+        folder_path = f"users/{current_user.id}/scans"
+
+        image_url = await file_service.upload_image(
+            file=image,
+            bucket_name="scan",
+            folder_path=folder_path
+        )
     
-    return crud_scan.create_scan(db=db, scan=scan, user_id=current_user.id)
+        # Prédiction
+        prediction_result = ml_service.predict(image_bytes)
+        scan_data = {
+            "plant_id": plant_id,
+            "image_url": image_url,
+            "result_type": prediction_result["result_type"],
+            "confidence_score": prediction_result["confidence"],
+            "recommendations": prediction_result["recommendations"],
+            "location_lat": location_lat,
+            "location_lng": location_lng,
+            "detected_diseases": prediction_result["top_predictions"],
+        }
+        scan =  create_scan(db, scan_data, current_user.id)
+        # Si une maladie est détectée, créer les enregistrements scan_diseases
+        if prediction_result["result_type"] == "diseased":
+            # Chercher la maladie dans la base de données
+            print("yes diseased")
+            disease = db.query(Disease).filter(
+                Disease.name.ilike(f"%{prediction_result['predicted_class']}%")
+            ).first()
+            
+            if disease:
+                print("the diseased is in the database")
+                scan_disease_data = {                    
+                    "disease_id": disease.id,
+                    "confidence_score": prediction_result["confidence"],
+                    "affected_area_percentage": None
+                }                
+                create_scan_disease(db, scan_disease_data,scan.id)    
+        return scan
+    except Exception as e:
+        raise HTTPException(500, f"Erreur lors de l'analyse et du stockage: {str(e)}")
 
 @router.put("/{scan_id}", response_model=PlantScan)
 def update_scan(

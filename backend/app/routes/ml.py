@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, s
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from typing import Optional
+from datetime import datetime
 import json
 
 from app.database import get_db
@@ -24,9 +25,6 @@ file_service = FileService()
 @router.post("/predict", response_model=PredictionResponse)
 async def predict_disease(
     image: UploadFile = File(...),
-    plant_id: Optional[int] = Form(None),
-    location_lat: Optional[float] = Form(None),
-    location_lng: Optional[float] = Form(None),
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -58,66 +56,21 @@ async def predict_disease(
                 detail="L'image est trop volumineuse (max 10MB)"
             )
         
-       # Recharger l'objet UploadFile
-        image.file.seek(0)  # Revenir au début
-
-        # Créer le dossier de destination
-        folder_path = f"users/{current_user.id}/scans"
-
-        image_url = await file_service.upload_image(
-            file=image,
-            bucket_name="scan",
-            folder_path=folder_path
-        )
-        
         # Effectuer la prédiction
-        prediction_result = ml_service.predict(image_bytes)
-        
-        # Créer l'enregistrement du scan
-        scan_data = {
-            "plant_id": plant_id,
-            "image_url": image_url,
-            "result_type": prediction_result["result_type"],
-            "confidence_score": prediction_result["confidence"],
-            "recommendations": prediction_result["recommendations"],
-            "location_lat": location_lat,
-            "location_lng": location_lng,
-            "detected_diseases": prediction_result["top_predictions"]
-        }
-        
-        scan = create_scan(db, scan_data, current_user.id)
-        
-        # Si une maladie est détectée, créer les enregistrements scan_diseases
-        if prediction_result["result_type"] == "diseased":
-            # Chercher la maladie dans la base de données
-            print("yes diseased")
-            disease = db.query(Disease).filter(
-                Disease.name.ilike(f"%{prediction_result['predicted_class']}%")
-            ).first()
-            
-            if disease:
-                print("the diseased is in the database")
-                scan_disease_data = {                    
-                    "disease_id": disease.id,
-                    "confidence_score": prediction_result["confidence"],
-                    "affected_area_percentage": None
-                }                
-                create_scan_disease(db, scan_disease_data,scan.id)        
+        prediction_result = ml_service.predict(image_bytes)        
+             
         # Préparer la réponse
         response = PredictionResponse(
-            scan_id=scan.id,
-            user_id=scan.user_id,
             predicted_class=prediction_result["predicted_class"],
             confidence=prediction_result["confidence"],
             result_type=prediction_result["result_type"],
             top_predictions=prediction_result["top_predictions"],
             recommendations=prediction_result["recommendations"],
-            image_url=image_url,
-            scan_date=scan.scan_date,
+            image=getattr(getattr(image, "file", None), "uri", None) or getattr(image, "filename", "") or "",
+            scan_date=datetime.now(),
             model_version=prediction_result["model_version"],
             processing_time=prediction_result.get("processing_time")
         )
-        
         return response
         
     except HTTPException:
