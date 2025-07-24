@@ -6,13 +6,14 @@ import LoadingSpinner from "@/components/ui/loading-spinner"
 import PhotoPreview from "@/components/ui/photo-preview"
 // import ScanResultScreen from "@/components/ui/scan-result-screen"
 import AddPlantForm from "@/components/add-plant-form"
+import ScanResultScreen from "@/components/scan-result-screen"
 import { useCamera } from "@/hooks/use-camera"
 import { scanService } from "@/services/remote/scanService"
 import type React from "react"
 import { useState } from "react"
 import { Image, Modal, ScrollView, Text, View } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
-import ScanResultScreen from "@/components/scan-result-screen"
+import { PlantScan } from "@/types"
 
 export type ScanFlow = 'scanner' | 'camera' | 'preview' | 'options' | 'linking' | 'addPlant' | 'result' | 'analyzing'
 
@@ -22,22 +23,7 @@ export interface ScanData {
     plantName?: string
     isNewPlant?: boolean
     analysisType?: 'quick' | 'save'
-    scanResult?: {
-        predicted_class: string
-        confidence: number
-        result_type: 'healthy' | 'diseased' | 'warning' | 'unknown'
-        top_predictions: Array<{
-            class_name: string
-            confidence: number
-            rank: number
-            class_index: number
-        }>
-        recommendations: string
-        image: string
-        scan_date: string
-        model_version: string
-        processing_time: number
-    }
+    scanResult?: PlantScan
 }
 
 export default function ScannerScreen() {
@@ -98,11 +84,11 @@ export default function ScannerScreen() {
             })
         }
         console.log("yes")
+        StartAnalysis(linkingData.linkedPlantId)
         setCurrentFlow('analyzing')
-        StartAnalysis()
     }
 
-    const StartAnalysis = () => {
+    const StartAnalysis = (linkedPlantId?: number) => {
         if (!scanData?.imageUri) {
             console.error("No image to analyze");
             return;
@@ -110,11 +96,11 @@ export default function ScannerScreen() {
         (async () => {
             try {
                 let data;
-                if (scanData.linkedPlantId) {
-                    console.log(scanData.linkedPlantId)
+                console.log("id : ", linkedPlantId)
+                if (linkedPlantId) {
                     data = await scanService.predictAndSaveScan({
                         image: scanData.imageUri,
-                        plantId: scanData.linkedPlantId,
+                        plantId: linkedPlantId,
                         // locationLat: scanData.location?.lat,
                         // locationLng: scanData.location?.lng,
                     });
@@ -240,7 +226,7 @@ export default function ScannerScreen() {
 
             {/* Camera Modal */}
             <Modal visible={currentFlow === 'camera'} animationType="slide" presentationStyle="fullScreen">
-               
+
                 <CameraScreen onClose={handleCloseCamera} onPhotoTaken={handlePhotoTaken} />
             </Modal>
 

@@ -1,5 +1,6 @@
 import type { ScanData } from '@/app/(tabs)/scanner';
-import { Activity, TriangleAlert as AlertTriangle, ArrowLeft, Calendar, Camera, CircleCheck as CheckCircle, Clock, Download, Leaf, Link2, Share, Circle as XCircle, Zap } from 'lucide-react-native';
+import { PlantUtils } from '@/lib/constant/plantUtils';
+import { Activity, Calendar, Camera, Clock, Download, Leaf, Link2, Share, Zap } from 'lucide-react-native';
 import React from 'react';
 import {
     Alert,
@@ -24,62 +25,16 @@ export default function ScanResultScreen({
     onBack,
 }: ScanResultScreenProps) {
     const { scanResult, analysisType, linkedPlantId, plantName, imageUri } = scanData;
-
+    console.log("plantId", linkedPlantId)
+    console.log("plantName", plantName)
     if (!scanResult) {
         return null;
     }
-
-    const getHealthIcon = () => {
-        switch (scanResult.result_type) {
-            case 'healthy':
-                return <CheckCircle size={32} color="#10B981" />;
-            case 'warning':
-                return <AlertTriangle size={32} color="#F59E0B" />;
-            case 'diseased':
-                return <XCircle size={32} color="#EF4444" />;
-            case 'unknown':
-                return <Activity size={32} color="#6B7280" />;
-            default:
-                return <Activity size={32} color="#6B7280" />;
-        }
-    };
-
-    const getHealthColor = () => {
-        switch (scanResult.result_type) {
-            case 'healthy':
-                return '#10B981';
-            case 'warning':
-                return '#F59E0B';
-            case 'diseased':
-                return '#EF4444';
-            case 'unknown':
-                return '#6B7280';
-            default:
-                return '#6B7280';
-        }
-    };
-
-    const getHealthBackground = () => {
-        switch (scanResult.result_type) {
-            case 'healthy':
-                return '#F0FDF4';
-            case 'warning':
-                return '#FFFBEB';
-            case 'diseased':
-                return '#FEF2F2';
-            case 'unknown':
-                return '#F9FAFB';
-            default:
-                return '#F9FAFB';
-        }
-    };
-
     const getStatusText = () => {
-        switch (scanResult.result_type) {
+        switch (scanResult.status) {
             case 'healthy':
                 return 'Healthy Plant';
-            case 'warning':
-                return 'Needs Attention';
+
             case 'diseased':
                 return 'Disease Detected';
             case 'unknown':
@@ -101,9 +56,6 @@ export default function ScanResultScreen({
         <SafeAreaView style={styles.container}>
             {/* Header */}
             <View style={styles.header}>
-                <TouchableOpacity style={styles.backButton} onPress={onBack}>
-                    <ArrowLeft size={24} color="#111827" />
-                </TouchableOpacity>
                 <Text style={styles.headerTitle}>Scan Results</Text>
                 <TouchableOpacity style={styles.shareButton} onPress={handleShare}>
                     <Share size={20} color="#6B7280" />
@@ -114,9 +66,9 @@ export default function ScanResultScreen({
                 {/* Scan Image */}
                 <View style={styles.imageSection}>
                     <Image source={{ uri: imageUri }} style={styles.scanImage} />
-                    <View style={[styles.statusBadge, { backgroundColor: getHealthBackground() }]}>
-                        {getHealthIcon()}
-                        <Text style={[styles.statusText, { color: getHealthColor() }]}>
+                    <View style={[styles.statusBadge, { backgroundColor: PlantUtils.getHealthBackground(scanResult.status) }]}>
+                        {PlantUtils.getStatusIcon(scanResult.status)}
+                        <Text style={[styles.statusText, { color: PlantUtils.getHealthColor(scanResult.status) }]}>
                             {getStatusText()}
                         </Text>
                     </View>
@@ -154,24 +106,24 @@ export default function ScanResultScreen({
                     <View style={styles.resultCard}>
                         <View style={styles.resultHeader}>
                             <Text style={styles.resultTitle}>Disease Detection</Text>
-                            <View style={[styles.confidenceBadge, { backgroundColor: getHealthBackground() }]}>
-                                <Text style={[styles.confidenceText, { color: getHealthColor() }]}>
+                            <View style={[styles.confidenceBadge, { backgroundColor: PlantUtils.getHealthBackground(scanResult.status) }]}>
+                                <Text style={[styles.confidenceText, { color: PlantUtils.getHealthColor(scanResult.status) }]}>
                                     {Math.round(scanResult.confidence * 100)}% confidence
                                 </Text>
                             </View>
                         </View>
                         <Text style={styles.diseaseText}>
-                            {scanResult.predicted_class.replace(/___/g, ' - ').replace(/_/g, ' ')}
+                            {scanResult.diseaseName.replace(/___/g, ' - ').replace(/_/g, ' ')}
                         </Text>
                         <Text style={styles.severityText}>
-                            Status: <Text style={[styles.severityValue, { color: getHealthColor() }]}>
-                                {scanResult.result_type.charAt(0).toUpperCase() + scanResult.result_type.slice(1)}
+                            Status: <Text style={[styles.severityValue, { color: PlantUtils.getHealthColor(scanResult.status) }]}>
+                                {scanResult.status}
                             </Text>
                         </Text>
                     </View>
 
                     {/* Top Predictions (only if confidence is low or unknown) */}
-                    {(scanResult.result_type === 'unknown' || scanResult.confidence < 0.7) && (
+                    {(scanResult.status === 'unknown' || scanResult.confidence < 0.7) && (
                         <View style={styles.predictionsCard}>
                             <Text style={styles.predictionsTitle}>Alternative Predictions</Text>
                             <View style={styles.predictionsList}>
@@ -199,74 +151,74 @@ export default function ScanResultScreen({
                 <View style={styles.recommendationsCard}>
                     <Text style={styles.recommendationsTitle}>Treatment Recommendations</Text>
                     <Text style={styles.recommendationsText}>
-                        {scanResult.recommendations}
+                        {scanResult.treatment}
                     </Text>
                 </View>
-           
 
-            {/* Analysis Info */}
-            <View style={styles.analysisInfoSection}>
-                <Text style={styles.sectionTitle}>Scan Information</Text>
-                <View style={styles.infoCard}>
-                    <View style={styles.infoRow}>
-                        <Calendar size={16} color="#6B7280" />
-                        <Text style={styles.infoLabel}>Scanned:</Text>
-                        <Text style={styles.infoValue}>
-                            {new Date(scanResult.scan_date).toLocaleDateString('en-US', {
-                                month: 'short',
-                                day: 'numeric',
-                                year: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit',
-                            })}
-                        </Text>
-                    </View>
-                    <View style={styles.infoRow}>
-                        <Clock size={16} color="#6B7280" />
-                        <Text style={styles.infoLabel}>Processing Time:</Text>
-                        <Text style={styles.infoValue}>
-                            {scanResult.processing_time.toFixed(2)}s
-                        </Text>
-                    </View>
-                    <View style={styles.infoRow}>
-                        <Activity size={16} color="#6B7280" />
-                        <Text style={styles.infoLabel}>Analysis Type:</Text>
-                        <Text style={styles.infoValue}>
-                            {analysisType === 'quick' ? 'Quick Analysis' : 'Saved Analysis'}
-                        </Text>
-                    </View>
-                    <View style={styles.infoRow}>
-                        <Zap size={16} color="#6B7280" />
-                        <Text style={styles.infoLabel}>Model Version:</Text>
-                        <Text style={styles.infoValue}>{scanResult.model_version}</Text>
-                    </View>
-                    {analysisType === 'save' && (
+
+                {/* Analysis Info */}
+                <View style={styles.analysisInfoSection}>
+                    <Text style={styles.sectionTitle}>Scan Information</Text>
+                    <View style={styles.infoCard}>
                         <View style={styles.infoRow}>
-                            <Download size={16} color="#6B7280" />
-                            <Text style={styles.infoLabel}>Storage:</Text>
-                            <Text style={styles.infoValue}>Saved to your collection</Text>
+                            <Calendar size={16} color="#6B7280" />
+                            <Text style={styles.infoLabel}>Scanned:</Text>
+                            <Text style={styles.infoValue}>
+                                {new Date(scanResult.createdAt).toLocaleDateString('en-US', {
+                                    month: 'short',
+                                    day: 'numeric',
+                                    year: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                })}
+                            </Text>
                         </View>
-                    )}
+                        {/* <View style={styles.infoRow}>
+                            <Clock size={16} color="#6B7280" />
+                            <Text style={styles.infoLabel}>Processing Time:</Text>
+                            <Text style={styles.infoValue}>
+                                {scanResult.processing_time.toFixed(2)}s
+                            </Text>
+                        </View> */}
+                        <View style={styles.infoRow}>
+                            <Activity size={16} color="#6B7280" />
+                            <Text style={styles.infoLabel}>Analysis Type:</Text>
+                            <Text style={styles.infoValue}>
+                                {analysisType === 'quick' ? 'Quick Analysis' : 'Saved Analysis'}
+                            </Text>
+                        </View>
+                        {/* <View style={styles.infoRow}>
+                            <Zap size={16} color="#6B7280" />
+                            <Text style={styles.infoLabel}>Model Version:</Text>
+                            <Text style={styles.infoValue}>{scanResult.model_version}</Text>
+                        </View> */}
+                        {analysisType === 'save' && (
+                            <View style={styles.infoRow}>
+                                <Download size={16} color="#6B7280" />
+                                <Text style={styles.infoLabel}>Storage:</Text>
+                                <Text style={styles.infoValue}>Saved to your collection</Text>
+                            </View>
+                        )}
+                    </View>
                 </View>
-            </View>
 
-            {/* Action Buttons */}
-            <View style={styles.actionsSection}>
-                {analysisType === 'quick' && (
-                    <TouchableOpacity style={styles.saveButton} onPress={handleSaveReport}>
-                        <Download size={20} color="#FFFFFF" />
-                        <Text style={styles.saveButtonText}>Save Report</Text>
+                {/* Action Buttons */}
+                <View style={styles.actionsSection}>
+                    {analysisType === 'quick' && (
+                        <TouchableOpacity style={styles.saveButton} onPress={handleSaveReport}>
+                            <Download size={20} color="#FFFFFF" />
+                            <Text style={styles.saveButtonText}>Save Report</Text>
+                        </TouchableOpacity>
+                    )}
+
+                    <TouchableOpacity style={styles.newScanButton} onPress={onNewScan}>
+                        <Camera size={20} color="#10B981" />
+                        <Text style={styles.newScanButtonText}>New Scan</Text>
                     </TouchableOpacity>
-                )}
+                </View>
 
-                <TouchableOpacity style={styles.newScanButton} onPress={onNewScan}>
-                    <Camera size={20} color="#10B981" />
-                    <Text style={styles.newScanButtonText}>New Scan</Text>
-                </TouchableOpacity>
-            </View>
-
-            {/* Bottom Spacing */}
-            <View style={styles.bottomSpacing} />
+                {/* Bottom Spacing */}
+                <View style={styles.bottomSpacing} />
             </ScrollView>
         </SafeAreaView >
     );

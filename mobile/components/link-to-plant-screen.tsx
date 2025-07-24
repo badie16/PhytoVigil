@@ -45,7 +45,6 @@ export default function LinkToPlantScreen({
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
     const [selectedPlant, setSelectedPlant] = useState<Plant | null>(null)
-    const [activeTab, setActiveTab] = useState<'quick' | 'existing' | 'new'>('quick')
     // const filteredPlants = plants.filter(plant =>
     //     plant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     // )
@@ -84,7 +83,9 @@ export default function LinkToPlantScreen({
     };
 
     const handleStartAnalysis = () => {
+        
         if (selectedPlant) {
+            console.log(selectedPlant.id)
             onStartAnalysis({
                 linkedPlantId: selectedPlant.id,
                 plantName: selectedPlant.name,
