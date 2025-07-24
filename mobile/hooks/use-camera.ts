@@ -44,7 +44,7 @@ export function useCamera(): CameraHookResult {
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
         aspect: [1, 1],
-        quality: 0.8,
+        quality: 0.9,
         base64: false,
       })
 
