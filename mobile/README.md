@@ -38,6 +38,7 @@ npx expo install
 
 ```bash
 npx expo start
+npx expo start --tunnel
 ```
 
 Scan the QR code with the **Expo Go** app on your phone.
