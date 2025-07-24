@@ -221,7 +221,9 @@ class PredictionService:
                 "recommendations": recommendations,
                 "processing_time": processing_time,
                 "model_version": "1.0",
-                "timestamp": datetime.now().isoformat()
+                "timestamp": datetime.now().isoformat(),
+                "image_uri":processed_image,
+                "image_byte":image_bytes
             }
             
         except Exception as e:
