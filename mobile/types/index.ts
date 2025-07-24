@@ -19,6 +19,9 @@ export interface PlantScan {
   updatedAt: string
   status: "healthy" | "diseased" | "unknown"
   notes?: string
+  processing_time?: number
+  model_version?: string
+
 }
 export interface BackendPlantScan {
   plant_id: number
@@ -101,19 +104,23 @@ export interface PredictionRequest {
 }
 
 export interface PredictionResponse {
-  success: boolean
-  prediction: {
+  diseaseName: string
+  top_predictions: Array<{
     class_name: string
     confidence: number
-    is_healthy: boolean
-    disease_info?: {
-      name: string
-      description: string
-      treatment: string
-      prevention: string
-      severity_level: number
-    }
+    rank?: number
+  }>
+  confidence: number
+  treatment: string
+  // imageUri: string
+  location?: {
+    latitude: number
+    longitude: number
+    address?: string
   }
-  scan_id?: number
-  message?: string
+  processing_time?: number,
+  model_version?: string
+  status: "healthy" | "diseased" | "unknown"
+  createdAt?: string
+  // notes?: string
 }
