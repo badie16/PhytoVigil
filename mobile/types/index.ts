@@ -85,3 +85,30 @@ export interface AppSettings {
 }
 
 
+export interface PredictionRequest {
+  image: string // base64 encoded image
+  // plant_id?: number
+  // location?: {
+  //   latitude: number
+  //   longitude: number
+  //   address?: string
+  // }
+}
+
+export interface PredictionResponse {
+  success: boolean
+  prediction: {
+    class_name: string
+    confidence: number
+    is_healthy: boolean
+    disease_info?: {
+      name: string
+      description: string
+      treatment: string
+      prevention: string
+      severity_level: number
+    }
+  }
+  scan_id?: number
+  message?: string
+}
