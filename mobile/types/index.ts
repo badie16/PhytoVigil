@@ -2,6 +2,11 @@ export interface PlantScan {
   id: number
   plant_id: number
   diseaseName: string
+  top_predictions: Array<{
+    class_name: string
+    confidence: number
+    rank?: number
+  }>
   confidence: number
   treatment: string
   imageUri: string
