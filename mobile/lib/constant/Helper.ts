@@ -25,21 +25,22 @@ const base64ToBlob = (base64: string, contentType: string = 'image/jpeg') => {
 export async function appendImageToFormData(
     formData: FormData,
     base64Uri: string,
-    fileName: string
+    fileName: string,
+    argName: string = "file"
 ): Promise<void> {
     const base64Data = base64Uri.split(',')[1];
 
     if (Platform.OS === 'web') {
         // WEB: Convert Base64 to Blob and append.
         const imageBlob = base64ToBlob(base64Data);
-        formData.append('file', imageBlob, fileName);
+        formData.append(argName, imageBlob, fileName);
     } else {
         // NATIVE (iOS/Android): Save to a temporary file and append its path.
         const tempFileUri = FileSystem.cacheDirectory + fileName;
         await FileSystem.writeAsStringAsync(tempFileUri, base64Data, {
             encoding: FileSystem.EncodingType.Base64,
         });
-        formData.append("file", {
+        formData.append(argName, {
             uri: tempFileUri,
             name: fileName,
             type: "image/jpeg",
