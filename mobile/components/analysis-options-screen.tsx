@@ -1,5 +1,4 @@
 import {
-    Clock,
     Database,
     Link2,
     Plus,
@@ -35,7 +34,7 @@ export default function AnalysisOptionsScreen({
     return (
         <SafeAreaView style={styles.container}>
             {/* Header */}
-            <Header onBack={onBack}></Header>
+            <Header title='Choose Analysis Type' onBack={onBack}></Header>
             <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
                 {/* Photo Preview */}
                 <View style={styles.photoSection}>
@@ -65,7 +64,7 @@ export default function AnalysisOptionsScreen({
                             Get instant disease detection results without saving to your plant collection.
                             Perfect for quick checkups.
                         </Text>
-                       
+
                     </TouchableOpacity>
 
                     {/* Save & Analyze Section */}
@@ -96,7 +95,7 @@ export default function AnalysisOptionsScreen({
                                 Connect this scan to one of your existing plants to build a health history
                                 and track progress over time.
                             </Text>
-                           
+
                         </TouchableOpacity>
 
                         {/* Add New Plant */}
@@ -116,7 +115,7 @@ export default function AnalysisOptionsScreen({
                             <Text style={styles.optionDescription}>
                                 Create a new plant entry in your collection with this scan as the first health record.
                             </Text>
-                           
+
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -214,12 +213,12 @@ const styles = StyleSheet.create({
         color: '#6B7280',
         fontWeight: '500',
     },
-    
+
     optionDescription: {
         fontSize: 15,
         color: '#4B5563',
         lineHeight: 22,
-        
+
     },
 
     saveSection: {

@@ -23,6 +23,7 @@ import {
     View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Header from './ui/header';
 
 
 
@@ -47,7 +48,7 @@ export default function AddPlantForm({
 }: {
     defaultImage?: string;
     onSuccess: (plantId?: number) => void;
-    onBack?: () => void;
+    onBack: () => void;
 }) {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
@@ -200,6 +201,8 @@ export default function AddPlantForm({
 
     return (
         <SafeAreaView style={styles.container}>
+            {/* Header */}
+            <Header title='Add Plant' onBack={onBack}></Header>
             <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
                 {/* Image Section */}
                 <View className="mb-10" style={styles.section}>

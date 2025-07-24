@@ -1,11 +1,11 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native"
-import { CameraView, type CameraType, useCameraPermissions } from "expo-camera"
-import { SafeAreaView } from "react-native-safe-area-context"
-import { X, RotateCcw, Zap, ZapOff } from "lucide-react-native"
+import { CameraView, useCameraPermissions, type CameraType } from "expo-camera"
 import * as MediaLibrary from "expo-media-library"
+import { RotateCcw, X, Zap, ZapOff } from "lucide-react-native"
+import { useEffect, useRef, useState } from "react"
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { SafeAreaView } from "react-native-safe-area-context"
 
 interface CameraScreenProps {
     onClose: () => void
@@ -50,8 +50,9 @@ export default function CameraScreen({ onClose, onPhotoTaken }: CameraScreenProp
             try {
                 const photo = await cameraRef.current.takePictureAsync({
                     quality: 0.8,
-                    base64: false,
+                    base64: true,
                     skipProcessing: false,
+
                 })
 
                 if (photo?.uri) {
@@ -61,7 +62,6 @@ export default function CameraScreen({ onClose, onPhotoTaken }: CameraScreenProp
                     }
 
                     onPhotoTaken(photo.uri)
-                    onClose()
                 }
             } catch (error) {
                 console.error("Error taking picture:", error)
@@ -80,46 +80,47 @@ export default function CameraScreen({ onClose, onPhotoTaken }: CameraScreenProp
 
     return (
         <SafeAreaView style={styles.container}>
-            <CameraView ref={cameraRef} style={styles.camera} facing={facing} flash={flash ? "on" : "off"}>
-                {/* Header Controls */}
-                <View style={styles.headerControls}>
-                    <TouchableOpacity onPress={onClose} style={styles.controlButton}>
-                        <X color="#FFFFFF" size={24} />
-                    </TouchableOpacity>
+            <CameraView ref={cameraRef} style={styles.absoluteFill} facing={facing} flash={flash ? "on" : "off"}>
 
-                    <TouchableOpacity onPress={toggleFlash} style={styles.controlButton}>
-                        {flash ? <Zap color="#FFD700" size={24} /> : <ZapOff color="#FFFFFF" size={24} />}
-                    </TouchableOpacity>
-                </View>
-
-                {/* Camera Guide Overlay */}
-                <View style={styles.overlay}>
-                    <View style={styles.focusArea}>
-                        <View style={styles.corner} />
-                        <View style={[styles.corner, styles.topRight]} />
-                        <View style={[styles.corner, styles.bottomLeft]} />
-                        <View style={[styles.corner, styles.bottomRight]} />
-                    </View>
-                    <Text style={styles.guideText}>Position the plant leaf within the frame</Text>
-                </View>
-
-                {/* Bottom Controls */}
-                <View style={styles.bottomControls}>
-                    <View style={styles.controlsRow}>
-                        <TouchableOpacity onPress={toggleCameraFacing} style={styles.secondaryButton}>
-                            <RotateCcw color="#FFFFFF" size={24} />
-                        </TouchableOpacity>
-
-                        <TouchableOpacity onPress={takePicture} style={styles.captureButton}>
-                            <View style={styles.captureButtonInner} />
-                        </TouchableOpacity>
-
-                        <View style={styles.placeholder} />
-                    </View>
-
-                    <Text style={styles.instructionText}>Tap to capture • Ensure good lighting</Text>
-                </View>
             </CameraView>
+            {/* Header Controls */}
+            <View style={styles.headerControls}>
+                <TouchableOpacity onPress={onClose} style={styles.controlButton}>
+                    <X color="#FFFFFF" size={24} />
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={toggleFlash} style={styles.controlButton}>
+                    {flash ? <Zap color="#FFD700" size={24} /> : <ZapOff color="#FFFFFF" size={24} />}
+                </TouchableOpacity>
+            </View>
+
+            {/* Camera Guide Overlay */}
+            <View style={styles.overlay}>
+                <View style={styles.focusArea}>
+                    <View style={styles.corner} />
+                    <View style={[styles.corner, styles.topRight]} />
+                    <View style={[styles.corner, styles.bottomLeft]} />
+                    <View style={[styles.corner, styles.bottomRight]} />
+                </View>
+                <Text style={styles.guideText}>Position the plant leaf within the frame</Text>
+            </View>
+
+            {/* Bottom Controls */}
+            <View style={styles.bottomControls}>
+                <View style={styles.controlsRow}>
+                    <TouchableOpacity onPress={toggleCameraFacing} style={styles.secondaryButton}>
+                        <RotateCcw color="#FFFFFF" size={24} />
+                    </TouchableOpacity>
+
+                    <TouchableOpacity onPress={takePicture} style={styles.captureButton}>
+                        <View style={styles.captureButtonInner} />
+                    </TouchableOpacity>
+
+                    <View style={styles.placeholder} />
+                </View>
+
+                <Text style={styles.instructionText}>Tap to capture • Ensure good lighting</Text>
+            </View>
         </SafeAreaView>
     )
 }
@@ -162,6 +163,9 @@ const styles = StyleSheet.create({
         alignItems: "center",
         paddingHorizontal: 20,
         paddingTop: 20,
+    },
+    absoluteFill: {
+        ...StyleSheet.absoluteFillObject,
     },
     controlButton: {
         width: 44,

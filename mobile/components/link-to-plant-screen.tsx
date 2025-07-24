@@ -102,7 +102,7 @@ export default function LinkToPlantScreen({
     return (
         <SafeAreaView style={styles.container}>
             {/* Header */}
-            <Header onBack={onBack}></Header>
+            <Header title='Link to Plant' onBack={onBack}></Header>
 
             <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
                 {/* Photo Preview */}
