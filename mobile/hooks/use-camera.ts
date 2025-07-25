@@ -43,8 +43,7 @@ export function useCamera(): CameraHookResult {
       const result = await ImagePicker.launchCameraAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
-        aspect: [1, 1],
-        quality: 0.9,
+       
         base64: false,
       })
 

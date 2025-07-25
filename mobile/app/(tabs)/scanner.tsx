@@ -276,12 +276,12 @@ export default function ScannerScreen() {
                 )}
             </Modal>
             {/* Scan Result Modal */}
-            <Modal visible={currentFlow === 'result'} animationType="slide" presentationStyle="fullScreen">
+            <Modal visible={currentFlow === 'result'} animationType="slide" presentationStyle="pageSheet">
                 {scanData?.scanResult && (
                     <ScanResultScreen
                         scanData={scanData}
                         onNewScan={handleNewScan}
-                        onBack={handleBackToOptions}
+                        onBack={handleBackToScanner}
                     />
                 )}
             </Modal>

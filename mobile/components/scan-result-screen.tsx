@@ -13,6 +13,7 @@ import {
     View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Header from './ui/header';
 
 interface ScanResultScreenProps {
     scanData: ScanData;
@@ -26,8 +27,6 @@ export default function ScanResultScreen({
     onBack,
 }: ScanResultScreenProps) {
     const { scanResult, analysisType, linkedPlantId, plantName, imageUri } = scanData;
-    console.log("plantId", linkedPlantId)
-    console.log("plantName", plantName)
     if (!scanResult) {
         return null;
     }
@@ -56,12 +55,11 @@ export default function ScanResultScreen({
     return (
         <SafeAreaView style={styles.container}>
             {/* Header */}
-            <View style={styles.header}>
-                <Text style={styles.headerTitle}>Scan Results</Text>
-                <TouchableOpacity style={styles.shareButton} onPress={handleShare}>
+            <Header onBack={onBack} title='Scan Results' isClose>
+                {/* <TouchableOpacity style={styles.shareButton} onPress={handleShare}>
                     <Share size={20} color="#6B7280" />
-                </TouchableOpacity>
-            </View>
+                </TouchableOpacity> */}
+            </Header>
 
             <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
                 {/* Scan Image */}
@@ -227,29 +225,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#F9FAFB',
-    },
-    header: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingHorizontal: 20,
-        paddingVertical: 16,
-        backgroundColor: '#FFFFFF',
-        borderBottomWidth: 1,
-        borderBottomColor: '#E5E7EB',
-    },
-    backButton: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        backgroundColor: '#F3F4F6',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    headerTitle: {
-        fontSize: 18,
-        fontWeight: '600',
-        color: '#111827',
     },
     shareButton: {
         width: 40,

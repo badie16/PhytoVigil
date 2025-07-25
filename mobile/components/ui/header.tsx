@@ -1,5 +1,5 @@
 import {
-    ArrowLeft,
+    ArrowLeft,X
 } from 'lucide-react-native';
 import React from 'react';
 import {
@@ -9,15 +9,26 @@ import {
     View,
 } from 'react-native';
 
-
-export default function Header({ onBack, title }: { onBack: () => void, title: string }) {
+export default function Header({
+    onBack,
+    title,
+    isClose = false,
+}: {
+    onBack: () => void,
+    title: string,
+    isClose?: boolean,
+}) {
     return (
         <View style={styles.header}>
             <TouchableOpacity
                 style={styles.backButton}
                 onPress={onBack}
             >
-                <ArrowLeft size={24} color="#111827" />
+                {isClose ? (
+                    <X size={24} color="#111827" />
+                ) : (
+                    <ArrowLeft size={24} color="#111827" />
+                )}
             </TouchableOpacity>
             <Text style={styles.headerTitle}>{title}</Text>
             <View style={styles.placeholder} />
