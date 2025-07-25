@@ -1,17 +1,28 @@
 import numpy as np
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, List, Optional
 import logging
 from datetime import datetime
 
 from .model_loader import model_loader
 from .image_preprocessor import image_preprocessor
-
+import google.generativeai as genai
+from app.core.config import settings
 logger = logging.getLogger(__name__)
 
 class PredictionService:
     """Service de prédiction utilisant le modèle ML chargé"""
     
     def __init__(self):
+        """Initialise le service avec la clé API de Gemini."""
+        try:
+            # Configurez l'API Gemini avec votre clé
+            genai.configure(api_key=settings.gemini_api_key)
+            # Créez le modèle
+            self.model = genai.GenerativeModel('gemini-1.5-flash-latest')
+            logger.info("Service de recommandation initialisé avec succès.")
+        except Exception as e:
+            logger.error(f"Erreur lors de l'initialisation du modèle Gemini: {e}")
+            self.model = None
         self.confidence_threshold = 0.7
         self.top_k_predictions = 3
         
@@ -87,8 +98,41 @@ class PredictionService:
             logger.error(f"Erreur lors de la détermination du type de résultat: {str(e)}")
             return "unknown"
     
-    def generate_recommendations(self, predicted_class: str, confidence: float, result_type: str, top_predictions: List[Dict]) -> str:
-        """Génère des recommandations personnalisées"""
+    def _get_disease_specific_recommendations(self, disease_name: str) -> str:
+        """
+        Génère des recommandations spécifiques pour une maladie en utilisant l'API Gemini.
+        """
+        if not self.model:
+            return "Le service de recommandation n'est pas disponible pour le moment."
+
+        # 1. Créer un prompt clair et détaillé pour l'API
+        prompt = (
+            f"Fournis des recommandations concises pour un agriculteur afin de traiter et prévenir la maladie '{disease_name}'. "
+            "Organise la réponse en deux sections claires et distinctes :\n"
+            "1. **Traitements suggérés** (incluant des options biologiques et chimiques si possible).\n"
+            "2. **Mesures préventives** (actions pour éviter de futures infections).\n"
+            "La réponse doit être en français, directe et facile à comprendre."
+        )
+
+        try:
+            # 2. Appeler l'API Gemini pour générer le contenu
+            response = self.model.generate_content(prompt)
+            
+            if response and response.text:
+                # 3. Retourner la réponse formatée
+                return f"Recommandations spécifiques pour: {disease_name}\n\n{response.text}"
+            else:
+                # 4. Gérer une réponse vide
+                logger.warning(f"Aucune recommandation générée par l'API pour '{disease_name}'.")
+                return f"Aucune recommandation spécifique n'a pu être trouvée pour '{disease_name}'."
+
+        except Exception as e:
+            # 4. Gérer les erreurs de l'API
+            logger.error(f"Erreur lors de l'appel à l'API Gemini pour '{disease_name}': {str(e)}")
+            return "Erreur lors de la récupération des recommandations spécifiques."
+
+    def generate_recommendations(self, predicted_class: str, confidence: float, result_type: str, top_predictions:list) -> str:
+        """Génère des recommandations personnalisées basées sur le résultat de la détection."""
         try:
             if result_type == "unknown":
                 return (
@@ -96,8 +140,7 @@ class PredictionService:
                     "Recommandations pour améliorer la détection:\n"
                     "• Prenez une photo plus claire avec un bon éclairage naturel\n"
                     "• Focalisez sur les feuilles présentant des symptômes\n"
-                    "• Évitez les photos floues ou trop sombres\n"
-                    "• Assurez-vous que la plante occupe la majeure partie de l'image"
+                    "• Évitez les photos floues ou trop sombres"
                 )
             
             if result_type == "healthy":
@@ -105,76 +148,30 @@ class PredictionService:
                     f"Plante en bonne santé détectée ({confidence:.1%}).\n"
                     "Recommandations de maintenance:\n"
                     "• Continuez vos soins habituels\n"
-                    "• Surveillez régulièrement l'apparition de nouveaux symptômes\n"
-                    "• Maintenez un arrosage et une fertilisation appropriés\n"
-                    "• Effectuez des contrôles préventifs périodiques"
+                    "• Surveillez régulièrement l'apparition de nouveaux symptômes"
                 )
             
             if result_type == "diseased":
-                # Recommandations spécifiques selon le type de maladie
-                disease_specific = self._get_disease_specific_recommendations(predicted_class)
-                
                 base_recommendations = (
                     f"Maladie détectée: {predicted_class} (confiance: {confidence:.1%})\n\n"
                     "Mesures immédiates:\n"
                     "• Isolez la plante pour éviter la propagation\n"
                     "• Retirez les parties visiblement affectées avec des outils désinfectés\n"
-                    "• Améliorez la ventilation autour de la plante\n"
-                    "• Évitez l'arrosage sur les feuilles\n\n"
+                    "• Améliorez la ventilation autour de la plante\n\n"
                 )
+                
+                # Appel à la fonction dynamique
+                disease_specific = self._get_disease_specific_recommendations(predicted_class)
                 
                 return base_recommendations + disease_specific
             
             return "Aucune recommandation spécifique disponible."
-            
+        
         except Exception as e:
             logger.error(f"Erreur lors de la génération des recommandations: {str(e)}")
-            return "Erreur lors de la génération des recommandations."
-    
-    def _get_disease_specific_recommendations(self, disease_name: str) -> str:
-        """Retourne des recommandations spécifiques selon la maladie"""
-        disease_lower = disease_name.lower()
+            return "Erreur critique lors de la génération des recommandations."
         
-        if "rust" in disease_lower or "rouille" in disease_lower:
-            return (
-                "Recommandations spécifiques pour la rouille:\n"
-                "• Appliquez un fongicide à base de cuivre\n"
-                "• Réduisez l'humidité ambiante\n"
-                "• Espacez mieux les plantes pour améliorer la circulation d'air"
-            )
-        
-        elif "blight" in disease_lower or "mildiou" in disease_lower:
-            return (
-                "Recommandations spécifiques pour le mildiou:\n"
-                "• Traitez avec un fongicide systémique\n"
-                "• Évitez l'arrosage par aspersion\n"
-                "• Améliorez le drainage du sol"
-            )
-        
-        elif "spot" in disease_lower or "tache" in disease_lower:
-            return (
-                "Recommandations spécifiques pour les taches foliaires:\n"
-                "• Retirez toutes les feuilles affectées\n"
-                "• Appliquez un traitement fongicide préventif\n"
-                "• Évitez la surpopulation des plantes"
-            )
-        
-        elif "mold" in disease_lower or "moisissure" in disease_lower:
-            return (
-                "Recommandations spécifiques pour les moisissures:\n"
-                "• Réduisez immédiatement l'humidité\n"
-                "• Améliorez la ventilation\n"
-                "• Appliquez un fongicide anti-moisissure"
-            )
-        
-        else:
-            return (
-                "Recommandations générales:\n"
-                "• Consultez un spécialiste en phytopathologie\n"
-                "• Documentez l'évolution des symptômes\n"
-                "• Considérez un traitement fongicide à large spectre"
-            )
-    
+
     def predict(self, image_bytes: bytes) -> Dict:
         """Pipeline complet de prédiction"""
         try:

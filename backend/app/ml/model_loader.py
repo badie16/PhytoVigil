@@ -19,7 +19,7 @@ class ModelLoader:
     def configure_paths(self, model_path: str = None, class_names_path: str = None):
         """Configure les chemins vers le modèle et les classes"""
         if model_path is None:
-            self.model_path = os.path.join("app", "ml", "plant_disease_model.h5")
+            self.model_path = os.path.join("app", "ml", "best_model.keras")
         else:
             self.model_path = model_path
             
