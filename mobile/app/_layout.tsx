@@ -49,7 +49,7 @@ export default function RootLayout() {
       <Stack
         screenOptions={{
           headerStyle: {
-            backgroundColor: "#ffffff",
+            backgroundColor: "#f00",
 
           },
           headerTintColor: "#00c896",
@@ -67,6 +67,7 @@ export default function RootLayout() {
         <Stack.Screen name="plants/[id]" options={{ title: "Plant details" }} />
         <Stack.Screen name="plants/add" options={{ headerShown: false }} />
         <Stack.Screen name="plants/scan/[id]" options={{ title: "Scan details" }} />
+        <Stack.Screen name="weather/details" options={{ headerShown: false }} />
       </Stack>
     </AuthProvider>
   )

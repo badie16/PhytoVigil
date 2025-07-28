@@ -14,15 +14,18 @@ import {
 import React, { useEffect, useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 
+
 import { useAuth } from '@/contexts/auth-context';
 import { PlantUtils } from "@/lib/constant/plantUtils";
 import plantService from "@/services/remote/plantService";
 import statsService from '@/services/remote/statsService';
 import type { Plant, ScanStats } from '@/types';
 import { router } from 'expo-router';
+import { useTips } from "@/hooks/useTips";
+import { TipCard } from "@/components/ui/tip-card";
+import { WeatherWidget } from "@/components/ui/weather-widget";
 
 export default function HomeScreen() {
-
     const { user, isLoading, logout } = useAuth();
     const [scanStats, setScanStats] = useState<ScanStats | null>(null);
     const [plants, setPlants] = useState<Plant[]>([])
@@ -63,14 +66,49 @@ export default function HomeScreen() {
         }
     }, [user, isLoading]);
 
+
+
+    const { tips, weather, refreshTips, dismissTip, executeTipAction } = useTips()
+
     const handleQuickAction = (action: string) => {
-        if (action === "scan") {
-            router.push("/scanner");
-        } else if (action === "add") {
-            router.push("/plants/add");
-        } else if (action === "report") {
-            router.push("/");
+        switch (action) {
+            case "scan":
+                router.push("/(tabs)/scanner")
+                break
+            case "add":
+                router.push("/plants/add")
+                break
+            case "report":
+                router.push("/(tabs)/plants")
+                break
+            default:
+                console.log("Quick action:", action)
         }
+    }
+
+    const handleTipAction = async (tip: any) => {
+        await executeTipAction(tip)
+
+        // Navigation spécifique selon l'action
+        if (tip.action?.type === "scan") {
+            router.push("/(tabs)/scanner")
+        } else if (tip.action?.type === "navigate") {
+            const screen = tip.action.data?.screen
+            switch (screen) {
+                case "add-plant":
+                    router.push("/plants/add")
+                    break
+                case "plants":
+                    router.push("/(tabs)/plants")
+                    break
+                default:
+                    console.log("Navigate to:", screen)
+            }
+        }
+    }
+
+    const onRefresh = async () => {
+        await Promise.all([refreshTips()])
     }
 
     const handleTipPress = (tip: string) => {
@@ -92,8 +130,8 @@ export default function HomeScreen() {
                         </TouchableOpacity>
                     </View>
 
-                    {/* Stats Cards */}
-                    <View className="flex-row justify-between mb-6">
+                    <View className="flex-row justify-between mb-4">
+                        {/* Stats Cards */}
                         <StatsCard
                             icon={<Leaf color="#00C896" size={24} />}
                             title="Plants Scanned"
@@ -109,8 +147,10 @@ export default function HomeScreen() {
                             trend={scanStats && scanStats.diseased_scans > 0 ? "up" : "down"}
                         />
                     </View>
+                    {/* Weather Widget */}
+                    {weather && <WeatherWidget weather={weather} />}
                 </View>
-
+                
                 {/* Quick Actions */}
                 <View className="px-6 mb-8">
                     <Text className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</Text>
@@ -137,6 +177,30 @@ export default function HomeScreen() {
                             onPress={() => handleQuickAction("report")}
                         />
                     </View>
+                </View>
+
+
+                {/* Today's Tips Section */}
+                <View className="px-6 mb-8">
+                    <View className="flex-row items-center justify-between mb-4">
+                        <Text className="text-lg font-semibold text-gray-900">Today's Tips</Text>
+                        <TouchableOpacity onPress={refreshTips}>
+                            <Text className="text-primary font-medium">Refresh</Text>
+                        </TouchableOpacity>
+                    </View>
+
+                    {loading ? (
+                        <View className="bg-gray-50 rounded-2xl p-6 items-center">
+                            <Text className="text-gray-500">Loading personalized tips...</Text>
+                        </View>
+                    ) : tips.length > 0 ? (
+                        tips.map((tip) => <TipCard key={tip.id} tip={tip} onAction={handleTipAction} onDismiss={dismissTip} />)
+                    ) : (
+                        <View className="bg-gray-50 rounded-2xl p-6 items-center">
+                            <Text className="text-gray-500">No tips available right now</Text>
+                            <Text className="text-xs text-gray-400 mt-1">Pull to refresh</Text>
+                        </View>
+                    )}
                 </View>
 
                 {/* Recent Activity */}
@@ -171,7 +235,7 @@ export default function HomeScreen() {
                 {/* Today's Tips */}
                 <View className="px-6 mb-8">
                     <Text className="text-lg font-semibold text-gray-900 mb-4">Today's Tips</Text>
-                    <TipCard
+                    <TipCarda
                         icon={<Sun color="#FFB347" size={24} />}
                         title="Perfect Weather for Scanning"
                         description="Natural lighting is ideal for accurate plant disease detection. Take photos outdoors when possible."
@@ -288,7 +352,7 @@ function ActivityItem({
     )
 }
 
-function TipCard({
+function TipCarda({
     icon,
     title,
     description,
