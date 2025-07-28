@@ -4,7 +4,7 @@ from fastapi.security import OAuth2PasswordBearer
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from app.database import get_db, engine, Base
-from app.routes import auth, user, plants, diseases, scans, files,ml
+from app.routes import auth, user, plants, diseases, scans, files,ml,stats
 from app.core.config import settings # Importez les paramètres de configuration
 from app.core.security import get_current_user
 
@@ -34,6 +34,8 @@ app.include_router(diseases.router, prefix="/api/diseases", tags=["Diseases"])
 app.include_router(scans.router, prefix="/api/scans", tags=["Scans"])
 app.include_router(files.router, prefix="/api/files", tags=["File Uploads"]) 
 app.include_router(ml.router, prefix="/api/ml", tags=["Machine Learning"])
+app.include_router(stats.router, prefix="/api/stats", tags=["Statistics"])
+
 @app.get("/")
 async def root():
     return  {
@@ -45,3 +47,4 @@ async def root():
 @app.get("/protected-route")
 async def protected_route(current_user: user = Depends(get_current_user)):
     return {"message": f"Hello {current_user.email}, you are authenticated!"}
+
