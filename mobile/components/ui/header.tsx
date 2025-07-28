@@ -1,5 +1,5 @@
 import {
-    ArrowLeft,X
+    ArrowLeft, X
 } from 'lucide-react-native';
 import React from 'react';
 import {
@@ -19,20 +19,27 @@ export default function Header({
     isClose?: boolean,
 }) {
     return (
-        <View style={styles.header}>
-            <TouchableOpacity
-                style={styles.backButton}
-                onPress={onBack}
-            >
-                {isClose ? (
-                    <X size={24} color="#111827" />
-                ) : (
+        isClose ? (
+            <View className="flex-row items-center justify-between p-6 border-b border-gray-100">
+                <Text className="text-xl font-bold text-gray-900">{title}</Text>
+                <TouchableOpacity
+                    onPress={onBack}
+                >
+                    <X color="#111827" size={24} />
+                </TouchableOpacity>
+            </View>
+        ) : (
+            <View style={styles.header}>
+                <TouchableOpacity
+                    style={styles.backButton}
+                    onPress={onBack}
+                >
                     <ArrowLeft size={24} color="#111827" />
-                )}
-            </TouchableOpacity>
-            <Text style={styles.headerTitle}>{title}</Text>
-            <View style={styles.placeholder} />
-        </View>
+                </TouchableOpacity>
+                <Text style={styles.headerTitle}>{title}</Text>
+                <View style={styles.placeholder} />
+            </View>
+        )
     );
 }
 
@@ -42,7 +49,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         paddingHorizontal: 20,
-        paddingVertical: 16,
+        paddingVertical: 14,
         backgroundColor: '#FFFFFF',
         borderBottomWidth: 1,
         borderBottomColor: '#E5E7EB',
