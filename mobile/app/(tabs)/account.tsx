@@ -8,22 +8,36 @@ import { useAuth } from '@/contexts/auth-context';
 import { router } from 'expo-router';
 import { Bell, ChevronRight, CircleHelp as HelpCircle, Leaf, LogOut, MapPin, Settings, Shield, User } from 'lucide-react-native';
 import type React from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import statsService from '@/services/remote/statsService';
+import type { ScanStats } from '@/types';
 
 export default function AccountScreen() {
     const { user, isLoading, logout } = useAuth();
-    if (!user && !isLoading) {
-        router.replace("/auth/login")
-    }
+    const [scanStats, setScanStats] = useState<ScanStats | null>(null);
+    const [statsLoading, setStatsLoading] = useState(true);
+    useEffect(() => {
+        if (!user && !isLoading) {
+            router.replace("/auth/login");
+        } else if (user) {
+            // Récupérer les stats globales de scan
+            setStatsLoading(true);
+            statsService.getGlobalScanStats()
+                .then((stats) => setScanStats(stats))
+                .catch(() => setScanStats(null))
+                .finally(() => setStatsLoading(false));
+        }
+    }, [user, isLoading]);
+
     // Modal states
     const [showNotificationModal, setShowNotificationModal] = useState(false);
     const [showLocationModal, setShowLocationModal] = useState(false);
     const [showPrivacyModal, setShowPrivacyModal] = useState(false);
     const [showAppSettingsModal, setShowAppSettingsModal] = useState(false);
     const [showHelpModal, setShowHelpModal] = useState(false);
-
+    
     // Settings states
     const [notificationSettings, setNotificationSettings] = useState({
         pushNotifications: true,
@@ -92,14 +106,13 @@ export default function AccountScreen() {
                         <StatsCard
                             icon={<Leaf color="#00C896" size={24} />}
                             title="Plants Scanned"
-                            // value={user.plantsScanned.toString()}
-                            value='2'
+                            value={scanStats?.total_plantScaned?.toString() ?? '0'}
                         />
                         <StatsCard
                             icon={<Shield color="#00C896" size={24} />}
                             title="Diseases Detected"
-                            // value={user.diseasesDetected.toString()}
-                            value='2'
+                            
+                            value={scanStats?.diseased_scans?.toString() ?? '0'}
                         />
                     </View>
                 </View>
