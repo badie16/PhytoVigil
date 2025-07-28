@@ -1,22 +1,76 @@
-import React from "react"
-import { View, Text, ScrollView, TouchableOpacity, Image } from "react-native"
-import { SafeAreaView } from "react-native-safe-area-context"
 import {
-    Camera,
-    Leaf,
-    TrendingUp,
-    Shield,
-    Bell,
-    ChevronRight,
-    Sun,
-    Droplets,
     AlertTriangle,
-    CheckCircle
-} from "lucide-react-native"
+    Bell,
+    Camera,
+    CheckCircle,
+    ChevronRight,
+    Droplets,
+    Leaf,
+    Shield,
+    Sun,
+    TrendingDown,
+    TrendingUp
+} from "lucide-react-native";
+import React, { useEffect, useState } from "react";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+
+import { useAuth } from '@/contexts/auth-context';
+import { PlantUtils } from "@/lib/constant/plantUtils";
+import plantService from "@/services/remote/plantService";
+import statsService from '@/services/remote/statsService';
+import type { Plant, ScanStats } from '@/types';
+import { router } from 'expo-router';
 
 export default function HomeScreen() {
+
+    const { user, isLoading, logout } = useAuth();
+    const [scanStats, setScanStats] = useState<ScanStats | null>(null);
+    const [plants, setPlants] = useState<Plant[]>([])
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
+    const [overallHealthScore, setOverallHealthScore] = useState(Number)
+    const [plantsScannedThisWeek, setPlantsScannedThisWeek] = useState<number>(0);
+
+    useEffect(() => {
+        setPlantsScannedThisWeek(PlantUtils.getPlantsScannedThisWeek(plants));
+    }, [plants]);
+    useEffect(() => {
+        if (!user && !isLoading) {
+            router.replace("/auth/login");
+        } else if (user) {
+            setLoading(true);
+            try {
+                const fetch = async () => {
+                    const data = await plantService.getUserPlants();
+                    const stats = await statsService.getGlobalScanStats();
+                    setPlants(data);
+                    setScanStats(stats);
+                    PlantUtils.getPlantsScannedThisWeek(plants)
+                };
+                fetch()
+            } catch (err: any) {
+                console.log(err)
+                setError(err.message)
+            } finally {
+                setLoading(false)
+            }
+            if (scanStats) {
+                const score = scanStats.total_scans > 0 ? Math.round((scanStats.healthy_scans / scanStats.total_plantScaned) * 100) : 0;
+                setOverallHealthScore(score);
+            } else {
+                setOverallHealthScore(0);
+            }
+        }
+    }, [user, isLoading]);
+
     const handleQuickAction = (action: string) => {
-        console.log("Quick action:", action)
+        if (action === "scan") {
+            router.push("/scanner");
+        } else if (action === "add") {
+            router.push("/plants/add");
+        } else if (action === "report") {
+            router.push("/");
+        }
     }
 
     const handleTipPress = (tip: string) => {
@@ -43,16 +97,16 @@ export default function HomeScreen() {
                         <StatsCard
                             icon={<Leaf color="#00C896" size={24} />}
                             title="Plants Scanned"
-                            value="24"
-                            subtitle="+3 this week"
-                            trend="up"
+                            value={scanStats?.total_plantScaned?.toString() ?? '0'}
+                            subtitle={scanStats ? `+${plantsScannedThisWeek} this week` : ''}
+                            trend={plantsScannedThisWeek > 0 ? "up" : "down"}
                         />
                         <StatsCard
                             icon={<Shield color="#FF6B6B" size={24} />}
                             title="Issues Found"
-                            value="3"
-                            subtitle="2 resolved"
-                            trend="down"
+                            value={scanStats?.diseased_scans?.toString() ?? '0'}
+                            subtitle={scanStats ? `${scanStats.healthy_scans} healthy` : ''}
+                            trend={scanStats && scanStats.diseased_scans > 0 ? "up" : "down"}
                         />
                     </View>
                 </View>
@@ -131,13 +185,17 @@ export default function HomeScreen() {
                     <View className="bg-surface rounded-2xl p-4">
                         <View className="flex-row items-center justify-between mb-3">
                             <Text className="text-base font-medium text-gray-900">Overall Health Score</Text>
-                            <Text className="text-2xl font-bold text-primary">87%</Text>
+                            <Text className="text-2xl font-bold text-primary">
+                                {overallHealthScore}
+                            </Text>
                         </View>
                         <View className="w-full bg-gray-200 rounded-full h-3 mb-3">
-                            <View className="bg-primary h-3 rounded-full" style={{ width: '87%' }} />
+                            <View className="bg-primary h-3 rounded-full" style={{
+                                width: overallHealthScore
+                            }} />
                         </View>
                         <Text className="text-sm text-secondary">
-                            Great job! Your plants are mostly healthy. Keep monitoring regularly.
+                            {getHealthMessage(overallHealthScore)}
                         </Text>
                     </View>
                 </View>
@@ -163,11 +221,11 @@ function StatsCard({
         <View className="bg-surface rounded-2xl p-4 flex-1 mx-1">
             <View className="flex-row items-center justify-between mb-2">
                 {icon}
-                <TrendingUp
-                    color={trend === 'up' ? '#00C896' : '#FF6B6B'}
-                    size={16}
-                    style={{ transform: [{ rotate: trend === 'down' ? '180deg' : '0deg' }] }}
-                />
+                {trend === 'up' ? (
+                    <TrendingUp color="#00C896" size={16} />
+                ) : (
+                    <TrendingDown color="#FF6B6B" size={16} />
+                )}
             </View>
             <Text className="text-2xl font-bold text-gray-900 mb-1">{value}</Text>
             <Text className="text-xs font-medium text-gray-900 mb-1">{title}</Text>
@@ -257,4 +315,12 @@ function TipCard({
             <ChevronRight color="#8E8E93" size={20} />
         </TouchableOpacity>
     )
+}
+
+function getHealthMessage(score: number): string {
+    if (score >= 90) return "🌿 Excellent ! Vos plantes sont en excellente santé. Continuez ainsi !";
+    if (score >= 75) return "✅ Bon travail ! La majorité de vos plantes sont saines. Restez vigilant.";
+    if (score >= 50) return "⚠️ Attention ! Plusieurs plantes sont malades. Pensez à les traiter.";
+    if (score >= 25) return "🧪 État critique. La moitié de vos plantes ou plus sont malades. Agissez vite.";
+    return "🚨 Urgent ! La plupart de vos plantes sont en mauvais état. Consultez les recommandations.";
 }
