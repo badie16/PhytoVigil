@@ -130,4 +130,18 @@ export class PlantUtils {
         return [r, g, b];
     }
 
+    static getPlantsScannedThisWeek(plants: Plant[]): number {
+        const now = new Date();
+        const startOfWeek = new Date(now);
+        startOfWeek.setDate(now.getDate() - now.getDay()); // dim (0) début de semaine
+
+        return plants.filter(plant => {
+            if (!plant.lastScanned) return false;
+            const scannedDate = new Date(plant.lastScanned);
+            return scannedDate >= startOfWeek && scannedDate <= now;
+        }).length;
+    }
+
+
+
 }

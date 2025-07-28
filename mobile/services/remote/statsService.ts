@@ -1,32 +1,7 @@
 import { config } from "@/lib/config/env";
 import { storageService } from "../local/storage";
+import type { ScanStats, PlantStats, DiseaseStats } from "@/types";
 
-export interface ScanStats {
-    total_scans: number;
-    total_plantScaned: number;
-    healthy_scans: number;
-    diseased_scans: number;
-    unknown_scans: number;
-    most_common_disease?: string;
-    last_scan_date?: string;
-    [key: string]: any;
-}
-
-export interface PlantStats {
-    plant_id: number;
-    plant_name: string;
-    total_scans: number;
-    healthy_scans: number;
-    diseased_scans: number;
-    unknown_scans: number;
-    last_scan_date?: string;
-    [key: string]: any;
-}
-export interface DiseaseStats {
-    disease_name: string;
-    occurrence_count: number;
-    percentage?: number;
-}
 class StatsService {
     private async getAuthHeaders() {
         const token = await storageService.getSecureItem(config.TOKEN_KEY)
