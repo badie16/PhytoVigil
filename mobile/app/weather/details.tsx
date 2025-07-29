@@ -1,21 +1,35 @@
 import Header from '@/components/ui/header'
-import type { WeatherData } from '@/services/remote/weatherService'
+import { useTips } from '@/hooks/useTips'
 import { weatherService } from '@/services/remote/weatherService'
 import { BlurView } from 'expo-blur'
 import { LinearGradient } from 'expo-linear-gradient'
-import { router, useLocalSearchParams } from 'expo-router'
+import { router } from 'expo-router'
 import { Droplets, Eye, Gauge, MapPin, Wind } from 'lucide-react-native'
 import React from 'react'
 import { Animated, Dimensions, Text, View } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context'
 const { width } = Dimensions.get('window')
 
 export default function WeatherDetailsScreen() {
-    const { weatherData } = useLocalSearchParams()
-    const weather: WeatherData = JSON.parse(weatherData as string)
+    const { weather, loading } = useTips()
     const scrollY = new Animated.Value(0)
 
+    // Handle loading or null weather state
+    if (loading || !weather) {
+        // You might want to show a loading spinner or fallback UI here
+        return (
+            <SafeAreaView className="flex-1 bg-white">
+                <Header title="Weather Details" onBack={() => router.back()} />
+                <View className="flex-1 items-center justify-center">
+                    <Text className="text-gray-500">Loading weather data...</Text>
+                </View>
+            </SafeAreaView>
+        )
+    }
     const weatherIcon = weatherService.getWeatherIcon(weather.icon)
+    const AnimatedIcon = weather.AnimatedIconComponent
+    console.log("wa : ", weather)
+    console.log("icon : ", AnimatedIcon)
     const risk = weatherService.getWeatherRisk(weather)
 
     const getRiskColors = () => {
@@ -148,7 +162,9 @@ export default function WeatherDetailsScreen() {
                                     overflow: 'hidden'
                                 }}
                             >
-                                <Text style={{ fontSize: 50 }}>{weatherIcon}</Text>
+                                {AnimatedIcon && (
+                                    <AnimatedIcon width={65} height={65} />
+                                )}
                             </BlurView>
 
                             <Text style={{
