@@ -49,7 +49,7 @@ def create_activity(db: Session, activity: ActivityCreate, user_id: int) -> Acti
         plant_id=activity.plant_id,
         scan_id=activity.scan_id,
         status=activity.status or "active",
-        metadata=activity.metadata
+        meta_data=activity.meta_data
     )
     
     db.add(db_activity)
@@ -134,7 +134,7 @@ def create_scan_activity(db: Session, user_id: int, scan_id: int, plant_id: Opti
         description=description,
         plant_id=plant_id or scan.plant_id,
         scan_id=scan_id,
-        metadata={
+        meta_data={
             "result_type": scan.result_type,
             "confidence_score": float(scan.confidence_score) if scan.confidence_score else None,
             "diseases": scan.detected_diseases
@@ -156,7 +156,7 @@ def create_plant_activity(db: Session, user_id: int, plant_id: int) -> Activity:
         title="New Plant Added",
         description=f"Added {plant.name} to your garden",
         plant_id=plant_id,
-        metadata={
+        meta_data={
             "plant_type": plant.type,
             "variety": plant.variety,
             "location": plant.location
@@ -172,7 +172,7 @@ def create_disease_activity(db: Session, user_id: int, plant_id: int, disease_na
         title=f"Disease Alert: {disease_name}",
         description=f"Detected {disease_name} with {confidence:.1%} confidence",
         plant_id=plant_id,
-        metadata={
+        meta_data={
             "disease_name": disease_name,
             "confidence": confidence,
             "severity": "high" if confidence > 0.8 else "medium" if confidence > 0.6 else "low"
