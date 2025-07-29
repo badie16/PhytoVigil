@@ -14,7 +14,7 @@ class Activity(Base):
     plant_id = Column(Integer, ForeignKey("plants.id", ondelete="CASCADE"))
     scan_id = Column(Integer, ForeignKey("plant_scans.id", ondelete="CASCADE"))
     status = Column(String(50), default="active")  # active, archived, dismissed
-    metadata = Column(JSON)  # Additional data like disease info, treatment details, etc.
+    meta_data = Column(JSON)  # Additional data like disease info, treatment details, etc.
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     
