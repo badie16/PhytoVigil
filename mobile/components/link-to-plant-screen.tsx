@@ -1,4 +1,4 @@
-import { PlantUtils } from '@/lib/constant/plantUtils';
+import { PlantUtils } from '@/lib/utils/plantUtils';
 import { DateUtils } from '@/lib/utils/dateUtils';
 import plantService from '@/services/remote/plantService';
 import { Plant } from '@/types';

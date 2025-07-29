@@ -1,5 +1,5 @@
 import type { ScanData } from '@/app/(tabs)/scanner';
-import { PlantUtils } from '@/lib/constant/plantUtils';
+import { PlantUtils } from '@/lib/utils/plantUtils';
 import { DateUtils } from '@/lib/utils/dateUtils';
 import { Activity, Calendar, Camera, Clock, Download, Leaf, Link2, Zap } from 'lucide-react-native';
 import React from 'react';
