@@ -37,25 +37,25 @@ export default function WeatherDetailsScreen() {
         switch (risk.level) {
             case "high":
                 return {
-                    bg: ['#FEF2F2', '#FEE2E2'],
+                    bg: ['#FEF2F2', '#FEE2E2', '#FCA5A5'],
                     border: '#FECACA',
                     text: '#991B1B'
                 }
             case "medium":
                 return {
-                    bg: ['#FFFBEB', '#FEF3C7'],
+                    bg: ['#FFFBEB', '#FEF3C7', '#FDE68A'],
                     border: '#FDE68A',
                     text: '#92400E'
                 }
             case "low":
                 return {
-                    bg: ['#F0FDF4', '#DCFCE7'],
+                    bg: ['#F0FDF4', '#DCFCE7', '#A7F3D0'],
                     border: '#BBF7D0',
                     text: '#166534'
                 }
             default:
                 return {
-                    bg: ['#F9FAFB', '#F3F4F6'],
+                    bg: ['#F9FAFB', '#F3F4F6', '#E5E7EB'],
                     border: '#E5E7EB',
                     text: '#374151'
                 }
@@ -270,7 +270,7 @@ export default function WeatherDetailsScreen() {
                     </Text>
 
                     <LinearGradient
-                        colors={getRiskColors().bg}
+                        colors={getRiskColors().bg as [string, string, string]}
                         start={{ x: 0, y: 0 }}
                         end={{ x: 1, y: 1 }}
                         style={{
