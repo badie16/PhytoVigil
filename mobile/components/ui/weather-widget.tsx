@@ -53,7 +53,7 @@ export function WeatherWidget({ weather }: WeatherWidgetProps) {
                             source={lottieSource} // Pass the JSON data to the source prop
                             autoPlay={true}      // Start animation automatically
                             loop={true}          // Loop the animation
-                            style={{ width: (55), height: (55) }} // Apply size here
+                            style={{ width: (50), height: (50) }} // Apply size here
                             speed={4}
                         />
                     ) : (
