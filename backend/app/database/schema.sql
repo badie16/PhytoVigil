@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS activities (
     plant_id INTEGER REFERENCES plants(id) ON DELETE CASCADE,
     scan_id INTEGER REFERENCES plant_scans(id) ON DELETE CASCADE,
     status VARCHAR(50) DEFAULT 'active',
-    metadata JSONB,
+    meta_data JSONB,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
