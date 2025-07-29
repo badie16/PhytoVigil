@@ -16,6 +16,7 @@ import {
     View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Header from '@/components/ui/header';
 
 const { width } = Dimensions.get('window');
 
@@ -78,7 +79,7 @@ export default function ScanDetailScreen() {
     }
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             {/* Header */}
             {/* <View style={styles.header}>
                 <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
@@ -89,6 +90,10 @@ export default function ScanDetailScreen() {
                     <Share size={20} color="#6B7280" />
                 </TouchableOpacity>
             </View> */}
+            <Header
+                onBack={router.back}
+                title="Scan Details"
+            />
 
             <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
                 {/* Scan Image */}
@@ -302,7 +307,7 @@ export default function ScanDetailScreen() {
                     </View>
                 </View>
             </ScrollView>
-        </View>
+        </SafeAreaView>
     );
 }
 

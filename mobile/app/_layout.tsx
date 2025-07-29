@@ -64,10 +64,10 @@ export default function RootLayout() {
         <Stack.Screen name="auth/login" options={{ headerShown: false }} />
         <Stack.Screen name="auth/register" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="diseases/[name]" options={{ title: "Disease details" }} />
-        <Stack.Screen name="plants/[id]" options={{ title: "Plant details" }} />
+        <Stack.Screen name="diseases/[name]" options={{ headerShown: false }} />
+        <Stack.Screen name="plants/[id]" options={{ headerShown: false }} />
         <Stack.Screen name="plants/add" options={{ headerShown: false }} />
-        <Stack.Screen name="plants/scan/[id]" options={{ title: "Scan details" }} />
+        <Stack.Screen name="plants/scan/[id]" options={{ headerShown: false }} />
         <Stack.Screen name="weather/details" options={{ headerShown: false }} />
       </Stack>
     </AuthProvider>

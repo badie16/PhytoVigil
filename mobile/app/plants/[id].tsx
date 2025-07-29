@@ -19,6 +19,8 @@ import {
     TouchableOpacity,
     View
 } from 'react-native';
+import Header from '@/components/ui/header';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function PlantDetailScreen() {
     const router = useRouter();
@@ -63,7 +65,11 @@ export default function PlantDetailScreen() {
         );
     }
     return (
-        <View className="flex-1 bg-white">
+        <SafeAreaView className="flex-1 bg-white">
+            <Header
+                onBack={router.back}
+                title="Plant details"
+            />
             <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
                 {/* Plant Image & Basic Info */}
                 <View className="relative h-72">
@@ -193,7 +199,7 @@ export default function PlantDetailScreen() {
                     </View>
                 </View>
             </ScrollView>
-        </View>
+        </SafeAreaView>
     );
 }
 

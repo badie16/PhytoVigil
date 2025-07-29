@@ -1,3 +1,4 @@
+import Header from '@/components/ui/header';
 import LoadingSpinner from '@/components/ui/loading-spinner';
 import { getSeverityConfig } from '@/lib/constant/severity';
 import diseaseService from '@/services/remote/diseaseService';
@@ -14,6 +15,7 @@ import {
     Text,
     View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 const { width } = Dimensions.get('window');
 export default function DiseaseInfoPage() {
     const { name } = useLocalSearchParams()
@@ -40,7 +42,8 @@ export default function DiseaseInfoPage() {
         );
     }
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
+            <Header onBack={router.back} title="Disease details" />
             <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
                 {/* Header avec image */}
                 <View style={styles.header}>
@@ -105,14 +108,14 @@ export default function DiseaseInfoPage() {
                     </View>
                 </View>
             </ScrollView>
-        </View>
+        </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F3F4F6',
+        backgroundColor: '#fff',
     },
     scrollContainer: {
         flex: 1,
