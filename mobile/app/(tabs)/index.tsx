@@ -24,6 +24,8 @@ import { router } from 'expo-router';
 import { useTips } from "@/hooks/useTips";
 import { TipCard } from "@/components/ui/tip-card";
 import { WeatherWidget } from "@/components/ui/weather-widget";
+import { useActivities } from "@/hooks/useActivities";
+import { ActivityItem } from "@/components/ui/activity-item";
 
 export default function HomeScreen() {
     const { user, isLoading, logout } = useAuth();
@@ -33,7 +35,8 @@ export default function HomeScreen() {
     const [error, setError] = useState<string | null>(null)
     const [overallHealthScore, setOverallHealthScore] = useState(Number)
     const [plantsScannedThisWeek, setPlantsScannedThisWeek] = useState<number>(0);
-
+    const { tips, weather, refreshTips, dismissTip, executeTipAction } = useTips()
+    const { activities, loading: activitiesLoading, refreshActivities } = useActivities(5)
     useEffect(() => {
         setPlantsScannedThisWeek(PlantUtils.getPlantsScannedThisWeek(plants));
     }, [plants]);
@@ -68,7 +71,6 @@ export default function HomeScreen() {
 
 
 
-    const { tips, weather, refreshTips, dismissTip, executeTipAction } = useTips()
 
     const handleQuickAction = (action: string) => {
         switch (action) {
@@ -111,8 +113,12 @@ export default function HomeScreen() {
         await Promise.all([refreshTips()])
     }
 
-    const handleTipPress = (tip: string) => {
-        console.log("Tip pressed:", tip)
+    const handleActivityPress = (activity: any) => {
+        if (activity.type === "scan" && activity.scanId) {
+            router.push(`/plants/scan/${activity.scanId}`)
+        } else if (activity.plantId) {
+            router.push(`/plants/${activity.plantId}`)
+        }
     }
 
     return (
@@ -188,25 +194,25 @@ export default function HomeScreen() {
                             <Text className="text-primary font-medium">View All</Text>
                         </TouchableOpacity>
                     </View>
-
-                    <ActivityItem
-                        icon={<CheckCircle color="#00C896" size={20} />}
-                        title="Tomato Plant - Healthy"
-                        subtitle="Scanned 2 hours ago"
-                        time="2h"
-                    />
-                    <ActivityItem
-                        icon={<AlertTriangle color="#FF6B6B" size={20} />}
-                        title="Rose Bush - Late Blight"
-                        subtitle="Treatment recommended"
-                        time="1d"
-                    />
-                    <ActivityItem
-                        icon={<Droplets color="#4ECDC4" size={20} />}
-                        title="Watering reminder sent"
-                        subtitle="For 3 plants"
-                        time="2d"
-                    />
+                    {activitiesLoading ? (
+                        <View className="bg-gray-50 rounded-2xl p-6 items-center">
+                            <Text className="text-gray-500">Loading activities...</Text>
+                        </View>
+                    ) : activities.length > 0 ? (
+                        <View className="bg-white rounded-2xl border border-gray-100">
+                            {activities.map((activity, index) => (
+                                <View key={activity.id}>
+                                    <ActivityItem activity={activity} onPress={handleActivityPress} showChevron={true} />
+                                    {index < activities.length - 1 && <View className="h-px bg-gray-100 ml-13" />}
+                                </View>
+                            ))}
+                        </View>
+                    ) : (
+                        <View className="bg-gray-50 rounded-2xl p-6 items-center">
+                            <Text className="text-gray-500">No recent activity</Text>
+                            <Text className="text-xs text-gray-400 mt-1">Start scanning plants to see activity</Text>
+                        </View>
+                    )}
                 </View>
 
                 {/* Today's Tips */}
@@ -316,30 +322,30 @@ function QuickActionCard({
     )
 }
 
-function ActivityItem({
-    icon,
-    title,
-    subtitle,
-    time
-}: {
-    icon: React.ReactNode
-    title: string
-    subtitle: string
-    time: string
-}) {
-    return (
-        <View className="flex-row items-center py-3 border-b border-gray-100 last:border-b-0">
-            <View className="w-10 h-10 bg-surface rounded-full items-center justify-center mr-3">
-                {icon}
-            </View>
-            <View className="flex-1">
-                <Text className="text-base font-medium text-gray-900">{title}</Text>
-                <Text className="text-sm text-secondary">{subtitle}</Text>
-            </View>
-            <Text className="text-xs text-secondary">{time}</Text>
-        </View>
-    )
-}
+// function ActivityItem({
+//     icon,
+//     title,
+//     subtitle,
+//     time
+// }: {
+//     icon: React.ReactNode
+//     title: string
+//     subtitle: string
+//     time: string
+// }) {
+//     return (
+//         <View className="flex-row items-center py-3 border-b border-gray-100 last:border-b-0">
+//             <View className="w-10 h-10 bg-surface rounded-full items-center justify-center mr-3">
+//                 {icon}
+//             </View>
+//             <View className="flex-1">
+//                 <Text className="text-base font-medium text-gray-900">{title}</Text>
+//                 <Text className="text-sm text-secondary">{subtitle}</Text>
+//             </View>
+//             <Text className="text-xs text-secondary">{time}</Text>
+//         </View>
+//     )
+// }
 
 function getHealthMessage(score: number): string {
     if (score >= 90) return "🌿 Excellent ! Vos plantes sont en excellente santé. Continuez ainsi !";
