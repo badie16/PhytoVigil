@@ -1,19 +1,17 @@
-// Exemple de votre WeatherIconMap avec les fichiers Lottie
-// NOTE: Vous devrez ajuster les chemins et les noms de fichiers JSON !
-const ClearDayLottie = require('../../assets/images/Weather/animated/clear_day.json');
-const ClearNightLottie = require('../../assets/images/Weather/animated/clear_night.json');
+const ClearDayLottie = require('../../assets/images/Weather/animated/clear-day.json');
+const ClearNightLottie = require('../../assets/images/Weather/animated/clear-night.json');
 const CloudyLottie = require('../../assets/images/Weather/animated/cloudy.json');
 const DrizzleLottie = require('../../assets/images/Weather/animated/drizzle.json');
-const FogDayLottie = require('../../assets/images/Weather/animated/fog_day.json');
-const FogNightLottie = require('../../assets/images/Weather/animated/fog_night.json');
-const OvercastDayLottie = require('../../assets/images/Weather/animated/overcast_day.json');
-const OvercastNightLottie = require('../../assets/images/Weather/animated/overcast_night.json');
-const PartlyCloudyDayLottie = require('../../assets/images/Weather/animated/partly_cloudy_day.json');
-const PartlyCloudyNightLottie = require('../../assets/images/Weather/animated/partly_cloudy_night.json');
+const FogDayLottie = require('../../assets/images/Weather/animated/fog-day.json');
+const FogNightLottie = require('../../assets/images/Weather/animated/fog-night.json');
+const OvercastDayLottie = require('../../assets/images/Weather/animated/overcast-day.json');
+const OvercastNightLottie = require('../../assets/images/Weather/animated/overcast-night.json');
+const PartlyCloudyDayLottie = require('../../assets/images/Weather/animated/partly-cloudy-day.json');
+const PartlyCloudyNightLottie = require('../../assets/images/Weather/animated/partly-cloudy-night.json');
 const RainLottie = require('../../assets/images/Weather/animated/rain.json');
 const SnowLottie = require('../../assets/images/Weather/animated/snow.json');
-const ThunderstormsDayLottie = require('../../assets/images/Weather/animated/thunderstorms_day.json');
-const ThunderstormsNightLottie = require('../../assets/images/Weather/animated/thunderstorms_night.json');
+const ThunderstormsDayLottie = require('../../assets/images/Weather/animated/thunderstorms-day.json');
+const ThunderstormsNightLottie = require('../../assets/images/Weather/animated/thunderstorms-night.json');
 
 export const WeatherAnimationMap: { [key: string]: any } = {
     "01d": ClearDayLottie,
@@ -54,3 +52,4 @@ export {
     ThunderstormsDayLottie,
     ThunderstormsNightLottie
 };
+
