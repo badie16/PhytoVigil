@@ -21,7 +21,7 @@ interface ActivityItemProps {
 export function ActivityItem({ activity, onPress, showChevron = false }: ActivityItemProps) {
     const iconName = getActivityIcon(activity.type)
     const iconColor = getActivityColor(activity.status)
-    const timeAgo = DateUtils.formatDateFlexible(activity.timestamp)
+    const timeAgo = DateUtils.formatDateFlexible(activity.created_at ?? "")
 
     const renderIcon = () => {
         const iconProps = { color: iconColor, size: 20 }

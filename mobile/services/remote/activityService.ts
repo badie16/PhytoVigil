@@ -6,7 +6,7 @@ export interface Activity {
     type: "scan" | "plant_added" | "treatment" | "watering" | "fertilizing" | "note_added"
     title: string
     description: string
-    timestamp: string
+    created_at?: string
     plantId?: number
     plantName?: string
     scanId?: number
