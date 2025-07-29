@@ -4,6 +4,7 @@ import { weatherService } from '@/services/remote/weatherService'
 import { BlurView } from 'expo-blur'
 import { LinearGradient } from 'expo-linear-gradient'
 import { router } from 'expo-router'
+import LottieView from 'lottie-react-native'
 import { Droplets, Eye, Gauge, MapPin, Wind } from 'lucide-react-native'
 import React from 'react'
 import { Animated, Dimensions, Text, View } from 'react-native'
@@ -162,9 +163,12 @@ export default function WeatherDetailsScreen() {
                                     overflow: 'hidden'
                                 }}
                             >
-                                {AnimatedIcon && (
-                                    <AnimatedIcon width={65} height={65} />
-                                )}
+                                <LottieView
+                                    source={AnimatedIcon}
+                                    autoPlay
+                                    loop
+                                    style={{ width: 65, height: 65 }} 
+                                />
                             </BlurView>
 
                             <Text style={{
