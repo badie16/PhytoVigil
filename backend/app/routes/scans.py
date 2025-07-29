@@ -11,7 +11,7 @@ from app.services.file_service import FileService
 from app.services.ml_service import ml_service
 from app.crud import scan as crud_scan
 from app.crud.scan import create_scan, create_scan_disease
-
+from app.crud.activity import create_scan_activity, create_disease_activity
 router = APIRouter()
 file_service = FileService()
 
@@ -94,7 +94,7 @@ async def upload_scan(
             folder_path=folder_path
         )
     
-        # Prédiction
+        # Prédiction ML
         prediction_result = ml_service.predict(image_bytes)
         scan_data = {
             "plant_id": plant_id,
@@ -106,11 +106,23 @@ async def upload_scan(
             "location_lng": location_lng,
             "detected_diseases": prediction_result["top_predictions"],
         }
+        # Créer le scan
         scan =  create_scan(db, scan_data, current_user.id)
+
+        # AUTO-GÉNÉRATION D'ACTIVITÉ POUR LE SCAN
+        try:
+            scan_activity = create_scan_activity(
+                db=db, 
+                user_id=current_user.id, 
+                scan_id=scan.id, 
+                plant_id=plant_id
+            )
+        except Exception as e:
+            print(f"⚠️ Erreur lors de la création de l'activité de scan: {str(e)}")
+
         # Si une maladie est détectée, créer les enregistrements scan_diseases
         if prediction_result["result_type"] == "diseased":
             # Chercher la maladie dans la base de données
-            print("yes diseased")
             disease = db.query(Disease).filter(
                 Disease.name.ilike(f"%{prediction_result['predicted_class']}%")
             ).first()
@@ -122,7 +134,32 @@ async def upload_scan(
                     "confidence_score": prediction_result["confidence"],
                     "affected_area_percentage": None
                 }                
-                create_scan_disease(db, scan_disease_data,scan.id)    
+                create_scan_disease(db, scan_disease_data,scan.id)
+              # AUTO-GÉNÉRATION D'ACTIVITÉ POUR LA DÉTECTION DE MALADIE
+                try:
+                    disease_activity = create_disease_activity(
+                        db=db,
+                        user_id=current_user.id,
+                        plant_id=plant_id,
+                        disease_name=disease.name,
+                        confidence=prediction_result["confidence"]
+                    )
+                    print(f"✅ Activité de maladie créée: {disease_activity.id}")
+                except Exception as e:
+                    print(f"⚠️ Erreur lors de la création de l'activité de maladie: {str(e)}")
+            else:                
+                # Créer une activité générique pour maladie inconnue
+                try:
+                    unknown_disease_activity = create_disease_activity(
+                        db=db,
+                        user_id=current_user.id,
+                        plant_id=plant_id,
+                        disease_name=prediction_result.get('predicted_class', 'Unknown Disease'),
+                        confidence=prediction_result["confidence"]
+                    )
+                    print(f"✅ Activité de maladie inconnue créée: {unknown_disease_activity.id}")
+                except Exception as e:
+                    print(f"⚠️ Erreur lors de la création de l'activité de maladie inconnue: {str(e)}")   
         return scan
     except Exception as e:
         raise HTTPException(500, f"Erreur lors de l'analyse et du stockage: {str(e)}")
