@@ -14,8 +14,6 @@ export function WeatherWidget({ weather }: WeatherWidgetProps) {
     // weatherIcon (emoji) might still be useful as a fallback or for text-only displays
     const weatherIcon = weatherService.getWeatherIcon(weather.icon)
     const risk = weatherService.getWeatherRisk(weather)
-    console.log(weather)
-
     const getRiskColor = () => {
         switch (risk.level) {
             case "high":

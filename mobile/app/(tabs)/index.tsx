@@ -11,6 +11,7 @@ import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 
 import { ActivityItem } from "@/components/ui/activity-item";
+import LoadingSpinner from "@/components/ui/loading-spinner";
 import { TipCard } from "@/components/ui/tip-card";
 import { WeatherWidget } from "@/components/ui/weather-widget";
 import { useAuth } from '@/contexts/auth-context';
@@ -46,7 +47,10 @@ export default function HomeScreen() {
                     const stats = await statsService.getGlobalScanStats();
                     setPlants(data);
                     setScanStats(stats);
-                    PlantUtils.getPlantsScannedThisWeek(plants)
+                    setPlantsScannedThisWeek(PlantUtils.getPlantsScannedThisWeek(plants));
+                    const score = stats.total_scans > 0 ? Math.round((stats.healthy_scans / stats.total_scans) * 100) : 0;
+                    console.log(score)
+                    setOverallHealthScore(score);
                 };
                 fetch()
             } catch (err: any) {
@@ -54,12 +58,6 @@ export default function HomeScreen() {
                 setError(err.message)
             } finally {
                 setLoading(false)
-            }
-            if (scanStats) {
-                const score = scanStats.total_scans > 0 ? Math.round((scanStats.healthy_scans / scanStats.total_scans) * 100) : 0;
-                setOverallHealthScore(score);
-            } else {
-                setOverallHealthScore(0);
             }
         }
     }, [user, isLoading]);
@@ -115,7 +113,13 @@ export default function HomeScreen() {
             router.push(`/plants/${activity.plantId}`)
         }
     }
-
+    if (loading) {
+        return (
+            <View className="flex-1 justify-center items-center bg-white">
+                <LoadingSpinner />
+            </View>
+        );
+    }
     return (
         <View className="flex-1 bg-white pt-2">
             <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
