@@ -1,4 +1,4 @@
-import { getActivityColor, getActivityIcon } from "@/lib/utils/activityUtils"
+import { getActivityColor, getActivityIcon, getActivityBackgroundColor } from "@/lib/utils/activityUtils"
 import { DateUtils } from "@/lib/utils/dateUtils"
 import type { Activity } from "@/services/remote/activityService"
 import {
@@ -22,9 +22,10 @@ export function ActivityItem({ activity, onPress, showChevron = false }: Activit
     const iconName = getActivityIcon(activity.type)
     const iconColor = getActivityColor(activity.status)
     const timeAgo = DateUtils.formatDateFlexible(activity.created_at ?? "")
+    const backgroundColor = getActivityBackgroundColor(activity.status)
 
     const renderIcon = () => {
-        const iconProps = { color: iconColor, size: 20 }
+        const iconProps = { color: iconColor, size: 24 }
 
         switch (iconName) {
             case "camera":
@@ -43,6 +44,8 @@ export function ActivityItem({ activity, onPress, showChevron = false }: Activit
                 return <ActivityIcon {...iconProps} />
         }
     }
+    
+
     function getActivitySubtitle(activity: any): string {
         const { type, metadata } = activity;
 
@@ -72,8 +75,8 @@ export function ActivityItem({ activity, onPress, showChevron = false }: Activit
             disabled={!onPress}
             activeOpacity={onPress ? 0.7 : 1}
         >
-            <View className="flex-row items-center py-3 border-b border-gray-100 last:border-b-0">
-                <View className="w-12 h-12 bg-surface rounded-full items-center justify-center mr-3">
+            <View className="flex-row items-center py-4 border-b border-gray-100 last:border-b-0">
+                <View className="w-12 h-12 rounded-full items-center justify-center mr-3" style={{ backgroundColor }}>
                     {renderIcon()}
                 </View>
                 <View className="flex-1">

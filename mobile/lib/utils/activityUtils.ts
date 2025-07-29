@@ -31,7 +31,19 @@ export function getActivityColor(status?: Activity["status"]) {
             return "#4ECDC4"
     }
 }
-
+export function getActivityBackgroundColor(status?: Activity["status"]) {
+    switch (status) {
+        case "healthy":
+            return "#E6F7F3"   // vert clair
+        case "diseased":
+            return "#FFECEC"   // rouge très clair
+        case "warning":
+            return "#FFF6E5"   // orange clair
+        case "info":
+        default:
+            return "#EAF9F8"   // bleu clair
+    }
+}
 export function generateActivityFromScan(scan: any): Omit<Activity, "id" | "timestamp"> {
     const isHealthy = scan.status === "healthy"
     const diseaseName = scan.diseaseName || "Unknown issue"
@@ -49,6 +61,7 @@ export function generateActivityFromScan(scan: any): Omit<Activity, "id" | "time
             confidence: scan.confidence,
             treatment: scan.treatment,
         },
+        created_at: scan.created_at || new Date().toISOString(),
     }
 }
 
@@ -65,6 +78,7 @@ export function generateActivityFromPlant(plant: any): Omit<Activity, "id" | "ti
             variety: plant.variety,
             location: plant.location?.address,
         },
+        created_at: plant.created_at || new Date().toISOString(),
     }
 }
 
@@ -76,6 +90,7 @@ export function generateWateringActivity(plantName: string, plantId: number): Om
         plantId,
         plantName,
         status: "info",
+        created_at: new Date().toISOString(),
     }
 }
 
@@ -94,5 +109,6 @@ export function generateTreatmentActivity(
         meta_data: {
             treatment,
         },
+        created_at: new Date().toISOString(),
     }
 }
