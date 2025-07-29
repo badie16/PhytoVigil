@@ -179,30 +179,7 @@ export default function HomeScreen() {
                     </View>
                 </View>
 
-
-                {/* Today's Tips Section */}
-                <View className="px-6 mb-8">
-                    <View className="flex-row items-center justify-between mb-4">
-                        <Text className="text-lg font-semibold text-gray-900">Today's Tips</Text>
-                        <TouchableOpacity onPress={refreshTips}>
-                            <Text className="text-primary font-medium">Refresh</Text>
-                        </TouchableOpacity>
-                    </View>
-
-                    {loading ? (
-                        <View className="bg-gray-50 rounded-2xl p-6 items-center">
-                            <Text className="text-gray-500">Loading personalized tips...</Text>
-                        </View>
-                    ) : tips.length > 0 ? (
-                        tips.map((tip) => <TipCard key={tip.id} tip={tip} onAction={handleTipAction} onDismiss={dismissTip} />)
-                    ) : (
-                        <View className="bg-gray-50 rounded-2xl p-6 items-center">
-                            <Text className="text-gray-500">No tips available right now</Text>
-                            <Text className="text-xs text-gray-400 mt-1">Pull to refresh</Text>
-                        </View>
-                    )}
-                </View>
-
+                
                 {/* Recent Activity */}
                 <View className="px-6 mb-8">
                     <View className="flex-row items-center justify-between mb-4">
@@ -234,13 +211,25 @@ export default function HomeScreen() {
 
                 {/* Today's Tips */}
                 <View className="px-6 mb-8">
-                    <Text className="text-lg font-semibold text-gray-900 mb-4">Today's Tips</Text>
-                    <TipCarda
-                        icon={<Sun color="#FFB347" size={24} />}
-                        title="Perfect Weather for Scanning"
-                        description="Natural lighting is ideal for accurate plant disease detection. Take photos outdoors when possible."
-                        onPress={() => handleTipPress("weather")}
-                    />
+                    <View className="flex-row items-center justify-between mb-4">
+                        <Text className="text-lg font-semibold text-gray-900">Today's Tips</Text>
+                        <TouchableOpacity onPress={refreshTips}>
+                            <Text className="text-primary font-medium">Refresh</Text>
+                        </TouchableOpacity>
+                    </View>
+
+                    {loading ? (
+                        <View className="bg-gray-50 rounded-2xl p-6 items-center">
+                            <Text className="text-gray-500">Loading personalized tips...</Text>
+                        </View>
+                    ) : tips.length > 0 ? (
+                        tips.map((tip) => <TipCard key={tip.id} tip={tip} onAction={handleTipAction} onDismiss={dismissTip} />)
+                    ) : (
+                        <View className="bg-gray-50 rounded-2xl p-6 items-center">
+                            <Text className="text-gray-500">No tips available right now</Text>
+                            <Text className="text-xs text-gray-400 mt-1">Pull to refresh</Text>
+                        </View>
+                    )}
                 </View>
 
                 {/* Plant Health Overview */}
@@ -349,35 +338,6 @@ function ActivityItem({
             </View>
             <Text className="text-xs text-secondary">{time}</Text>
         </View>
-    )
-}
-
-function TipCarda({
-    icon,
-    title,
-    description,
-    onPress
-}: {
-    icon: React.ReactNode
-    title: string
-    description: string
-    onPress: () => void
-}) {
-    return (
-        <TouchableOpacity
-            onPress={onPress}
-            className="bg-gradient-to-r from-primary/10 to-primary/5 rounded-2xl p-4 flex-row items-start"
-            activeOpacity={0.8}
-        >
-            <View className="w-12 h-12 bg-primary/20 rounded-full items-center justify-center mr-4">
-                {icon}
-            </View>
-            <View className="flex-1">
-                <Text className="text-base font-semibold text-gray-900 mb-2">{title}</Text>
-                <Text className="text-sm text-secondary leading-5">{description}</Text>
-            </View>
-            <ChevronRight color="#8E8E93" size={20} />
-        </TouchableOpacity>
     )
 }
 

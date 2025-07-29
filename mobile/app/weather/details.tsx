@@ -61,7 +61,18 @@ export default function WeatherDetailsScreen() {
                 }
         }
     }
-
+    const getHeaderGradientColors = () => {
+        switch (risk.level) {
+            case "high":
+                return ['#EF4444', '#DC2626', '#B91C1C']; // Brighter reds
+            case "medium":
+                return ['#FACC15', '#EAB308', '#CA8A04']; // Brighter yellows/oranges
+            case "low":
+                return ['#10B981', '#059669', '#047857']; // Original green for low risk
+            default:
+                return ['#6B7280', '#4B5563', '#374151']; // Default grey
+        }
+    };
     const getPlantAdvice = () => {
         const temp = weather.temperature
         const humidity = weather.humidity
@@ -118,7 +129,7 @@ export default function WeatherDetailsScreen() {
             >
                 <Animated.View style={{ opacity: headerOpacity }}>
                     <LinearGradient
-                        colors={['#10B981', '#059669', '#047857']}
+                        colors={getHeaderGradientColors() as [string, string]}
                         start={{ x: 0, y: 0 }}
                         end={{ x: 1, y: 1 }}
                         style={{
@@ -127,8 +138,6 @@ export default function WeatherDetailsScreen() {
                             paddingBottom: 32,
                         }}
                     >
-
-
                         {/* Location */}
                         <View style={{
                             flexDirection: 'row',
@@ -167,7 +176,8 @@ export default function WeatherDetailsScreen() {
                                     source={AnimatedIcon}
                                     autoPlay
                                     loop
-                                    style={{ width: 65, height: 65 }} 
+                                    style={{ width: 70, height: 70 }} 
+                                    speed={4}
                                 />
                             </BlurView>
 
