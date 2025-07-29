@@ -21,3 +21,5 @@ class Plant(Base):
     # Relations
     user = relationship("User", back_populates="plants")
     scans = relationship("PlantScan", back_populates="plant", cascade="all, delete-orphan")
+    activities = relationship("Activity", back_populates="plant", cascade="all, delete-orphan")
+

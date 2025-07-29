@@ -22,7 +22,7 @@ class PlantScan(Base):
     user = relationship("User", back_populates="scans")
     plant = relationship("Plant", back_populates="scans")
     scan_diseases = relationship("ScanDisease", back_populates="scan", cascade="all, delete-orphan")
-
+    activities = relationship("Activity", back_populates="scan", cascade="all, delete-orphan")
 class ScanDisease(Base):
     __tablename__ = "scan_diseases"
     

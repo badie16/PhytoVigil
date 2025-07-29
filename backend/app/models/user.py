@@ -16,3 +16,4 @@ class User(Base):
     # Relations
     plants = relationship("Plant", back_populates="user", cascade="all, delete-orphan")
     scans = relationship("PlantScan", back_populates="user", cascade="all, delete-orphan")
+    activities = relationship("Activity", back_populates="user", cascade="all, delete-orphan")
