@@ -1,9 +1,10 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
-import { tipsService, type Tip } from "@/services/tipsService"
 import { weatherService, type WeatherData } from "@/services/remote/weatherService"
+import { tipsService, type Tip } from "@/services/tipsService"
 import * as Location from "expo-location"
+import { useCallback, useEffect, useState } from "react"
+import { AppState } from "react-native"
 
 export function useTips() {
     const [tips, setTips] = useState<Tip[]>([])
@@ -92,34 +93,23 @@ export function useTips() {
     // Auto-refresh tips every hour
     useEffect(() => {
         loadTips()
-
-        const interval = setInterval(
-            () => {
-                if (lastRefresh && Date.now() - lastRefresh.getTime() > 60 * 60 * 1000) {
-                    loadTips()
-                }
-            },
-            60 * 60 * 1000,
-        ) // Check every hour
-
+        const interval = setInterval(loadTips, 60 * 60 * 1000)
         return () => clearInterval(interval)
-    }, [loadTips, lastRefresh])
+    }, [loadTips])
+
 
     // Refresh tips when app comes to foreground
     useEffect(() => {
-        const handleAppStateChange = (nextAppState: string) => {
+        const subscription = AppState.addEventListener("change", (nextAppState) => {
             if (nextAppState === "active" && lastRefresh) {
                 const timeSinceLastRefresh = Date.now() - lastRefresh.getTime()
                 if (timeSinceLastRefresh > 30 * 60 * 1000) {
-                    // 30 minutes
                     loadTips()
                 }
             }
-        }
+        })
 
-        // Note: In a real app, you'd use AppState from react-native
-        // AppState.addEventListener('change', handleAppStateChange)
-        // return () => AppState.removeEventListener('change', handleAppStateChange)
+        return () => subscription.remove()
     }, [lastRefresh, loadTips])
 
     return {

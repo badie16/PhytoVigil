@@ -1,9 +1,9 @@
-import type React from "react"
-import { View, Text, TouchableOpacity } from "react-native"
-import { MapPin, ChevronRight } from "lucide-react-native"
 import type { WeatherData } from "@/services/remote/weatherService"
 import { weatherService } from "@/services/remote/weatherService"
 import { router } from "expo-router"
+import { ChevronRight, MapPin } from "lucide-react-native"
+import type React from "react"
+import { Text, TouchableOpacity, View } from "react-native"
 
 interface WeatherWidgetProps {
     weather: WeatherData
@@ -12,7 +12,7 @@ interface WeatherWidgetProps {
 export function WeatherWidget({ weather }: WeatherWidgetProps) {
     const weatherIcon = weatherService.getWeatherIcon(weather.icon)
     const risk = weatherService.getWeatherRisk(weather)
-
+    console.log(weather)
     const getRiskColor = () => {
         switch (risk.level) {
             case "high":
@@ -29,9 +29,9 @@ export function WeatherWidget({ weather }: WeatherWidgetProps) {
     const handlePress = () => {
         router.push({
             pathname: "/weather/details",
-            params: { weatherData: JSON.stringify(weather) }
         })
     }
+    const AnimatedIcon = weather.AnimatedIconComponent;
 
     return (
         <View className="mb-4">
@@ -42,7 +42,13 @@ export function WeatherWidget({ weather }: WeatherWidgetProps) {
             >
                 {/* Weather Icon */}
                 <View className="w-16 h-16 bg-gray-50 rounded-2xl items-center justify-center mr-4">
-                    <Text className="text-3xl">{weatherIcon}</Text>
+                    {/* <Text className="text-3xl">{weatherIcon}</Text> */}
+                    {/* Weather Icon Image */}
+
+                    {AnimatedIcon && (
+                        <AnimatedIcon width={65} height={65} />
+                    )}
+
                 </View>
 
                 {/* Weather Info */}

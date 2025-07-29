@@ -1,5 +1,7 @@
 import { config } from "@/lib/config/env"
-
+import { WeatherIconMap } from "@/lib/constant/WeatherIcon"
+import React from 'react';
+type SvgComponent = React.FC<any>;
 export interface WeatherData {
     temperature: number
     humidity: number
@@ -8,6 +10,8 @@ export interface WeatherData {
     condition: string
     description: string
     icon: string
+    iconUrl: string 
+    AnimatedIconComponent: SvgComponent;
     location: string
     sunrise: string
     sunset: string
@@ -22,6 +26,7 @@ export interface WeatherForecast {
         min: number
         max: number
     }
+    AnimatedIconComponent: SvgComponent;
     condition: string
     icon: string
     humidity: number
@@ -31,7 +36,7 @@ export interface WeatherForecast {
 class WeatherService {
     private readonly API_KEY = config.WEATHER_API_KEY
     private readonly BASE_URL = "https://api.openweathermap.org/data/2.5"
-
+    private readonly ICON_BASE_URL = "https://openweathermap.org/img/wn"
     async getCurrentWeather(lat: number, lon: number): Promise<WeatherData> {
         try {
             const response = await fetch(`${this.BASE_URL}/weather?lat=${lat}&lon=${lon}&appid=${this.API_KEY}&units=metric`)
@@ -41,7 +46,7 @@ class WeatherService {
             }
 
             const data = await response.json()
-
+            const iconCode = data.weather[0].icon;        
             return {
                 temperature: Math.round(data.main.temp),
                 humidity: data.main.humidity,
@@ -49,7 +54,9 @@ class WeatherService {
                 windSpeed: data.wind.speed,
                 condition: data.weather[0].main,
                 description: data.weather[0].description,
-                icon: data.weather[0].icon,
+                icon: iconCode, 
+                iconUrl: this.getAnimatedWeatherIconName(iconCode),
+                AnimatedIconComponent: WeatherIconMap[iconCode] || WeatherIconMap["04d"], // Fallback par défaut
                 location: data.name,
                 sunrise: new Date(data.sys.sunrise * 1000).toLocaleTimeString(),
                 sunset: new Date(data.sys.sunset * 1000).toLocaleTimeString(),
@@ -79,7 +86,7 @@ class WeatherService {
 
             for (const item of data.list) {
                 const date = new Date(item.dt * 1000).toDateString()
-
+                const iconCode = item.weather[0].icon;
                 if (!processedDates.has(date) && dailyForecasts.length < 5) {
                     processedDates.add(date)
                     dailyForecasts.push({
@@ -88,8 +95,9 @@ class WeatherService {
                             min: Math.round(item.main.temp_min),
                             max: Math.round(item.main.temp_max),
                         },
+                        AnimatedIconComponent: WeatherIconMap[iconCode] || WeatherIconMap["04d"], // Fallback par défaut
                         condition: item.weather[0].main,
-                        icon: item.weather[0].icon,
+                        icon: iconCode,
                         humidity: item.main.humidity,
                         windSpeed: item.wind.speed,
                     })
@@ -102,7 +110,9 @@ class WeatherService {
             throw new Error("Failed to fetch weather forecast")
         }
     }
-
+    private getAnimatedWeatherIconName(iconCode: string): string {
+        return WeatherIconMap[iconCode]
+    }
     async getUVIndex(lat: number, lon: number): Promise<number> {
         try {
             const response = await fetch(`${this.BASE_URL}/uvi?lat=${lat}&lon=${lon}&appid=${this.API_KEY}`)
@@ -153,7 +163,9 @@ class WeatherService {
 
         return goodTemp && lowHumidity && goodConditions && lowWind
     }
-
+    getOpenWeatherMapIconUrl(iconCode: string): string {
+        return `${this.ICON_BASE_URL}/${iconCode}@2x.png`;
+    }
     getWeatherRisk(weather: WeatherData): {
         level: "low" | "medium" | "high"
         message: string
