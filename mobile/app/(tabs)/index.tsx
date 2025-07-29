@@ -189,8 +189,8 @@ export default function HomeScreen() {
                 <View className="px-6 mb-8">
                     <View className="flex-row items-center justify-between mb-4">
                         <Text className="text-lg font-semibold text-gray-900">Recent Activity</Text>
-                        <TouchableOpacity>
-                            <Text className="text-primary font-medium">View All</Text>
+                        <TouchableOpacity onPress={() => router.push("/activities")}>
+                            <Text className="text-green-600 font-medium">View All</Text>
                         </TouchableOpacity>
                     </View>
                     {activitiesLoading ? (

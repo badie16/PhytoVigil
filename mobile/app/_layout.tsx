@@ -69,6 +69,7 @@ export default function RootLayout() {
         <Stack.Screen name="plants/add" options={{ headerShown: false }} />
         <Stack.Screen name="plants/scan/[id]" options={{ headerShown: false }} />
         <Stack.Screen name="weather/details" options={{ headerShown: false }} />
+        <Stack.Screen name="activities" options={{ headerShown: false }} />
       </Stack>
     </AuthProvider>
   )
