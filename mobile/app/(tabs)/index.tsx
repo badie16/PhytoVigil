@@ -244,9 +244,10 @@ export default function HomeScreen() {
                             </Text>
                         </View>
                         <View className="w-full bg-gray-200 rounded-full h-3 mb-3">
-                            <View className="bg-primary h-3 rounded-full" style={{
-                                width: overallHealthScore + '%'
-                            }} />
+                            <View
+                                className="bg-primary h-3 rounded-full"
+                                style={{ width: `${overallHealthScore}%` as any }}
+                            />
                         </View>
                         <Text className="text-sm text-secondary">
                             {getHealthMessage(overallHealthScore)}
