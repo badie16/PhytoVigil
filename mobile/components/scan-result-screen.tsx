@@ -1,7 +1,7 @@
 import type { ScanData } from '@/app/(tabs)/scanner';
-import { DateUtils } from '@/lib/constant/dateUtils';
 import { PlantUtils } from '@/lib/constant/plantUtils';
-import { Activity, Calendar, Camera, Clock, Download, Leaf, Link2, Share, Zap } from 'lucide-react-native';
+import { DateUtils } from '@/lib/utils/dateUtils';
+import { Activity, Calendar, Camera, Clock, Download, Leaf, Link2, Zap } from 'lucide-react-native';
 import React from 'react';
 import {
     Alert,
@@ -182,7 +182,7 @@ export default function ScanResultScreen({
                                 {analysisType === 'quick' ? 'Quick Analysis' : 'Saved Analysis'}
                             </Text>
                         </View>
-                        {scanResult.model_version && (  
+                        {scanResult.model_version && (
                             <View style={styles.infoRow}>
                                 <Zap size={16} color="#6B7280" />
                                 <Text style={styles.infoLabel}>Model Version:</Text>

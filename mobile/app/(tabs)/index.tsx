@@ -1,13 +1,8 @@
 import {
-    AlertTriangle,
     Bell,
     Camera,
-    CheckCircle,
-    ChevronRight,
-    Droplets,
     Leaf,
     Shield,
-    Sun,
     TrendingDown,
     TrendingUp
 } from "lucide-react-native";
@@ -15,17 +10,17 @@ import React, { useEffect, useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 
+import { ActivityItem } from "@/components/ui/activity-item";
+import { TipCard } from "@/components/ui/tip-card";
+import { WeatherWidget } from "@/components/ui/weather-widget";
 import { useAuth } from '@/contexts/auth-context';
-import { PlantUtils } from "@/lib/constant/plantUtils";
+import { useActivities } from "@/hooks/useActivities";
+import { useTips } from "@/hooks/useTips";
+import { PlantUtils } from "@/lib/utils/plantUtils";
 import plantService from "@/services/remote/plantService";
 import statsService from '@/services/remote/statsService';
 import type { Plant, ScanStats } from '@/types';
 import { router } from 'expo-router';
-import { useTips } from "@/hooks/useTips";
-import { TipCard } from "@/components/ui/tip-card";
-import { WeatherWidget } from "@/components/ui/weather-widget";
-import { useActivities } from "@/hooks/useActivities";
-import { ActivityItem } from "@/components/ui/activity-item";
 
 export default function HomeScreen() {
     const { user, isLoading, logout } = useAuth();
@@ -156,7 +151,7 @@ export default function HomeScreen() {
                     {/* Weather Widget */}
                     {weather && <WeatherWidget weather={weather} />}
                 </View>
-                
+
                 {/* Quick Actions */}
                 <View className="px-6 mb-8">
                     <Text className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</Text>
@@ -185,7 +180,7 @@ export default function HomeScreen() {
                     </View>
                 </View>
 
-                
+
                 {/* Recent Activity */}
                 <View className="px-6 mb-8">
                     <View className="flex-row items-center justify-between mb-4">
@@ -250,7 +245,7 @@ export default function HomeScreen() {
                         </View>
                         <View className="w-full bg-gray-200 rounded-full h-3 mb-3">
                             <View className="bg-primary h-3 rounded-full" style={{
-                                width: overallHealthScore+'%'
+                                width: overallHealthScore + '%'
                             }} />
                         </View>
                         <Text className="text-sm text-secondary">

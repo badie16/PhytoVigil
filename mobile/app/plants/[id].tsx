@@ -1,6 +1,6 @@
 import LoadingSpinner from '@/components/ui/loading-spinner';
-import { DateUtils } from '@/lib/constant/dateUtils';
 import { PlantUtils } from '@/lib/constant/plantUtils';
+import { DateUtils } from '@/lib/utils/dateUtils';
 import plantService from '@/services/remote/plantService';
 import { Plant, PlantScan } from '@/types';
 import { useLocalSearchParams, useRouter } from 'expo-router';

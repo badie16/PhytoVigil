@@ -1,5 +1,5 @@
-import { DateUtils } from '@/lib/constant/dateUtils';
 import { PlantUtils } from '@/lib/constant/plantUtils';
+import { DateUtils } from '@/lib/utils/dateUtils';
 import plantService from '@/services/remote/plantService';
 import { Plant } from '@/types';
 import {
@@ -83,7 +83,7 @@ export default function LinkToPlantScreen({
     };
 
     const handleStartAnalysis = () => {
-        
+
         if (selectedPlant) {
             console.log(selectedPlant.id)
             onStartAnalysis({

@@ -1,5 +1,5 @@
-import { DateUtils } from "@/lib/constant/dateUtils"
 import { getActivityColor, getActivityIcon } from "@/lib/utils/activityUtils"
+import { DateUtils } from "@/lib/utils/dateUtils"
 import type { Activity } from "@/services/remote/activityService"
 import {
     Activity as ActivityIcon,
@@ -73,7 +73,7 @@ export function ActivityItem({ activity, onPress, showChevron = false }: Activit
             activeOpacity={onPress ? 0.7 : 1}
         >
             <View className="flex-row items-center py-3 border-b border-gray-100 last:border-b-0">
-                <View className="w-10 h-10 bg-surface rounded-full items-center justify-center mr-3">
+                <View className="w-12 h-12 bg-surface rounded-full items-center justify-center mr-3">
                     {renderIcon()}
                 </View>
                 <View className="flex-1">
@@ -90,4 +90,3 @@ export function ActivityItem({ activity, onPress, showChevron = false }: Activit
 
 
 
-                   

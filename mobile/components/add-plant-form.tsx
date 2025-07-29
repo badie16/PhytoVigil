@@ -1,5 +1,5 @@
 import CameraButton from '@/components/ui/camera-button';
-import { PlantUtils } from '@/lib/constant/plantUtils';
+import { PlantUtils } from '@/lib/utils/plantUtils';
 import plantService from '@/services/remote/plantService';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
