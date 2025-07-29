@@ -1,13 +1,13 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
 import { activityService, type Activity } from "@/services/remote/activityService"
+import { useCallback, useEffect, useState } from "react"
 
 export function useActivities(limit = 10) {
     const [activities, setActivities] = useState<Activity[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
-
+    
     const loadActivities = useCallback(async () => {
         try {
             setLoading(true)

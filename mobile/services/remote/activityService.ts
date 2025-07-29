@@ -44,7 +44,8 @@ class ActivityService {
             }
 
             const data = await response.json()
-            return data.activities || []
+            console.log(data)
+            return data || []
         } catch (error) {
             console.error("Error fetching recent activities:", error)
             return []
@@ -91,7 +92,7 @@ class ActivityService {
             }
 
             const data = await response.json()
-            return data.activities || []
+            return data || []
         } catch (error) {
             console.error("Error fetching activities by type:", error)
             return []
@@ -113,7 +114,7 @@ class ActivityService {
             }
 
             const data = await response.json()
-            return data.activities || []
+            return data || []
         } catch (error) {
             console.error("Error fetching plant activities:", error)
             return []

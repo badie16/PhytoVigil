@@ -61,7 +61,7 @@ export default function HomeScreen() {
                 setLoading(false)
             }
             if (scanStats) {
-                const score = scanStats.total_scans > 0 ? Math.round((scanStats.healthy_scans / scanStats.total_plantScaned) * 100) : 0;
+                const score = scanStats.total_scans > 0 ? Math.round((scanStats.healthy_scans / scanStats.total_scans) * 100) : 0;
                 setOverallHealthScore(score);
             } else {
                 setOverallHealthScore(0);
@@ -199,7 +199,7 @@ export default function HomeScreen() {
                             <Text className="text-gray-500">Loading activities...</Text>
                         </View>
                     ) : activities.length > 0 ? (
-                        <View className="bg-white rounded-2xl border border-gray-100">
+                        <View>
                             {activities.map((activity, index) => (
                                 <View key={activity.id}>
                                     <ActivityItem activity={activity} onPress={handleActivityPress} showChevron={true} />
@@ -250,7 +250,7 @@ export default function HomeScreen() {
                         </View>
                         <View className="w-full bg-gray-200 rounded-full h-3 mb-3">
                             <View className="bg-primary h-3 rounded-full" style={{
-                                width: overallHealthScore
+                                width: overallHealthScore+'%'
                             }} />
                         </View>
                         <Text className="text-sm text-secondary">
