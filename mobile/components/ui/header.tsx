@@ -13,10 +13,12 @@ export default function Header({
     onBack,
     title,
     isClose = false,
+    children,
 }: {
     onBack: () => void,
     title: string,
     isClose?: boolean,
+    children?: React.ReactNode,
 }) {
     return (
         isClose ? (
@@ -27,6 +29,7 @@ export default function Header({
                 >
                     <X color="#111827" size={24} />
                 </TouchableOpacity>
+                {children}
             </View>
         ) : (
             <View style={styles.header}>
@@ -37,7 +40,7 @@ export default function Header({
                     <ArrowLeft size={24} color="#111827" />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>{title}</Text>
-                <View style={styles.placeholder} />
+                {children ? children : <View style={styles.placeholder} />}
             </View>
         )
     );
