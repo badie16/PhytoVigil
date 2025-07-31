@@ -10,6 +10,7 @@ import { Calendar, Filter, Search, X } from "lucide-react-native"
 import { useCallback, useState } from "react"
 import { RefreshControl, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
+import { ActivityDetailModal } from "@/components/ui/activity-detail-modal"
 
 const ACTIVITY_TYPES = [
     { key: "all", label: "All Activities", color: "#6B7280" },
@@ -34,10 +35,17 @@ export default function ActivitiesScreen() {
     const [selectedType, setSelectedType] = useState("all")
     const [selectedTimeFilter, setSelectedTimeFilter] = useState("all")
     const [showFilters, setShowFilters] = useState(false)
-
+    const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null)
+    const [showDetailModal, setShowDetailModal] = useState(false)
     const { activities, loading, error, refreshActivities } = useActivities(50)
 
-    const handleActivityPress = useCallback(
+
+    const handleActivityPress = useCallback((activity: Activity) => {
+        setSelectedActivity(activity)
+        setShowDetailModal(true)
+    }, [])
+
+    const handleNavigateFromModal = useCallback(
         (activity: Activity) => {
             if (activity.type === "scan" && activity.scanId) {
                 router.push(`/plants/scan/${activity.scanId}`)
@@ -242,7 +250,16 @@ export default function ActivitiesScreen() {
                     </View>
                 )}
             </ScrollView>
-
+            {/* Activity Detail Modal */}
+            <ActivityDetailModal
+                activity={selectedActivity}
+                visible={showDetailModal}
+                onClose={() => {
+                    setShowDetailModal(false)
+                    setSelectedActivity(null)
+                }}
+                onNavigate={handleNavigateFromModal}
+            />
         </SafeAreaView>
     )
 }
