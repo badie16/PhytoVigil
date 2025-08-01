@@ -1,17 +1,16 @@
-import { config } from "@/lib/config/env"
-import { WeatherAnimationMap } from "@/lib/constant/WeatherIcon" 
-type LottieAnimationSource = any;
+import { config } from "@/lib/config/env";
+import { WeatherAnimationMap } from "@/lib/constant/WeatherIcon";
 
 export interface WeatherData {
     temperature: number
     humidity: number
-    uvIndex: number 
+    uvIndex: number
     windSpeed: number
     condition: string // Main weather condition (e.g., "Clouds", "Rain")
     description: string // Detailed weather description (e.g., "overcast clouds")
     icon: string // OpenWeatherMap icon code (e.g., "04d")
     iconUrl: string // URL for a traditional OpenWeatherMap icon image 
-    AnimatedIconComponent: LottieAnimationSource; // The Lottie JSON object for the animation
+    PngIconComponent: any;
     location: string
     sunrise: string
     sunset: string
@@ -26,7 +25,7 @@ export interface WeatherForecast {
         min: number
         max: number
     }
-    AnimatedIconComponent: LottieAnimationSource; // The Lottie JSON object for the animation
+    PngIconComponent: any;
     condition: string
     icon: string
     humidity: number
@@ -58,7 +57,7 @@ class WeatherService {
                 description: data.weather[0].description,
                 icon: iconCode,
                 iconUrl: this.getOpenWeatherMapIconUrl(iconCode),
-                AnimatedIconComponent: WeatherAnimationMap[iconCode] || WeatherAnimationMap["04d"], // Fallback to 'cloudy' animation
+                PngIconComponent: WeatherAnimationMap[iconCode] || WeatherAnimationMap["04d"], // Fallback to 'cloudy' animation
                 location: data.name,
                 sunrise: new Date(data.sys.sunrise * 1000).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
                 sunset: new Date(data.sys.sunset * 1000).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
@@ -100,7 +99,7 @@ class WeatherService {
                             max: Math.round(item.main.temp_max),
                         },
                         // Use WeatherAnimationMap for forecast icons as well
-                        AnimatedIconComponent: WeatherAnimationMap[iconCode] || WeatherAnimationMap["04d"], // Fallback
+                        PngIconComponent: WeatherAnimationMap[iconCode] || WeatherAnimationMap["04d"], // Fallback
                         condition: item.weather[0].main,
                         icon: iconCode, // The original icon code from OpenWeatherMap
                         humidity: item.main.humidity,
@@ -121,7 +120,7 @@ class WeatherService {
         return `${this.ICON_BASE_URL}/${iconCode}@2x.png`;
     }
 
- 
+
     async getUVIndex(lat: number, lon: number): Promise<number> {
         try {
             const response = await fetch(`${this.BASE_URL}/uvi?lat=${lat}&lon=${lon}&appid=${this.API_KEY}`)

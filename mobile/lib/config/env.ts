@@ -11,12 +11,10 @@ type AppConfig = {
 };
 
 const getEnv = (): AppConfig => ({
-    API_URL: "http://192.168.11.105:8000",
-    // API_URL: "http://127.0.0.1:8000",
+    API_URL: ENV.API_URL ?? "http://192.168.100.138:8000",
     TOKEN_KEY: ENV.TOKEN_KEY ?? "auth_token",
     WEATHER_API_KEY: ENV.WEATHER_API_KEY ?? "579cf214a40b14f1487d7332d696f09e",
-    // Location
-    LOCATION_TIMEOUT: 10000, // 10 seconds
+    LOCATION_TIMEOUT: ENV.LOCATION_TIMEOUT ?? 10000, // 10 seconds
 
     // Tips
     TIPS_REFRESH_INTERVAL: 60 * 60 * 1000, // 1 hour

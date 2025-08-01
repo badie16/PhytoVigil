@@ -1,15 +1,14 @@
-import type { WeatherData } from "@/services/remote/weatherService"
-import { weatherService } from "@/services/remote/weatherService"
-import { router } from "expo-router"
-import { ChevronRight, MapPin } from "lucide-react-native"
-import React from "react" // Ensure React is imported
-import { Text, TouchableOpacity, View } from "react-native"
+import type { WeatherData } from "@/services/remote/weatherService";
+import { weatherService } from "@/services/remote/weatherService";
+import { router } from "expo-router";
+import { ChevronRight, MapPin } from "lucide-react-native";
+import React from "react"; // Ensure React is imported
+import { Image, Text, TouchableOpacity, View } from "react-native";
 interface WeatherWidgetProps {
     weather: WeatherData
 }
 
 export function WeatherWidget({ weather }: WeatherWidgetProps) {
-    // weatherIcon (emoji) might still be useful as a fallback or for text-only displays
     const weatherIcon = weatherService.getWeatherIcon(weather.icon)
     const risk = weatherService.getWeatherRisk(weather)
     const getRiskColor = () => {
@@ -30,12 +29,7 @@ export function WeatherWidget({ weather }: WeatherWidgetProps) {
             pathname: "/weather/details",
         })
     }
-
-    // weather.AnimatedIconComponent is now the JSON source, not a component
-    // We don't need a separate variable like `const AnimatedIcon = weather.AnimatedIconComponent;`
-    // unless you want to rename it for clarity.
-    // const lottieSource = weather.AnimatedIconComponent; // Better name: lottieSource or animationSource
-
+    console.log(weather)
     return (
         <View className="mb-4">
             <TouchableOpacity
@@ -43,20 +37,16 @@ export function WeatherWidget({ weather }: WeatherWidgetProps) {
                 className="bg-surface rounded-2xl p-4 flex-row items-center"
                 activeOpacity={0.7}
             >
-                {/* Weather Icon (Lottie Animation) */}
                 <View className="w-16 h-16 bg-gray-50 rounded-2xl items-center justify-center mr-4">
-                    {/* {lottieSource ? ( // Check if lottieSource exists
-                        <LottieView
-                            source={lottieSource} // Pass the JSON data to the source prop
-                            autoPlay={true}      // Start animation automatically
-                            loop={true}          // Loop the animation
-                            style={{ width: (50), height: (50) }} // Apply size here
-                            speed={4}
+                    <Text className="text-3xl">{weather.PngIconComponent
+                        ?
+                        <Image
+                            source={weather.PngIconComponent}
+                            alt={weather.description}
+                            style={{ width: 60, height: 60 }}
                         />
-                    ) : ( */}
-                        // Fallback if Lottie source is not available (e.g., show emoji or a static image)
-                        <Text className="text-3xl">{weatherIcon}</Text>
-                    {/* )} */}
+                        : weatherIcon}
+                    </Text>
                 </View>
 
                 {/* Weather Info */}

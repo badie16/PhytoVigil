@@ -7,7 +7,7 @@ import { router } from 'expo-router'
 // import LottieView from 'lottie-react-native'
 import { Droplets, Eye, Gauge, MapPin, Wind } from 'lucide-react-native'
 import React from 'react'
-import { Animated, Dimensions, Text, View } from 'react-native'
+import { Animated, Dimensions, Image, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 const { width } = Dimensions.get('window')
 
@@ -169,7 +169,16 @@ export default function WeatherDetailsScreen() {
                                     marginBottom: 20,
                                     overflow: 'hidden'
                                 }}>
-                                    <Text className="text-3xl">{weatherIcon}</Text>
+                                <Text className="text-3xl">{weather.PngIconComponent
+                                    ?
+                                    <Image
+                                        source={weather.PngIconComponent}
+                                        alt={weather.description}
+                                        style={{ width: 80, height: 80 }}
+                                    />
+                                    : weatherIcon}
+                                </Text>
+
                             </BlurView>
 
                             <Text style={{
