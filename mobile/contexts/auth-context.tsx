@@ -1,3 +1,7 @@
+"use client"
+
+import { useOffline } from "@/hooks/useOffline"
+import { offlineAuthService } from "@/services/local/authService.offline"
 import { authService } from "@/services/remote/auth"
 import type { AuthState, LoginCredentials, RegisterCredentials, User } from "@/types/auth"
 import type React from "react"
@@ -8,6 +12,8 @@ interface AuthContextType extends AuthState {
     register: (credentials: RegisterCredentials) => Promise<void>
     logout: () => Promise<void>
     clearError: () => void
+    // loginOffline: (credentials: LoginCredentials) => Promise<void>
+    // registerOffline: (credentials: RegisterCredentials) => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -51,17 +57,40 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [state, dispatch] = useReducer(authReducer, initialState)
+    const { isOffline } = useOffline()
 
     useEffect(() => {
         checkAuthStatus()
-    }, [])
+    }, [isOffline])
 
     const checkAuthStatus = async () => {
         try {
             dispatch({ type: "SET_LOADING", payload: true })
-            const user = await authService.getCurrentUser()
+
+            let user: User | null = null
+
+            if (isOffline) {
+                // Check offline authentication
+                user = await offlineAuthService.getCurrentOfflineUser()
+                if (!user) {
+                    // Create demo user for offline testing
+                    console.log('dddddddddddddddddddddddddddddddddddddd  no user hhhhhhhhhh')
+                    // await offlineAuthService.createDemoUser()
+                }
+            } else {
+                
+                // Check online authentication first
+                user = await authService.getCurrentUser()
+
+                // If no online user, check offline user
+                if (!user) {
+                    user = await offlineAuthService.getCurrentOfflineUser()
+                }
+            }
+
             dispatch({ type: "SET_USER", payload: user })
         } catch (error) {
+            console.error("Auth check failed:", error)
             dispatch({ type: "SET_ERROR", payload: "Failed to check authentication status" })
         }
     }
@@ -70,10 +99,49 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         try {
             dispatch({ type: "SET_LOADING", payload: true })
             dispatch({ type: "CLEAR_ERROR" })
-            const user = await authService.login(credentials)
+
+            let user: User | null = null
+
+            if (isOffline) {
+                // Try offline login
+                user = await offlineAuthService.loginOffline(credentials)
+                if (!user) {
+                    throw new Error("Invalid credentials or user not found offline")
+                }
+            } else {
+                // Try online login first
+                try {
+                    user = await authService.login(credentials)
+                } catch (onlineError) {
+                    // If online login fails, try offline
+                    console.log("Online login failed, trying offline...")
+                    user = await offlineAuthService.loginOffline(credentials)
+                    if (!user) {
+                        throw onlineError
+                    }
+                }
+            }
+
             dispatch({ type: "SET_USER", payload: user })
         } catch (error) {
             dispatch({ type: "SET_ERROR", payload: error instanceof Error ? error.message : "Login failed" })
+            throw error
+        }
+    }
+
+    const loginOffline = async (credentials: LoginCredentials) => {
+        try {
+            dispatch({ type: "SET_LOADING", payload: true })
+            dispatch({ type: "CLEAR_ERROR" })
+
+            const user = await offlineAuthService.loginOffline(credentials)
+            if (!user) {
+                throw new Error("Invalid credentials")
+            }
+
+            dispatch({ type: "SET_USER", payload: user })
+        } catch (error) {
+            dispatch({ type: "SET_ERROR", payload: error instanceof Error ? error.message : "Offline login failed" })
             throw error
         }
     }
@@ -82,17 +150,53 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         try {
             dispatch({ type: "SET_LOADING", payload: true })
             dispatch({ type: "CLEAR_ERROR" })
-            const user = await authService.register(credentials)
-            dispatch({ type: "SET_USER", payload: user })
+
+            let user: User
+
+            if (isOffline) {
+                // Register offline
+                // user = await offlineAuthService.registerOffline(credentials)
+            } else {
+                // Try online registration first
+                try {
+                    user = await authService.register(credentials)
+                    dispatch({ type: "SET_USER", payload: user })
+                } catch (onlineError) {
+                    // If online registration fails, register offline
+                    console.log("Online registration failed, registering offline...")
+                    // user = await offlineAuthService.registerOffline(credentials)
+                }
+                
+            }
+            
         } catch (error) {
             dispatch({ type: "SET_ERROR", payload: error instanceof Error ? error.message : "Registration failed" })
             throw error
         }
     }
 
+    // const registerOffline = async (credentials: RegisterCredentials) => {
+    //     try {
+    //         dispatch({ type: "SET_LOADING", payload: true })
+    //         dispatch({ type: "CLEAR_ERROR" })
+
+    //         const user = await offlineAuthService.registerOffline(credentials)
+    //         dispatch({ type: "SET_USER", payload: user })
+    //     } catch (error) {
+    //         dispatch({ type: "SET_ERROR", payload: error instanceof Error ? error.message : "Offline registration failed" })
+    //         throw error
+    //     }
+    // }
+
     const logout = async () => {
         try {
-            await authService.logout()
+            if (state.user?.isOfflineUser) {
+                await offlineAuthService.logoutOffline()
+            } else {
+                await authService.logout()
+                // Also logout offline user if exists
+                await offlineAuthService.logoutOffline()
+            }
             dispatch({ type: "LOGOUT" })
         } catch (error) {
             dispatch({ type: "SET_ERROR", payload: "Logout failed" })
@@ -110,6 +214,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         register,
         logout,
         clearError,
+        // loginOffline,
+        // registerOffline,
     }
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

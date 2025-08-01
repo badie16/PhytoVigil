@@ -1,6 +1,7 @@
 export interface PlantScan {
   id: number
   plant_id: number
+  user_id?: number
   diseaseName: string
   top_predictions: Array<{
     class_name: string
@@ -55,6 +56,7 @@ export interface Plant {
   name: string
   type: string
   variety?: string
+  user_id: number
   plantedDate?: string
   location?: {
     latitude: number

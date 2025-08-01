@@ -158,21 +158,43 @@ class PlantService {
         }
         return {
             id: backendPlant.id,
+            user_id: backendPlant.user_id,
             name: backendPlant.name,
             type: backendPlant.type,
             variety: backendPlant.variety,
             plantedDate: backendPlant.planted_date,
-            location: backendPlant.location ? {
-                latitude: 0, // Vous devrez parser la location si elle contient lat/lng
-                longitude: 0,
-                address: backendPlant.location
-            } : undefined,
+            location: (() => {
+                // Try to parse location as JSON {latitude, longitude, address}, fallback to string address
+                if (!backendPlant.location) return undefined;
+                try {
+                    const loc = JSON.parse(backendPlant.location);
+                    if (
+                        typeof loc === "object" &&
+                        loc !== null &&
+                        typeof loc.latitude === "number" &&
+                        typeof loc.longitude === "number"
+                    ) {
+                        return {
+                            latitude: loc.latitude,
+                            longitude: loc.longitude,
+                            address: loc.address || undefined,
+                        };
+                    }
+                } catch {
+                    // Not JSON, treat as address string
+                }
+                return {
+                    latitude: 0,
+                    longitude: 0,
+                    address: backendPlant.location,
+                };
+            })(),
             image_url: backendPlant.image_url,
             health: await this.determineHealthFromScans(backendPlant.id),
             lastScanned: lastScanned,
             notes: backendPlant.notes,
             createdAt: backendPlant.created_at,
-            updatedAt: backendPlant.updated_at
+            updatedAt: backendPlant.updated_at,
         };
     }
     // Transformer les données backend en format frontend pour PlantScan
