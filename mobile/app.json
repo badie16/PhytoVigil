@@ -1,33 +1,46 @@
 {
   "expo": {
     "name": "PhytoVigil",
-    "slug": "PhytoVigil",
+    "slug": "phytovigil",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "phytovigil",
-    "userInterfaceStyle": "automatic",
+    "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/images/splash-icon.png",
       "resizeMode": "contain",
-        "backgroundColor": "#ffffff"
-          
+      "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.phytovigil.app"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ccc"
+        "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "package": "com.phytovigil.app",
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.VIBRATE"
+      ]
     },
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/favicon.png",
+      "serviceWorkerPath": "./service-worker.js"
+
+    },
+    "notification": {
+      "vapidPublicKey": "BP0ZeF6zpRD5mG8DitEqYuoYRY1lYWCvF7EZFut4Qh0rNqkAs_rBMjGq8Li273XbJuFbXCT_e4bsDMCfIOrhjHE"
     },
     "plugins": [
       "expo-router",
@@ -39,10 +52,31 @@
           "backgroundColor": "#ffffff"
           
         }
+      ],
+       [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/icon.png",
+          "color": "#00C896",
+          "defaultChannel": "default"
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow PhytoVigil to access your camera to scan plants for diseases."
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow PhytoVigil to use your location to provide weather information and location-based plant care tips."
+        }
       ]
     ],
     "experiments": {
       "typedRoutes": true
     }
+    
   }
 }
