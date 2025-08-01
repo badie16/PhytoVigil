@@ -17,3 +17,4 @@ class User(Base):
     plants = relationship("Plant", back_populates="user", cascade="all, delete-orphan")
     scans = relationship("PlantScan", back_populates="user", cascade="all, delete-orphan")
     activities = relationship("Activity", back_populates="user", cascade="all, delete-orphan")
+    push_tokens = relationship("PushToken", back_populates="user", cascade="all, delete-orphan")
