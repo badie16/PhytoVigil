@@ -131,11 +131,11 @@ class DatabaseService {
         const savedImageUri = await this.saveImageLocally(scan.imageUri, id)
 
         await this.db.runAsync(
-            `INSERT INTO plant_scans (id, plant_name, disease_name, confidence, treatment, image_uri, latitude, longitude, address, created_at, updated_at, status, notes)
+            `INSERT INTO plant_scans (id, plant_id, disease_name, confidence, treatment, image_uri, latitude, longitude, address, created_at, updated_at, status, notes)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [
                 id,
-                scan.plantName,
+                scan.plant_id,
                 scan.diseaseName,
                 scan.confidence,
                 scan.treatment,
@@ -189,8 +189,8 @@ class DatabaseService {
         const now = new Date().toISOString()
 
         let savedImageUri = null
-        if (plant.imageUri) {
-            savedImageUri = await this.saveImageLocally(plant.imageUri, id)
+        if (plant.image_url) {
+            savedImageUri = await this.saveImageLocally(plant.image_url, id)
         }
 
         await this.db.runAsync(
@@ -329,8 +329,20 @@ class DatabaseService {
     private mapRowToPlantScan(row: any): PlantScan {
         return {
             id: row.id,
-            plantName: row.plant_name,
+            plant_id: row.plant_id,
             diseaseName: row.disease_name,
+            top_predictions: row.top_predictions
+                ? (() => {
+                    try {
+                        const parsed = typeof row.top_predictions === "string"
+                            ? JSON.parse(row.top_predictions)
+                            : row.top_predictions;
+                        return Array.isArray(parsed) ? parsed : [];
+                    } catch {
+                        return [];
+                    }
+                })()
+                : [],
             confidence: row.confidence,
             treatment: row.treatment,
             imageUri: row.image_uri,
@@ -346,6 +358,8 @@ class DatabaseService {
             updatedAt: row.updated_at,
             status: row.status,
             notes: row.notes,
+            processing_time: row.processing_time,
+            model_version: row.model_version,
         }
     }
 
@@ -364,7 +378,7 @@ class DatabaseService {
                         address: row.address,
                     }
                     : undefined,
-            imageUri: row.image_uri,
+            image_url: row.image_uri,
             health: row.health,
             lastScanned: row.last_scanned,
             notes: row.notes,
