@@ -4,8 +4,6 @@ import { router } from "expo-router"
 import { ChevronRight, MapPin } from "lucide-react-native"
 import React from "react" // Ensure React is imported
 import { Text, TouchableOpacity, View } from "react-native"
-import LottieView from 'lottie-react-native'; 
-
 interface WeatherWidgetProps {
     weather: WeatherData
 }
@@ -36,8 +34,7 @@ export function WeatherWidget({ weather }: WeatherWidgetProps) {
     // weather.AnimatedIconComponent is now the JSON source, not a component
     // We don't need a separate variable like `const AnimatedIcon = weather.AnimatedIconComponent;`
     // unless you want to rename it for clarity.
-    const lottieSource = weather.AnimatedIconComponent; // Better name: lottieSource or animationSource
-
+    // const lottieSource = weather.AnimatedIconComponent; // Better name: lottieSource or animationSource
 
     return (
         <View className="mb-4">
@@ -48,7 +45,7 @@ export function WeatherWidget({ weather }: WeatherWidgetProps) {
             >
                 {/* Weather Icon (Lottie Animation) */}
                 <View className="w-16 h-16 bg-gray-50 rounded-2xl items-center justify-center mr-4">
-                    {lottieSource ? ( // Check if lottieSource exists
+                    {/* {lottieSource ? ( // Check if lottieSource exists
                         <LottieView
                             source={lottieSource} // Pass the JSON data to the source prop
                             autoPlay={true}      // Start animation automatically
@@ -56,10 +53,10 @@ export function WeatherWidget({ weather }: WeatherWidgetProps) {
                             style={{ width: (50), height: (50) }} // Apply size here
                             speed={4}
                         />
-                    ) : (
+                    ) : ( */}
                         // Fallback if Lottie source is not available (e.g., show emoji or a static image)
                         <Text className="text-3xl">{weatherIcon}</Text>
-                    )}
+                    {/* )} */}
                 </View>
 
                 {/* Weather Info */}
