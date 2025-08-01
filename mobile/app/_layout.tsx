@@ -1,5 +1,6 @@
 import { AuthProvider } from "@/contexts/auth-context"
 import { databaseService } from "@/services/local/databaseService"
+import { notificationService } from "@/services/notifications/notificationService"
 import { Stack } from "expo-router"
 import * as Splash from "expo-splash-screen"
 import { StatusBar } from "expo-status-bar"
@@ -14,11 +15,15 @@ if (Platform.OS !== "web") {
 
 export default function RootLayout() {
   const [appIsReady, setAppIsReady] = useState(false)
+
   useEffect(() => {
     const prepare = async () => {
       try {
         // Initialize database
         await databaseService.init()
+
+        // Initialize notification service
+        await notificationService.initialize()
 
         // Simulate minimum splash time for better UX
         await new Promise((resolve) => setTimeout(resolve, 2500))
@@ -38,9 +43,7 @@ export default function RootLayout() {
   }, [])
 
   if (!appIsReady) {
-    return (
-      <SplashScreen></SplashScreen>
-    )
+    return <SplashScreen></SplashScreen>
   }
 
   return (
@@ -51,7 +54,6 @@ export default function RootLayout() {
         screenOptions={{
           headerStyle: {
             backgroundColor: "#fff",
-
           },
           headerTintColor: "#00c896",
           headerTitleStyle: {
