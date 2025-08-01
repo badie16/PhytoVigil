@@ -37,7 +37,6 @@
       "output": "static",
       "favicon": "./assets/images/favicon.png",
       "serviceWorkerPath": "./service-worker.js"
-
     },
     "notification": {
       "vapidPublicKey": "BP0ZeF6zpRD5mG8DitEqYuoYRY1lYWCvF7EZFut4Qh0rNqkAs_rBMjGq8Li273XbJuFbXCT_e4bsDMCfIOrhjHE"
@@ -50,10 +49,9 @@
           "image": "./assets/images/splash-icon.png",
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
-          
         }
       ],
-       [
+      [
         "expo-notifications",
         {
           "icon": "./assets/images/icon.png",
@@ -76,7 +74,13 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
-    
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "c7d6295f-4e51-42d4-ab89-fabd0518635c"
+      }
+    },
+    "owner": "badie"
   }
 }
