@@ -1,6 +1,6 @@
 import type { ScanData } from '@/app/(tabs)/scanner';
-import { PlantUtils } from '@/lib/utils/plantUtils';
 import { DateUtils } from '@/lib/utils/dateUtils';
+import { PlantUtils } from '@/lib/utils/plantUtils';
 import { Activity, Calendar, Camera, Clock, Download, Leaf, Link2, Zap } from 'lucide-react-native';
 import React from 'react';
 import {
@@ -20,6 +20,37 @@ interface ScanResultScreenProps {
     onNewScan: () => void;
     onBack: () => void;
 }
+function renderFormattedText(text: string) {
+    return text.split('\n').map((line, index) => {
+        // Sous-titre : commence par * **titre**
+        if (/^\*\s\*\*(.+)\*\*$/.test(line)) {
+            const subtitle = line.match(/^\*\s\*\*(.+)\*\*$/)?.[1]
+            return (
+                <Text key={index} style={styles.subTitle}>
+                    {subtitle}
+                </Text>
+            )
+        }
+
+        // Titre principal : juste **titre**
+        if (/^\*\*(.+)\*\*$/.test(line)) {
+            const title = line.match(/^\*\*(.+)\*\*$/)?.[1]
+            return (
+                <Text key={index} style={styles.mainTitle}>
+                    {title}
+                </Text>
+            )
+        }
+
+        // Texte normal
+        return (
+            <Text key={index} style={styles.recommendationsText}>
+                {line}
+            </Text>
+        )
+    })
+}
+
 
 export default function ScanResultScreen({
     scanData,
@@ -149,9 +180,7 @@ export default function ScanResultScreen({
                 {/* Recommendations */}
                 <View style={styles.recommendationsCard}>
                     <Text style={styles.recommendationsTitle}>Treatment Recommendations</Text>
-                    <Text style={styles.recommendationsText}>
-                        {scanResult.treatment}
-                    </Text>
+                    {renderFormattedText(scanResult.treatment)}
                 </View>
 
 
@@ -380,6 +409,20 @@ const styles = StyleSheet.create({
         color: '#374151',
         lineHeight: 24,
         textAlign: 'left',
+    },
+    mainTitle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#2b4c3d',
+        marginTop: 12,
+        marginBottom: 6,
+    },
+    subTitle: {
+        fontSize: 15,
+        fontWeight: '600',
+        color: '#3e684c',
+        marginTop: 8,
+        marginBottom: 4,
     },
     predictionsCard: {
         backgroundColor: '#FFFFFF',
