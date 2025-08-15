@@ -23,6 +23,26 @@ class PlantService {
         const data: BackendPlant[] = await response.json();
         return Promise.all(data.map(this.transformBackendPlantToPlant.bind(this)));
     }
+    async getUserPlantsBackend(skip = 0, limit = 100): Promise<BackendPlant[]> {
+        const token = await storageService.getSecureItem(config.TOKEN_KEY);
+        if (!token) {
+            throw new Error("Token manquant ou utilisateur non authentifié");
+        }
+        const response = await fetch(`${config.API_URL}/api/plants?skip=${skip}&limit=${limit}`, {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Erreur lors de la récupération des plantes : ${response.status} - ${errorText}`);
+        }
+
+        const data: BackendPlant[] = await response.json();
+        return data
+    }
     async getPlantById(id: number): Promise<Plant> {
         const token = await storageService.getSecureItem(config.TOKEN_KEY);
 
@@ -143,7 +163,7 @@ class PlantService {
         return await response.json();
     }
     // Transformer les données backend en format frontend pour Plant
-    private async transformBackendPlantToPlant(backendPlant: BackendPlant): Promise<Plant> {
+    async transformBackendPlantToPlant(backendPlant: BackendPlant): Promise<Plant> {
         let lastScanned: string | undefined = undefined;
         try {
             const scans = await this.getScansByPlantId(backendPlant.id);
