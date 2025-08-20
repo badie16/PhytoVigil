@@ -1,3 +1,5 @@
+import { useOfflineManager } from "@/hooks/useOfflineManager"
+import { authHybridService } from "@/services/hybrid/auth"
 import { authService } from "@/services/remote/auth"
 import type { AuthState, LoginCredentials, RegisterCredentials, User } from "@/types/auth"
 import type React from "react"
@@ -51,15 +53,16 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [state, dispatch] = useReducer(authReducer, initialState)
+    const { offlineStatus } = useOfflineManager()
 
     useEffect(() => {
         checkAuthStatus()
-    }, [])
+    }, [offlineStatus.isOnline])
 
     const checkAuthStatus = async () => {
         try {
             dispatch({ type: "SET_LOADING", payload: true })
-            const user = await authService.getCurrentUser()
+            const user = await authHybridService.getCurrentUser(offlineStatus.isOnline)
             dispatch({ type: "SET_USER", payload: user })
         } catch (error) {
             dispatch({ type: "SET_ERROR", payload: "Failed to check authentication status" })
