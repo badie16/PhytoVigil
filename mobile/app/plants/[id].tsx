@@ -1,6 +1,8 @@
+import Header from '@/components/ui/header';
 import LoadingSpinner from '@/components/ui/loading-spinner';
-import { PlantUtils } from '@/lib/utils/plantUtils';
 import { DateUtils } from '@/lib/utils/dateUtils';
+import { PlantUtils } from '@/lib/utils/plantUtils';
+import { hybridService } from '@/services/hybrid/hybridService';
 import plantService from '@/services/remote/plantService';
 import { Plant, PlantScan } from '@/types';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -19,7 +21,6 @@ import {
     TouchableOpacity,
     View
 } from 'react-native';
-import Header from '@/components/ui/header';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function PlantDetailScreen() {
@@ -33,10 +34,16 @@ export default function PlantDetailScreen() {
         const fetchPlants = async () => {
             try {
                 const plantId = Array.isArray(id) ? parseInt(id[0], 10) : parseInt(id as string, 10);
-                const data = await plantService.getPlantById(plantId)
-                setPlant(data)
-                const dataScans = await plantService.getScansByPlantId(data.id)
-                setPlantScans(dataScans)
+                const data = await hybridService.getPlantById(plantId);
+                console.log(data)
+                if (data) {
+                    setPlant(data);
+                    const dataScans = await hybridService.getPlantScansByPlantId(data.id);
+                    setPlantScans(dataScans);
+                } else {
+                    setPlant(undefined);
+                    setPlantScans([]);
+                }
             } catch (err: any) {
                 console.log(err)
                 setError(err.message)
