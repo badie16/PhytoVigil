@@ -19,13 +19,9 @@ class AuthService {
     })
 
     const data = await res.json()
-    console.log("data:", data)
     if (!res.ok) throw new Error(data.detail || "Login failed")
-    console.log("yes 1")
     await storageService.setSecureItem(this.TOKEN_KEY, data.access_token)
-    console.log("yes 2")
     const user = await this.getCurrentUser()
-    console.log(user)
     if (user) {
       await AsyncStorage.setItem(this.USER_KEY, JSON.stringify(user))
       return user
