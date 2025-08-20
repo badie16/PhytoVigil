@@ -2,6 +2,7 @@
 
 import DiseaseCard from "@/components/ui/disease-card"
 import LoadingSpinner from "@/components/ui/loading-spinner"
+import { hybridService } from "@/services/hybrid/hybridService"
 import diseaseService from "@/services/remote/diseaseService"
 import type { Disease } from "@/types"
 import { useRouter } from "expo-router"
@@ -18,7 +19,7 @@ export default function DiagnoseScreen() {
     useEffect(() => {
         const fetchDiseases = async () => {
             try {
-                const data = await diseaseService.getAllDisease()
+                const data = await hybridService.getAllDiseases()
                 setDiseases(data)
                 setFilteredDiseases(data)
             } catch (err: any) {
@@ -28,7 +29,7 @@ export default function DiagnoseScreen() {
             }
         }
         fetchDiseases()
-    }, [])
+    }, [router])
     const handleSearch = (query: string) => {
         setSearchQuery(query)
         if (query.trim() === "") {
