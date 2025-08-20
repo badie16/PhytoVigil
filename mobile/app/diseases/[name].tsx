@@ -1,6 +1,7 @@
 import Header from '@/components/ui/header';
 import LoadingSpinner from '@/components/ui/loading-spinner';
 import { getSeverityConfig } from '@/lib/constant/severity';
+import { hybridService } from '@/services/hybrid/hybridService';
 import diseaseService from '@/services/remote/diseaseService';
 import type { Disease } from '@/types';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -25,9 +26,13 @@ export default function DiseaseInfoPage() {
     useEffect(() => {
         const fetchDisease = async () => {
             try {
-                const res = await diseaseService.getDiseaseByName(Array.isArray(name) ? name[0] : name);
-                setDiseaseData(res)
-                console.log(res)
+                const res = await hybridService.getDiseaseByName(Array.isArray(name) ? name[0] : name);
+                if (res) {
+                    setDiseaseData(res);
+                } else {
+                    setDiseaseData(undefined);
+                }
+                console.log(res);
             } catch (error) {
                 console.error("Erreur lors du chargement de la maladie", error)
             } finally {
