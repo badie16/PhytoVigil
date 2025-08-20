@@ -1,11 +1,13 @@
 import LoadingSpinner from "@/components/ui/loading-spinner"
-import { PlantUtils } from "@/lib/utils/plantUtils"
 import { DateUtils } from "@/lib/utils/dateUtils"
-import plantService from "@/services/remote/plantService"
+import { PlantUtils } from "@/lib/utils/plantUtils"
+import { hybridService } from "@/services/hybrid/hybridService"
 import { Plant } from "@/types"
+import { useFocusEffect } from "@react-navigation/native"
 import { useRouter } from "expo-router"
+
 import { AlertTriangle, ChevronDown, Droplets, Filter, LayoutGrid, Leaf, List, LucideIcon, Plus, Sun, Thermometer, X } from "lucide-react-native"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { Dimensions, Image, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 
@@ -38,22 +40,27 @@ export default function PlantsScreen() {
     // Get unique plant types for filter options
     const plantTypes = ['all', ...Array.from(new Set(plants.map(plant => plant.type)))];
 
-    useEffect(() => {
-        const fetchPlants = async () => {
-            try {
-                const data = await plantService.getUserPlants()
-                console.log(data)
-                setPlants(data)
-                setFilteredPlants(data)
-            } catch (err: any) {
-                console.log(err)
-                setError(err.message)
-            } finally {
-                setLoading(false)
+    useFocusEffect(
+        useCallback(() => {
+            const fetchPlants = async () => {
+                console.log("fetching plants...")
+                try {
+                    const data = await hybridService.getUserPlants()
+                    setPlants(data)
+                    setFilteredPlants(data)
+                } catch (err: any) {
+                    setError(err.message)
+                } finally {
+                    setLoading(false)
+                }
             }
-        }
-        fetchPlants()
-    }, [])
+
+            fetchPlants()
+
+            // optionnel : fonction de cleanup si besoin
+            return () => { }
+        }, [])
+    )
 
     // Apply filters whenever filters or plants change
     useEffect(() => {
