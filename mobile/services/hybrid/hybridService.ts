@@ -1,8 +1,8 @@
 import { databaseService } from "@/services/local/databaseService"
-import { syncService } from "@/services/sync/syncService"
 import diseaseService from "@/services/remote/diseaseService"
 import plantService from "@/services/remote/plantService"
 import { scanService } from "@/services/remote/scanService"
+import { syncService } from "@/services/sync/syncService"
 import type { Disease, Plant, PlantScan, PredictionRequest } from "@/types"
 
 class HybridService {
@@ -42,8 +42,14 @@ class HybridService {
         } catch (error) {
             console.log("❌ Erreur API maladie, basculement offline:", error)
         }
-
-        return await databaseService.getDiseaseByName(name)
+        console.log("📱 Recherche maladie en local (offline ou non trouvée en ligne)");
+        // Fallback to local database if not found online or error occurs
+        const localDisease = await databaseService.getDiseaseByName(name)
+        if (localDisease) {
+            return localDisease
+        }
+        // If not found locally, return null
+        return null
     }
 
     async searchDiseases(query: string): Promise<Disease[]> {
@@ -82,10 +88,44 @@ class HybridService {
         } catch (error) {
             console.log("❌ Erreur API plantes, basculement offline:", error)
         }
-
+        console.log("📱 Recherche plantes en local");
         return await databaseService.getPlants()
     }
+    async getPlantById(id: number): Promise<Plant | null> {
+        try {
+            if (await this.isOnline()) {
+                const remotePlant = await plantService.getPlantBackendById(id)                
+                if (remotePlant) {
+                    // Synchroniser avec la base locale
+                    await databaseService.savePlantFromRemote(remotePlant)
+                    return await plantService.transformBackendPlantToPlant(remotePlant)
+                }
+            }
+        } catch (error) {
+            console.log("❌ Erreur API getPlantById, basculement offline:", error)
+        }
+        console.log("📱 Recherche plante en local getPlantById:", id);
+        return await databaseService.getPlantById(id)
+    }
 
+    async getPlantScansByPlantId(plantId: number): Promise<PlantScan[]> {
+        try {
+            if (await this.isOnline()) {
+                const remoteScans = await plantService.getScansByPlantId(plantId);
+
+                // Synchroniser avec la base locale
+                for (const scan of remoteScans) {
+                    await databaseService.savePlantScan(scan);
+                }
+                return remoteScans;
+            }
+        } catch (error) {
+            console.log("❌ Erreur API getPlantScansByPlantId, basculement offline:", error);
+        }
+        console.log("📱 Recherche scans de plante en local getPlantScansByPlantId:", plantId);
+        return await databaseService.getPlantScansByPlantId(plantId);
+    }
+    
     // async createPlant(plantData: Omit<Plant, "id" | "createdAt" | "updatedAt">): Promise<Plant> {
     //     // Toujours sauvegarder en local d'abord
     //     const localId = await databaseService.savePlant(plantData)
@@ -161,120 +201,120 @@ class HybridService {
 
     // === GESTION DES SCANS ===
 
-    async predictDisease(request: PredictionRequest): Promise<PlantScan> {
-        if (await this.isOnline()) {
-            try {
-                // Scan en ligne avec IA complète
-                const result = await scanService.predictDisease(request)
+    // async predictDisease(request: PredictionRequest): Promise<PlantScan> {
+    //     if (await this.isOnline()) {
+    //         try {
+    //             // Scan en ligne avec IA complète
+    //             const result = await scanService.predictDisease(request)
 
-                // Sauvegarder le résultat localement
-                const scanData = {
-                    plant_id: 0, // Scan rapide sans plante associée
-                    diseaseName: result.diseaseName,
-                    top_predictions: result.top_predictions,
-                    confidence: result.confidence,
-                    treatment: result.treatment,
-                    imageUri: request.image,
-                    status: result.status,
-                    processing_time: result.processing_time,
-                    model_version: result.model_version,
-                }
+    //             // Sauvegarder le résultat localement
+    //             const scanData = {
+    //                 plant_id: 0, // Scan rapide sans plante associée
+    //                 diseaseName: result.diseaseName,
+    //                 top_predictions: result.top_predictions,
+    //                 confidence: result.confidence,
+    //                 treatment: result.treatment,
+    //                 imageUri: request.image,
+    //                 status: result.status,
+    //                 processing_time: result.processing_time,
+    //                 model_version: result.model_version,
+    //             }
 
-                const localId = await databaseService.savePlantScan(scanData)
-                const localScan = await databaseService.getPlantScanById(localId)
+    //             const localId = await databaseService.savePlantScan(scanData)
+    //             const localScan = await databaseService.getPlantScanById(localId)
 
-                return localScan!
-            } catch (error) {
-                console.log("❌ Erreur scan online, basculement offline:", error)
-            }
-        }
+    //             return localScan!
+    //         } catch (error) {
+    //             console.log("❌ Erreur scan online, basculement offline:", error)
+    //         }
+    //     }
 
-        // Mode offline: scan basique avec données locales
-        return await this.predictDiseaseOffline(request)
-    }
+    //     // Mode offline: scan basique avec données locales
+    //     return await this.predictDiseaseOffline(request)
+    // }
 
-    private async predictDiseaseOffline(request: PredictionRequest): Promise<PlantScan> {
-        console.log("📱 Mode offline: analyse basique de l'image")
+    // private async predictDiseaseOffline(request: PredictionRequest): Promise<PlantScan> {
+    //     console.log("📱 Mode offline: analyse basique de l'image")
 
-        // Analyse offline simplifiée
-        // On peut implémenter une logique basique ou utiliser des modèles légers
-        const offlineResult = {
-            diseaseName: "Analyse offline - Connexion requise pour diagnostic précis",
-            top_predictions: [
-                {
-                    class_name: "Analyse limitée",
-                    confidence: 0.5,
-                    rank: 1,
-                },
-            ],
-            confidence: 0.5,
-            treatment:
-                "Veuillez vous connecter à Internet pour obtenir un diagnostic précis et des recommandations de traitement.",
-            status: "unknown" as const,
-            processing_time: 100,
-            model_version: "offline-v1.0",
-        }
+    //     // Analyse offline simplifiée
+    //     // On peut implémenter une logique basique ou utiliser des modèles légers
+    //     const offlineResult = {
+    //         diseaseName: "Analyse offline - Connexion requise pour diagnostic précis",
+    //         top_predictions: [
+    //             {
+    //                 class_name: "Analyse limitée",
+    //                 confidence: 0.5,
+    //                 rank: 1,
+    //             },
+    //         ],
+    //         confidence: 0.5,
+    //         treatment:
+    //             "Veuillez vous connecter à Internet pour obtenir un diagnostic précis et des recommandations de traitement.",
+    //         status: "unknown" as const,
+    //         processing_time: 100,
+    //         model_version: "offline-v1.0",
+    //     }
 
-        // Sauvegarder localement
-        const scanData = {
-            plant_id: 0,
-            diseaseName: offlineResult.diseaseName,
-            top_predictions: offlineResult.top_predictions,
-            confidence: offlineResult.confidence,
-            treatment: offlineResult.treatment,
-            imageUri: request.image,
-            status: offlineResult.status,
-            processing_time: offlineResult.processing_time,
-            model_version: offlineResult.model_version,
-        }
+    //     // Sauvegarder localement
+    //     const scanData = {
+    //         plant_id: 0,
+    //         diseaseName: offlineResult.diseaseName,
+    //         top_predictions: offlineResult.top_predictions,
+    //         confidence: offlineResult.confidence,
+    //         treatment: offlineResult.treatment,
+    //         imageUri: request.image,
+    //         status: offlineResult.status,
+    //         processing_time: offlineResult.processing_time,
+    //         model_version: offlineResult.model_version,
+    //     }
 
-        const localId = await databaseService.savePlantScan(scanData)
-        const localScan = await databaseService.getPlantScanById(localId)
+    //     const localId = await databaseService.savePlantScan(scanData)
+    //     const localScan = await databaseService.getPlantScanById(localId)
 
-        // Ajouter à la queue pour re-analyse en ligne
-        await syncService.addToSyncQueue("scan", "create", {
-            ...scanData,
-            needsReanalysis: true,
-        })
+    //     // Ajouter à la queue pour re-analyse en ligne
+    //     await syncService.addToSyncQueue("scan", "create", {
+    //         ...scanData,
+    //         needsReanalysis: true,
+    //     })
 
-        return localScan!
-    }
+    //     return localScan!
+    // }
 
-    async predictAndSaveScan(request: { image: string; plantId: number }): Promise<PlantScan> {
-        if (await this.isOnline()) {
-            try {
-                const result = await scanService.predictAndSaveScan(request)
+    // async predictAndSaveScan(request: { image: string; plantId: number }): Promise<PlantScan> {
+    //     if (await this.isOnline()) {
+    //         try {
+    //             const result = await scanService.predictAndSaveScan(request)
 
-                // Sauvegarder localement aussi
-                const scanData = {
-                    plant_id: request.plantId,
-                    diseaseName: result.diseaseName,
-                    top_predictions: result.top_predictions,
-                    confidence: result.confidence,
-                    treatment: result.treatment,
-                    imageUri: request.image,
-                    status: result.status,
-                    processing_time: result.processing_time,
-                    model_version: result.model_version,
-                }
+    //             // Sauvegarder localement aussi
+    //             const scanData = {
+    //                 plant_id: request.plantId,
+    //                 diseaseName: result.diseaseName,
+    //                 top_predictions: result.top_predictions,
+    //                 confidence: result.confidence,
+    //                 treatment: result.treatment,
+    //                 imageUri: request.image,
+    //                 status: result.status,
+    //                 processing_time: result.processing_time,
+    //                 model_version: result.model_version,
+    //             }
 
-                await databaseService.savePlantScan(scanData)
-                return result
-            } catch (error) {
-                console.log("❌ Erreur scan avec sauvegarde online:", error)
-            }
-        }
+    //             await databaseService.savePlantScan(scanData)
+    //             return result
+    //         } catch (error) {
+    //             console.log("❌ Erreur scan avec sauvegarde online:", error)
+    //         }
+    //     }
 
-        // Mode offline
-        const offlineResult = await this.predictDiseaseOffline({ image: request.image })
+    //     // Mode offline
+    //     const offlineResult = await this.predictDiseaseOffline({ image: request.image })
 
-        // Mettre à jour avec l'ID de la plante
-        await databaseService.updatePlantScan(offlineResult.id.toString(), {
-            plant_id: request.plantId,
-        })
+    //     // Mettre à jour avec l'ID de la plante
+    //     await databaseService.updatePlantScan(offlineResult.id.toString(), {
+    //         plant_id: request.plantId,
+    //     })
 
-        return offlineResult
-    }
+    //     return offlineResult
+    // }
 
     // === UTILITAIRES ===
 

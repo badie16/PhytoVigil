@@ -1,5 +1,5 @@
 import { config } from "@/lib/config/env"
-import type { Disease, Plant, PlantScan, BackendPlant } from "@/types"
+import type { BackendPlant, Disease, Plant, PlantScan } from "@/types"
 import NetInfo from "@react-native-community/netinfo"
 import * as FileSystem from "expo-file-system"
 import { Platform } from "react-native"
@@ -295,15 +295,13 @@ class DatabaseService {
 
     async getPlants(): Promise<Plant[]> {
         if (!this.db) throw new Error("Base de données non initialisée")
-
         const rows = await this.db.getAllAsync("SELECT * FROM plants WHERE deleted = 0 ORDER BY created_at DESC")
         return rows.map(this.mapRowToPlant)
     }
 
-    async getPlantById(id: string): Promise<Plant | null> {
+    async getPlantById(id: number): Promise<Plant | null> {
         if (!this.db) throw new Error("Base de données non initialisée")
-
-        const row = await this.db.getFirstAsync("SELECT * FROM plants WHERE id = ? AND deleted = 0", [id])
+        const row = await this.db.getFirstAsync("SELECT * FROM plants WHERE remote_id = ?", [id.toString()])
         return row ? this.mapRowToPlant(row) : null
     }
 
@@ -335,14 +333,11 @@ class DatabaseService {
 
     // === GESTION DES SCANS ===
 
-    async savePlantScan(scan: Omit<PlantScan, "id" | "createdAt" | "updatedAt">): Promise<string> {
+    async savePlantScan(scan: PlantScan): Promise<number> {
         if (!this.db) throw new Error("Base de données non initialisée")
 
-        const id = `scan_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-        const now = new Date().toISOString()
-
         // Sauvegarder l'image localement
-        const savedImageUri = await this.saveImageLocally(scan.imageUri, id)
+        const savedImageUri = await this.saveImageLocally(scan.imageUri, scan.id.toString())
 
         await this.db.runAsync(
             `INSERT INTO plant_scans (
@@ -351,26 +346,26 @@ class DatabaseService {
                 status, notes, processing_time, model_version
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [
-                id,
+                scan.id,
                 scan.plant_id,
                 scan.diseaseName,
                 JSON.stringify(scan.top_predictions),
                 scan.confidence,
                 scan.treatment,
                 savedImageUri,
-                scan.location?.latitude || null,
-                scan.location?.longitude || null,
-                scan.location?.address || null,
-                now,
-                now,
-                scan.status,
-                scan.notes || null,
-                scan.processing_time || null,
-                scan.model_version || null,
+                scan.location?.latitude ?? null,
+                scan.location?.longitude ?? null,
+                scan.location?.address ?? null,
+                scan.createdAt ?? new Date().toISOString(),
+                scan.updatedAt ?? new Date().toISOString(),
+                scan.status ?? null,
+                scan.notes ?? null,
+                scan.processing_time ?? null,
+                scan.model_version ?? null,
             ],
         )
 
-        return id
+        return scan.id
     }
 
     async getPlantScans(limit?: number): Promise<PlantScan[]> {
@@ -398,6 +393,7 @@ class DatabaseService {
         const rows = await this.db.getAllAsync("SELECT * FROM plant_scans WHERE plant_id = ? ORDER BY created_at DESC", [
             plantId,
         ])
+        console.log(rows)
         return rows.map(this.mapRowToPlantScan)
     }
 
@@ -439,18 +435,23 @@ class DatabaseService {
             const filename = `${id}_${Date.now()}.jpg`
             const destinationUri = `${directory}${filename}`
 
-            await FileSystem.copyAsync({
-                from: sourceUri,
-                to: destinationUri,
-            })
-
-            return destinationUri
+            if (sourceUri.startsWith("http")) {
+                // 📥 Télécharger depuis une URL
+                const { uri } = await FileSystem.downloadAsync(sourceUri, destinationUri)
+                return uri
+            } else {
+                // 📂 Copier un fichier déjà local
+                await FileSystem.copyAsync({
+                    from: sourceUri,
+                    to: destinationUri,
+                })
+                return destinationUri
+            }
         } catch (error) {
             console.error("❌ Erreur sauvegarde image locale:", error)
             return sourceUri // Fallback vers l'URI originale
         }
     }
-
     private async cacheRemoteImage(remoteUrl: string, id: string): Promise<string> {
         try {
             // Vérifier si l'image est déjà en cache
