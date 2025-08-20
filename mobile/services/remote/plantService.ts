@@ -67,6 +67,30 @@ class PlantService {
         const data: BackendPlant = await response.json();
         return this.transformBackendPlantToPlant(data);
     }
+    async getPlantBackendById(id: number): Promise<BackendPlant> {
+        const token = await storageService.getSecureItem(config.TOKEN_KEY);
+
+        if (!token) {
+            throw new Error("Token manquant ou utilisateur non authentifié");
+        }
+
+        const response = await fetch(`${config.API_URL}/api/plants/${id}`, {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+        });
+
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Erreur lors de la récupération de la plante : ${response.status} - ${errorText}`);
+        }
+
+        const data: BackendPlant = await response.json();
+        return data
+    }
     async getScansByPlantId(plantId: number): Promise<PlantScan[]> {
         const token = await storageService.getSecureItem(config.TOKEN_KEY);
         if (!token) {
