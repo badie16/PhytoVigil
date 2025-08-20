@@ -136,6 +136,15 @@ class SyncService {
       for (const plant of remotePlants) {
         await databaseService.savePlantFromRemote(plant)
       }
+      // Synchroniser les scans de plantes pour chaque plante
+      for (const plant of remotePlants) {
+        if (plant.id) {
+          const remoteScans = await plantService.getScansByPlantId(plant.id)
+          for (const scan of remoteScans) {
+            await databaseService.savePlantScan(scan)
+          }
+        }
+      }
 
       console.log(`✅ ${remotePlants.length} plantes synchronisées`)
     } catch (error) {
