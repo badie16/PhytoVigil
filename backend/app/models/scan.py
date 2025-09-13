@@ -13,7 +13,7 @@ class PlantScan(Base):
     result_type = Column(String(50))  # 'healthy', 'diseased', 'unknown'
     confidence_score = Column(Numeric(5, 4))
     detected_diseases = Column(JSON)
-    recommendations = Column(Text)
+    recommendations = Column(JSON)
     scan_date = Column(DateTime(timezone=True), server_default=func.now())
     location_lat = Column(Numeric(10, 8))
     location_lng = Column(Numeric(11, 8))
