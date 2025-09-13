@@ -1,5 +1,4 @@
 import type { ScanData } from '@/app/(tabs)/scanner';
-import { DateUtils } from '@/lib/utils/dateUtils';
 import { PlantUtils } from '@/lib/utils/plantUtils';
 import { Activity, Calendar, Camera, Clock, Download, Leaf, Link2, Zap } from 'lucide-react-native';
 import React from 'react';
@@ -20,36 +19,115 @@ interface ScanResultScreenProps {
     onNewScan: () => void;
     onBack: () => void;
 }
-function renderFormattedText(text: string) {
-    return text.split('\n').map((line, index) => {
-        // Sous-titre : commence par * **titre**
-        if (/^\*\s\*\*(.+)\*\*$/.test(line)) {
-            const subtitle = line.match(/^\*\s\*\*(.+)\*\*$/)?.[1]
-            return (
-                <Text key={index} style={styles.subTitle}>
-                    {subtitle}
-                </Text>
-            )
-        }
-
-        // Titre principal : juste **titre**
-        if (/^\*\*(.+)\*\*$/.test(line)) {
-            const title = line.match(/^\*\*(.+)\*\*$/)?.[1]
-            return (
-                <Text key={index} style={styles.mainTitle}>
-                    {title}
-                </Text>
-            )
-        }
-
-        // Texte normal
-        return (
-            <Text key={index} style={styles.recommendationsText}>
-                {line}
-            </Text>
-        )
-    })
+interface Treatments {
+    status: string;
+    confidence: number;
+    immediate_actions?: string[]; // present if status === "diseased"
+    recommendations?: {
+        disease: string;
+        preventive_measures: string[];
+        treatments: string[];
+        error?: string;
+    }; // present if status === "diseased"
+    advice?: string[]; // present if status === "healthy"
+    tips?: string[]; // present if status === "unknown"
+    [key: string]: any; // allow extra fields for flexibility
 }
+function renderFormattedText(text: Treatments | string) {
+    if (typeof text === 'string' || typeof text === "object") {
+        try {
+            // Try to parse as JSON
+            const parsed = typeof text === 'string' ? JSON.parse(text) : text;
+            // Handle Treatments object
+            if (typeof parsed === 'object' && parsed !== null) {
+                const t = parsed as Treatments;
+                return (
+                    <>
+                        {/* Diseased: show immediate_actions + recommendations */}
+                        {t.status === 'diseased' && (
+                            <>
+                                <Text style={styles.recommendationsTitle}>Treatment Recommendations</Text>
+                                {Array.isArray(t.immediate_actions) && t.immediate_actions.length > 0 && (
+                                    <View style={styles.section}>
+                                        <Text style={styles.sectionTitle}>⚠️ Immediate Actions</Text>
+                                        {t.immediate_actions.map((item, i) => (
+                                            <Text key={i} style={styles.recommendationItem}>• {item}</Text>
+                                        ))}
+                                    </View>
+                                )}
+
+                                {t.recommendations && (
+                                    <>
+
+                                        {Array.isArray(t.recommendations.treatments) && t.recommendations.treatments.length > 0 && (
+                                            <View style={styles.section}>
+                                                <Text style={styles.sectionTitle}>💊 Treatments</Text>
+                                                {t.recommendations.treatments.map((item, i) => (
+                                                    <Text key={i} style={styles.recommendationItem}>• {item}</Text>
+                                                ))}
+                                            </View>
+                                        )}
+                                        {Array.isArray(t.recommendations.preventive_measures) && t.recommendations.preventive_measures.length > 0 && (
+                                            <View style={styles.section}>
+                                                <Text style={styles.sectionTitle}>🌱 Preventive Measures</Text>
+                                                {t.recommendations.preventive_measures.map((item, i) => (
+                                                    <Text key={i} style={styles.recommendationItem}>• {item}</Text>
+                                                ))}
+                                            </View>
+                                        )}
+                                        {t.recommendations.error && (
+                                            <Text style={[styles.recommendationsText, { color: 'red' }]}>{t.recommendations.error}</Text>
+                                        )}
+                                    </>
+                                )}
+                            </>
+                        )}
+                        {/* Healthy: show advice */}
+                        {t.status === 'healthy' && Array.isArray(t.advice) && t.advice.length > 0 && (
+                            <View style={styles.section}>
+                                <Text style={styles.recommendationsTitle}>Advice</Text>
+                                {t.advice.map((item, i) => (
+                                    <Text key={i} style={styles.recommendationItem}>• {item}</Text>
+                                ))}
+                            </View>
+                        )}
+
+                        {/* Unknown: show tips */}
+                        {t.status === 'unknown' && Array.isArray(t.tips) && t.tips.length > 0 && (
+                            <View style={styles.section}>
+                                <Text style={styles.recommendationsTitle}>Tips</Text>
+                                {t.tips.map((item, i) => (
+                                    <Text key={i} style={styles.recommendationItem}>• {item}</Text>
+                                ))}
+                            </View>
+                        )}
+                    </>
+                );
+            }
+        } catch (e) {
+            // Not a JSON string, continue as normal string
+            return text.split('\n').map((line, index) => {
+                // Subtitle: starts with * **title**
+                const subtitleMatch = line.match(/^\*\s\*\*(.+)\*\*$/);
+                if (subtitleMatch) {
+                    return <Text key={index} style={styles.subTitle}>{subtitleMatch[1]}</Text>;
+                }
+
+                // Main title: just **title**
+                const titleMatch = line.match(/^\*\*(.+)\*\*$/);
+                if (titleMatch) {
+                    return <Text key={index} style={styles.mainTitle}>{titleMatch[1]}</Text>;
+                }
+
+                // Normal text
+                return <Text key={index} style={styles.recommendationsText}>{line}</Text>;
+            });
+        }
+    }
+    // Fallback for unexpected types
+    return <Text style={styles.recommendationsText}>No data available.</Text>;
+}
+
 
 
 export default function ScanResultScreen({
@@ -179,7 +257,6 @@ export default function ScanResultScreen({
 
                 {/* Recommendations */}
                 <View style={styles.recommendationsCard}>
-                    <Text style={styles.recommendationsTitle}>Treatment Recommendations</Text>
                     {renderFormattedText(scanResult.treatment)}
                 </View>
 
@@ -192,7 +269,7 @@ export default function ScanResultScreen({
                             <Calendar size={16} color="#6B7280" />
                             <Text style={styles.infoLabel}>Scanned:</Text>
                             <Text style={styles.infoValue}>
-                                {DateUtils.formatDateFlexible(scanResult.createdAt)}
+                                1m ago
                             </Text>
                         </View>
                         {scanResult.processing_time && (
@@ -339,8 +416,8 @@ const styles = StyleSheet.create({
         marginBottom: 24,
     },
     sectionTitle: {
-        fontSize: 20,
-        fontWeight: '700',
+        fontSize: 18,
+        fontWeight: '600',
         color: '#111827',
         marginBottom: 16,
     },
@@ -400,7 +477,7 @@ const styles = StyleSheet.create({
     },
     recommendationsTitle: {
         fontSize: 18,
-        fontWeight: '600',
+        fontWeight: '700',
         color: '#111827',
         marginBottom: 16,
     },
@@ -409,6 +486,14 @@ const styles = StyleSheet.create({
         color: '#374151',
         lineHeight: 24,
         textAlign: 'left',
+    },
+    section: {
+        marginBottom: 12,
+    },
+    recommendationItem: {
+        fontSize: 15,
+        marginBottom: 4,
+        color: "#34495e",
     },
     mainTitle: {
         fontSize: 16,
