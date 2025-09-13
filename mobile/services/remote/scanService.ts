@@ -95,7 +95,7 @@ class ScanService {
             const data = await response.json()
             return plantService.transformBackendScanToPlantScan(data)
         } catch (error) {
-            console.error("Error predicting and saving scan:", error)
+            console.error("Error <predicting> and saving scan:", error)
             throw new Error(error instanceof Error ? error.message : "Failed to analyze and save scan")
         }
     }
