@@ -60,12 +60,19 @@ async def predict_disease(
         prediction_result = ml_service.predict(image_bytes)        
              
         # Préparer la réponse
+        rec = prediction_result["recommendations"]
+        if isinstance(rec, str):
+            try:
+                rec = json.loads(rec)
+            except Exception:
+                rec = {"status": "error", "error": "Invalid recommendations format", "raw": rec}
+
         response = PredictionResponse(
             predicted_class=prediction_result["predicted_class"],
             confidence=prediction_result["confidence"],
             result_type=prediction_result["result_type"],
             top_predictions=prediction_result["top_predictions"],
-            recommendations=prediction_result["recommendations"],
+            recommendations=rec,
             image="",
             scan_date=datetime.now(),
             model_version=prediction_result["model_version"],

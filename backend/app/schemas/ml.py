@@ -21,7 +21,7 @@ class PredictionResponse(BaseModel):
     confidence: float = Field(..., ge=0, le=1, description="Score de confiance principal")
     result_type: str = Field(..., description="Type de résultat: healthy, diseased, unknown")
     top_predictions: List[TopPrediction] = Field(..., description="Top 3 des prédictions")
-    recommendations: str = Field(..., description="Recommandations générées")
+    recommendations: dict = Field(..., description="Recommandations générées")
     image: str = Field(..., description="URL de l'image uploadée")
     scan_date: datetime = Field(..., description="Date et heure du scan")
     model_version: str = Field(..., description="Version du modèle utilisé")
