@@ -19,7 +19,7 @@ class ModelLoader:
     def configure_paths(self, model_path: str = None, class_names_path: str = None):
         """Configure les chemins vers le modèle et les classes"""
         if model_path is None:
-            self.model_path = os.path.join("app", "ml", "best_model.keras")
+            self.model_path = os.path.join("app", "ml", "plant_disease_detection_mobilenetv2_v21610.h5")
         else:
             self.model_path = model_path
             
@@ -107,7 +107,7 @@ class ModelLoader:
         try:
             # Test avec une image factice
             import numpy as np
-            test_input = np.random.random((1, 224, 224, 3)).astype(np.float32)
+            test_input = np.random.random((1, 256, 256, 3)).astype(np.float32)
             _ = self.model.predict(test_input, verbose=0)
             return True
         except Exception as e:

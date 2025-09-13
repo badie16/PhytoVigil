@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 class ImagePreprocessor:
     """Gestionnaire de prétraitement des images pour le modèle ML"""
     
-    def __init__(self, target_size: Tuple[int, int] = (224, 224)):
+    def __init__(self, target_size: Tuple[int, int] = (256, 256)):
         self.target_size = target_size
         self.supported_formats = {'JPEG', 'PNG', 'JPG', 'WEBP', 'BMP'}
     
