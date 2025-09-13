@@ -24,7 +24,7 @@ class PlantScanBase(BaseModel):
     result_type: Optional[str] = None
     confidence_score: Optional[Decimal] = None
     detected_diseases: Optional[List[Dict[str, Any]]] = None
-    recommendations: Optional[str] = None
+    recommendations: Optional[Dict[str, Any]] = None
     location_lat: Optional[Decimal] = None
     location_lng: Optional[Decimal] = None
 
@@ -36,7 +36,7 @@ class PlantScanUpdate(BaseModel):
     result_type: Optional[str] = None
     confidence_score: Optional[Decimal] = None
     detected_diseases: Optional[List[Dict[str, Any]]] = None
-    recommendations: Optional[str] = None
+    recommendations: Optional[Dict[str, Any]] = None
 
 class DetectedDisease(BaseModel):
     rank: int

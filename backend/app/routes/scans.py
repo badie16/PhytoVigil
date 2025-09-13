@@ -99,12 +99,12 @@ async def upload_scan(
         scan_data = {
             "plant_id": plant_id,
             "image_url": image_url,
-            "result_type": prediction_result["result_type"],
-            "confidence_score": prediction_result["confidence"],
-            "recommendations": prediction_result["recommendations"],
+            "result_type": prediction_result.get("result_type"),
+            "confidence_score": prediction_result.get("confidence"),
+            "recommendations": prediction_result.get("recommendations"),
             "location_lat": location_lat,
             "location_lng": location_lng,
-            "detected_diseases": prediction_result["top_predictions"],
+            "detected_diseases": prediction_result.get("top_predictions"),
         }
         # Créer le scan
         scan =  create_scan(db, scan_data, current_user.id)
