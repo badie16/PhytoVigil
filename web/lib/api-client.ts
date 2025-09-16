@@ -51,7 +51,9 @@ class ApiClient {
     const config: RequestInit = {
       ...options,
       headers: {
-        "Content-Type": "application/json",
+        ...(options.body instanceof FormData || options.body instanceof URLSearchParams
+          ? {} // ne pas forcer JSON si c’est un form-data
+          : { "Content-Type": "application/json" }),
         ...(token && { Authorization: `Bearer ${token}` }),
         ...options.headers,
       },
@@ -71,14 +73,11 @@ class ApiClient {
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}))
 
-        // Si token expiré, rediriger vers login
         if (response.status === 401) {
           if (typeof window !== "undefined") {
             localStorage.removeItem("auth_token")
-            window.location.href = "/admin/login"
           }
         }
-
         throw {
           message: errorData.message || `HTTP ${response.status}`,
           status: response.status,
@@ -86,11 +85,13 @@ class ApiClient {
           details: errorData.details,
         } as ApiError
       }
-
+     
       const data = await response.json()
-      return data
+      return {
+        success: true,
+        data: data as T,
+      }
     } catch (error) {
-      // Retry logic pour les erreurs réseau
       if (attempt < this.retryAttempts && this.shouldRetry(error)) {
         await this.delay(this.retryDelay * attempt)
         return this.makeRequest<T>(endpoint, options, attempt + 1)
@@ -108,11 +109,10 @@ class ApiClient {
   }
 
   private shouldRetry(error: any): boolean {
-    // Retry pour les erreurs réseau, pas pour les erreurs 4xx
     return !error.status || error.status >= 500
   }
 
-  // Méthodes HTTP de base
+  // Méthodes HTTP JSON
   async get<T>(endpoint: string, params?: Record<string, any>): Promise<ApiResponse<T>> {
     const url = params ? `${endpoint}?${new URLSearchParams(params)}` : endpoint
     return this.makeRequest<T>(url, { method: "GET" })
@@ -161,6 +161,19 @@ class ApiClient {
         ...(token && { Authorization: `Bearer ${token}` }),
       },
       body: formData,
+    })
+  }
+
+  async postForm<T>(endpoint: string, data: Record<string, string>): Promise<ApiResponse<T>> {
+    const body = new URLSearchParams()
+    Object.entries(data).forEach(([key, value]) => body.append(key, value))
+
+    return this.makeRequest<T>(endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body,
     })
   }
 }

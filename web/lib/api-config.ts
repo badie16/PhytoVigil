@@ -1,7 +1,7 @@
 // Configuration API centralisée
 export const API_CONFIG = {
-  BASE_URL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api",
-  WS_URL: process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:3001",
+  BASE_URL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api",
+  WS_URL: process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:8000",
   TIMEOUT: 30000,
   RETRY_ATTEMPTS: 3,
   RETRY_DELAY: 1000,
@@ -13,7 +13,7 @@ export const API_ENDPOINTS = {
     LOGIN: "/auth/login",
     LOGOUT: "/auth/logout",
     REFRESH: "/auth/refresh",
-    ME: "/auth/me",
+    ME: "/users/me",
     REGISTER: "/auth/register",
     FORGOT_PASSWORD: "/auth/forgot-password",
     RESET_PASSWORD: "/auth/reset-password",
