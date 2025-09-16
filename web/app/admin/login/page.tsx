@@ -1,14 +1,14 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Leaf, Lock, Mail, Eye, EyeOff, Loader2 } from 'lucide-react'
-import { useRouter } from "next/navigation"
 import { useAuth } from "@/hooks/useAuth"
+import { Eye, EyeOff, Leaf, Loader2, Lock, Mail } from 'lucide-react'
+import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
 
 export default function AdminLogin() {
   const [email, setEmail] = useState("")
@@ -22,6 +22,7 @@ export default function AdminLogin() {
     if (isAuthenticated) {
       router.push("/admin/dashboard")
     }
+    console.log("user not connected")
   }, [isAuthenticated, router])
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -34,7 +35,7 @@ export default function AdminLogin() {
     }
 
     const result = await login(email, password)
-    
+    console.log("result final",result)
     if (!result.success) {
       setError(result.error || "Erreur de connexion")
     }
