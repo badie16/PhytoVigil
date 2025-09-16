@@ -1,8 +1,8 @@
 "use client"
 
-import { useState, useEffect, useContext, createContext, type ReactNode } from "react"
-import { authService, type User } from "@/services/auth.service"
 import type { ApiError } from "@/lib/api-client"
+import { authService, type User } from "@/services/auth.service"
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react"
 
 interface AuthContextType {
   user: User | null
@@ -52,14 +52,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (email: string, password: string) => {
     try {
       setIsLoading(true)
-      const response = await authService.login({ email, password })
-
+      const response = await authService.login({ username: email, password })
       if (response.success && response.data) {
-        setUser(response.data.user)
-        return { success: true }
-      } else {
-        return { success: false, error: response.error || "Erreur de connexion" }
+        const responseuser = await authService.getCurrentUser()
+        if (responseuser.success && responseuser.data && responseuser.data.role == "admin") {
+          setUser(responseuser.data)
+          return { success: true }
+        }
+
       }
+      return { success: false, error: response.error || "Erreur de connexion" }
     } catch (error) {
       const apiError = error as ApiError
       return {
@@ -85,7 +87,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const response = await authService.refreshToken()
       if (response.success && response.data) {
-        setUser(response.data.user)
+        // setUser(response.data.user)
       }
     } catch (error) {
       console.error("Token refresh error:", error)
@@ -102,7 +104,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     refreshToken,
   }
 
-  return null
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  )
 }
 
 export function useAuth() {
