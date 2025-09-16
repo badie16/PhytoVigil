@@ -77,16 +77,17 @@ web/
 │   │   └── settings/      # System settings
 │   ├── globals.css        # Global styles
 │   └── layout.tsx         # Root layout
+│   └── page.tsx           # Product Overview Page
 ├── components/            # Reusable UI components
-│   ├── ui/               # Base UI components (shadcn/ui)
-│   └── providers/        # Context providers
-├── hooks/                # Custom React hooks
-├── lib/                  # Utility libraries
-│   ├── api-client.ts     # API client configuration
-│   ├── api-config.ts     # API endpoints
-│   └── utils.ts          # Utility functions
-├── services/             # API service layers
-└── types/                # TypeScript type definitions
+│   ├── ui/                # Base UI components (shadcn/ui)
+│   └── providers/         # Context providers
+├── hooks/                 # Custom React hooks
+├── lib/                   # Utility libraries
+│   ├── api-client.ts      # API client configuration
+│   ├── api-config.ts      # API endpoints
+│   └── utils.ts           # Utility functions
+├── services/              # API service layers
+└── types/                 # TypeScript type definitions
 ```
 
 ---
