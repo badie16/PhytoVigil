@@ -63,7 +63,7 @@ npm run start
 
 ## 📁 Project Structure
 
-```
+```graph
 web/
 ├── app/                   # Next.js App Router
 │   ├── admin/             # Admin dashboard pages
