@@ -20,10 +20,10 @@ import {
 } from "recharts"
 import { Users, Camera, Bug, TrendingUp, AlertTriangle, CheckCircle, Activity, Target, Loader2 } from 'lucide-react'
 import { useApi } from "@/hooks/useApi"
-import { apiClient } from "@/lib/api"
+import { dashboardService } from "@/services/dashboard.service"
 
 export default function AdminDashboard() {
-  const { data: dashboardData, loading, error, refetch } = useApi(() => apiClient.getDashboardStats())
+  const { data: dashboardData, loading, error, refetch } = useApi(() => dashboardService.getDashboardStats())
 
   if (loading) {
     return (
