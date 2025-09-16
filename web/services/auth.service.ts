@@ -2,10 +2,9 @@ import { apiClient, type ApiResponse } from "@/lib/api-client"
 import { API_ENDPOINTS } from "@/lib/api-config"
 
 export interface LoginCredentials {
-  email: string
+  username: string
   password: string
 }
-
 export interface RegisterData {
   name: string
   email: string
@@ -23,22 +22,23 @@ export interface User {
 }
 
 export interface AuthResponse {
-  user: User
-  token: string
-  refreshToken: string
+  access_token: string
+  token_type: string
 }
+
 
 export class AuthService {
   async login(credentials: LoginCredentials): Promise<ApiResponse<AuthResponse>> {
-    const response = await apiClient.post<AuthResponse>(API_ENDPOINTS.AUTH.LOGIN, credentials)
-
+    const response = await apiClient.postForm<AuthResponse>(
+      API_ENDPOINTS.AUTH.LOGIN,
+      { username: credentials.username, password: credentials.password }
+    )
+    console.log(response)
     if (response.success && response.data) {
       // Stocker le token
-      localStorage.setItem("auth_token", response.data.token)
-      localStorage.setItem("refresh_token", response.data.refreshToken)
-      localStorage.setItem("user", JSON.stringify(response.data.user))
+      localStorage.setItem("auth_token", response.data.access_token)
+      localStorage.setItem("token_type", response.data.token_type)
     }
-
     return response
   }
 
@@ -73,16 +73,29 @@ export class AuthService {
     })
 
     if (response.success && response.data) {
-      localStorage.setItem("auth_token", response.data.token)
-      localStorage.setItem("user", JSON.stringify(response.data.user))
+      localStorage.setItem("auth_token", response.data.access_token)
+      // localStorage.setItem("user", JSON.stringify(response.data.user))
     }
 
     return response
   }
 
   async getCurrentUser(): Promise<ApiResponse<User>> {
-    return apiClient.get<User>(API_ENDPOINTS.AUTH.ME)
+    const response = await apiClient.get<User>(API_ENDPOINTS.AUTH.ME)
+
+    const user = response.data as User
+
+    if (!user) {
+      throw new Error("Impossible de récupérer l'utilisateur")
+    }
+    if (user.role !== "admin") {
+      throw new Error("Utilisateur non autorisé")
+    } else {
+      localStorage.setItem("user", JSON.stringify(user))
+    }
+    return response
   }
+
 
   async forgotPassword(email: string): Promise<ApiResponse> {
     return apiClient.post(API_ENDPOINTS.AUTH.FORGOT_PASSWORD, { email })
