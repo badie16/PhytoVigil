@@ -55,3 +55,16 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     if user is None:
         raise credentials_exception
     return user
+
+
+def get_current_admin(user: User = Depends(get_current_user)) -> User:
+    """
+    Dépendance pour vérifier que l'utilisateur est un admin.
+    Utiliser dans les endpoints admin.
+    """
+    if user.role != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You do not have permission to perform this action"
+        )
+    return user
