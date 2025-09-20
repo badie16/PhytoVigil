@@ -4,7 +4,7 @@ from fastapi.security import OAuth2PasswordBearer
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from app.database import get_db, engine, Base
-from app.routes import auth, user, plants, diseases, scans, files,ml,stats,activity,push_token
+from app.routes import auth, user, plants, diseases, scans, files,ml,stats,activity,push_token,dashboard
 from app.core.config import settings # Importez les paramètres de configuration
 from app.core.security import get_current_user
 
@@ -37,6 +37,7 @@ app.include_router(ml.router, prefix="/api/ml", tags=["Machine Learning"])
 app.include_router(stats.router, prefix="/api/stats", tags=["Statistics"])
 app.include_router(activity.router, prefix="/api/activities", tags=["Activities"])
 app.include_router(push_token.router, prefix="/api/push-tokens", tags=["Push Notifications"])
+app.include_router(dashboard.router, prefix="/api/dashboard", tags=["Dashboard Admin"])
 @app.get("/")
 async def root():
     return  {
