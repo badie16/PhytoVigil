@@ -1,30 +1,34 @@
 "use client"
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import {
-  LineChart,
-  Line,
-  AreaChart,
-  Area,
-  PieChart,
-  Pie,
-  Cell,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts"
-import { Users, Camera, Bug, TrendingUp, AlertTriangle, CheckCircle, Activity, Target, Loader2 } from 'lucide-react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { useApi } from "@/hooks/useApi"
 import { dashboardService } from "@/services/dashboard.service"
+import { Activity, AlertTriangle, Bug, Camera, CheckCircle, Loader2, Target, TrendingUp, Users } from 'lucide-react'
+import { useCallback } from "react"
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  Cell,
+  Legend,
+  Line,
+  LineChart,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts"
 
 export default function AdminDashboard() {
-  const { data: dashboardData, loading, error, refetch } = useApi(() => dashboardService.getDashboardStats())
-
+  const fetchDashboard = useCallback(
+    () => dashboardService.getDashboardStats(),
+    []
+  )
+  const { data: dashboardData, loading, error, refetch } = useApi(fetchDashboard)
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -253,11 +257,11 @@ export default function AdminDashboard() {
                 </div>
               </div>
             )) || (
-              <div className="text-center py-8 text-gray-500">
-                <Activity className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                <p>Aucune activité récente</p>
-              </div>
-            )}
+                <div className="text-center py-8 text-gray-500">
+                  <Activity className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                  <p>Aucune activité récente</p>
+                </div>
+              )}
           </div>
         </CardContent>
       </Card>
