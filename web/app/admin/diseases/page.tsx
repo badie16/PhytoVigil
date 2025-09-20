@@ -1,13 +1,8 @@
 "use client"
 
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Dialog,
   DialogContent,
@@ -16,68 +11,40 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Textarea } from "@/components/ui/textarea"
+import { useApi } from "@/hooks/useApi"
+import { Disease, diseasesService } from "@/services"
 import {
-  Search,
-  Plus,
-  Edit,
-  Trash2,
-  Save,
-  RefreshCw,
-  Sparkles,
-  Bug,
   AlertTriangle,
+  Bug,
   CheckCircle,
+  Edit,
+  Loader2,
+  Plus,
+  RefreshCw,
+  Save,
+  Search,
+  Sparkles,
+  Trash2,
   Upload,
 } from "lucide-react"
 import Image from "next/image"
+import { useCallback, useState } from "react"
 
 export default function DiseasesPage() {
-  const [diseases, setDiseases] = useState([
-    {
-      id: 1,
-      name: "Mildiou de la tomate",
-      scientific_name: "Phytophthora infestans",
-      description: "Maladie fongique grave affectant les tomates et pommes de terre",
-      symptoms: "Taches brunes sur les feuilles, pourriture des fruits",
-      treatment: "Fongicide cuivré, amélioration de la ventilation",
-      prevention: "Éviter l'arrosage sur les feuilles, rotation des cultures",
-      severity_level: 4,
-      image_url: "/placeholder.svg?height=200&width=200",
-      created_at: "2024-01-15T10:30:00Z",
-      scan_count: 1234,
-      detection_accuracy: 94.2,
-    },
-    {
-      id: 2,
-      name: "Pucerons",
-      scientific_name: "Aphidoidea",
-      description: "Insectes suceurs de sève causant des déformations",
-      symptoms: "Petits insectes verts/noirs, feuilles collantes, déformation",
-      treatment: "Savon noir, coccinelles, jet d'eau",
-      prevention: "Plantes répulsives, surveillance régulière",
-      severity_level: 2,
-      image_url: "/placeholder.svg?height=200&width=200",
-      created_at: "2024-01-10T14:20:00Z",
-      scan_count: 987,
-      detection_accuracy: 89.5,
-    },
-    {
-      id: 3,
-      name: "Oïdium",
-      scientific_name: "Erysiphales",
-      description: "Champignon formant un duvet blanc sur les feuilles",
-      symptoms: "Poudre blanche sur les feuilles, jaunissement",
-      treatment: "Bicarbonate de soude, soufre, fongicides",
-      prevention: "Espacement des plants, éviter l'humidité stagnante",
-      severity_level: 3,
-      image_url: "/placeholder.svg?height=200&width=200",
-      created_at: "2024-01-08T09:15:00Z",
-      scan_count: 756,
-      detection_accuracy: 91.8,
-    },
-  ])
+  // Remove unused local state for diseases, rely on fetched data
+  const fetchDiseases = useCallback(
+    () => diseasesService.getDiseases(),
+    []
+  )
+
+  const { data: diseases, loading, error, refetch, setData: setDiseases } = useApi(fetchDiseases)
+
 
   const [newDisease, setNewDisease] = useState({
     name: "",
@@ -94,8 +61,8 @@ export default function DiseasesPage() {
   const [filterSeverity, setFilterSeverity] = useState("all")
   const [isGeneratingWithAI, setIsGeneratingWithAI] = useState(false)
   const [selectedDisease, setSelectedDisease] = useState<any>(null)
-
-  const filteredDiseases = diseases.filter((disease) => {
+  
+  const filteredDiseases = diseases.filter((disease: Disease) => {
     const matchesSearch =
       disease.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       disease.scientific_name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -107,17 +74,22 @@ export default function DiseasesPage() {
     { title: "Total maladies", value: diseases.length.toString(), icon: <Bug className="w-5 h-5" /> },
     {
       title: "Sévérité élevée",
-      value: diseases.filter((d) => d.severity_level >= 4).length.toString(),
+      value: diseases.filter((d: any) => d.severity_level >= 4).length.toString(),
       icon: <AlertTriangle className="w-5 h-5" />,
     },
     {
       title: "Détections ce mois",
-      value: diseases.reduce((sum, d) => sum + d.scan_count, 0).toLocaleString(),
+      value: diseases.reduce((sum: number, d: any) => sum + (d.scan_count || 0), 0).toLocaleString(),
       icon: <CheckCircle className="w-5 h-5" />,
     },
     {
       title: "Précision moyenne",
-      value: `${(diseases.reduce((sum, d) => sum + d.detection_accuracy, 0) / diseases.length).toFixed(1)}%`,
+      value:
+        diseases.length > 0
+          ? `${(
+            diseases.reduce((sum: number, d: any) => sum + (d.detection_accuracy || 0), 0) / diseases.length
+          ).toFixed(1)}%`
+          : "0%",
       icon: <Sparkles className="w-5 h-5" />,
     },
   ]
@@ -125,9 +97,9 @@ export default function DiseasesPage() {
   const generateWithGemini = async () => {
     setIsGeneratingWithAI(true)
     setTimeout(() => {
-      setNewDisease({
-        ...newDisease,
-        treatment: `Traitement naturel recommandé pour ${newDisease.name} :
+      setNewDisease((prev) => ({
+        ...prev,
+        treatment: `Traitement naturel recommandé pour ${prev.name} :
 • Pulvérisation de décoction d'ail et bicarbonate (1 c. à soupe/L)
 • Application matin/soir, éviter les heures chaudes
 • Renforcer avec purin d'ortie dilué à 10%
@@ -138,8 +110,8 @@ export default function DiseasesPage() {
 • Éviter l'arrosage sur le feuillage
 • Paillage du sol pour limiter les éclaboussures
 • Surveillance hebdomadaire des premiers symptômes`,
-        description: `${newDisease.name} est une maladie qui se développe particulièrement dans des conditions d'humidité élevée. Elle peut rapidement se propager et causer des dégâts importants si elle n'est pas traitée rapidement. Un diagnostic précoce est essentiel pour un traitement efficace.`,
-      })
+        description: `${prev.name} est une maladie qui se développe particulièrement dans des conditions d'humidité élevée. Elle peut rapidement se propager et causer des dégâts importants si elle n'est pas traitée rapidement. Un diagnostic précoce est essentiel pour un traitement efficace.`,
+      }))
       setIsGeneratingWithAI(false)
     }, 2000)
   }
@@ -165,7 +137,28 @@ export default function DiseasesPage() {
     const labels = ["", "Très faible", "Faible", "Moyenne", "Élevée", "Critique"]
     return labels[level] || "Inconnue"
   }
-
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="flex items-center gap-2">
+          <Loader2 className="w-6 h-6 animate-spin text-[#00C896]" />
+          <span>Chargement des maladies...</span>
+        </div>
+      </div>
+    )
+  }
+  if (error || !diseases) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">Erreur lors du chargement: {error}</p>
+          <Button onClick={refetch} variant="outline">
+            Réessayer
+          </Button>
+        </div>
+      </div>
+    )
+  }
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -416,7 +409,7 @@ export default function DiseasesPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredDiseases.map((disease) => (
+              {filteredDiseases.map((disease: any) => (
                 <TableRow key={disease.id}>
                   <TableCell>
                     <div className="w-16 h-16 relative rounded-lg overflow-hidden">
@@ -441,7 +434,7 @@ export default function DiseasesPage() {
                   </TableCell>
                   <TableCell>
                     <div className="text-sm">
-                      <div className="font-medium">{disease.scan_count.toLocaleString()}</div>
+                      <div className="font-medium">{(disease.scan_count || 0).toLocaleString()}</div>
                       <div className="text-gray-500">scans</div>
                     </div>
                   </TableCell>
@@ -450,7 +443,9 @@ export default function DiseasesPage() {
                   </TableCell>
                   <TableCell>
                     <div className="text-sm text-gray-500">
-                      {new Date(disease.created_at).toLocaleDateString("fr-FR")}
+                      {disease.created_at
+                        ? new Date(disease.created_at).toLocaleDateString("fr-FR")
+                        : ""}
                     </div>
                   </TableCell>
                   <TableCell>
