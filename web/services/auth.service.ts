@@ -41,7 +41,6 @@ export class AuthService {
     }
     return response
   }
-
   async logout(): Promise<ApiResponse> {
     try {
       await apiClient.post(API_ENDPOINTS.AUTH.LOGOUT)
@@ -54,7 +53,6 @@ export class AuthService {
       localStorage.removeItem("refresh_token")
       localStorage.removeItem("user")
     }
-
     return { success: true }
   }
 

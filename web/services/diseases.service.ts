@@ -6,7 +6,7 @@ export interface Disease {
   name: string
   scientific_name?: string
   description?: string
-  symptoms: string
+  symptoms: string[] | string
   treatment: string
   prevention?: string
   severity_level: number
@@ -14,8 +14,8 @@ export interface Disease {
   created_at: string
   scan_count?: number
   detection_accuracy?: number
+  affectedPlants?: string[]
 }
-
 export interface CreateDiseaseData {
   name: string
   scientific_name?: string
