@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
-import type { ApiResponse, ApiError } from "@/lib/api-client"
+import type { ApiError, ApiResponse } from "@/lib/api-client"
+import { useCallback, useEffect, useState } from "react"
 
 interface UseApiOptions {
   immediate?: boolean
@@ -9,9 +9,12 @@ interface UseApiOptions {
   onError?: (error: ApiError) => void
 }
 
-export function useApi<T>(apiCall: () => Promise<ApiResponse<T>>, options: UseApiOptions = {}) {
-  const [data, setData] = useState<T | null>(null)
-  const [loading, setLoading] = useState(options.immediate !== false)
+export function useApi<T>(
+  apiCall: () => Promise<ApiResponse<T>>,
+  { immediate = true, onSuccess, onError }: UseApiOptions = {}
+) {
+  const [data, setData] = useState<T>([] as T)
+  const [loading, setLoading] = useState(immediate)
   const [error, setError] = useState<string | null>(null)
 
   const execute = useCallback(async () => {
@@ -20,43 +23,35 @@ export function useApi<T>(apiCall: () => Promise<ApiResponse<T>>, options: UseAp
       setError(null)
 
       const response = await apiCall()
-
+      console.log("API Response:", response)
       if (response.success && response.data !== undefined) {
         setData(response.data)
-        options.onSuccess?.(response.data)
+        onSuccess?.(response.data)
       } else {
         const errorMessage = response.error || "Une erreur est survenue"
         setError(errorMessage)
-        options.onError?.({ message: errorMessage, status: 0 })
+        onError?.({ message: errorMessage, status: 0 })
       }
     } catch (err) {
       const apiError = err as ApiError
       const errorMessage = apiError.message || "Une erreur est survenue"
       setError(errorMessage)
-      options.onError?.(apiError)
+      onError?.(apiError)
     } finally {
       setLoading(false)
     }
-  }, [apiCall, options])
-
-  const refetch = useCallback(() => {
-    return execute()
-  }, [execute])
+  }, [apiCall, onSuccess, onError])
 
   useEffect(() => {
-    if (options.immediate !== false) {
+    if (immediate) {
       execute()
     }
-  }, [execute, options.immediate])
+  }, [execute, immediate])
 
-  return {
-    data,
-    loading,
-    error,
-    refetch,
-    execute,
-  }
+  return { data, loading, error, refetch: execute, execute, setData }
 }
+
+
 
 // Hook spécialisé pour les listes avec pagination
 export function usePaginatedApi<T>(apiCall: (params: any) => Promise<ApiResponse<T[]>>, initialParams: any = {}) {
